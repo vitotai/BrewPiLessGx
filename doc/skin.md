@@ -208,7 +208,7 @@ Custom fonts and images in the file system(LittleFS) of BPL can be used. To use 
 
 ### C.1 Fonts
 
-![Fonts](fonts.jpg)
+![Fonts](img/fonts.jpg)
 
 There are four fonts available: 14pt(s), 32pt(m), 48pt(l), and 108pt(x). The 108pt font includes only numbers. At most three custom fonts can be used. The font file should be converted to binary format by lv_font_conv tool.
 
