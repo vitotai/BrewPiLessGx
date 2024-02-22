@@ -2,6 +2,8 @@
 #include <ui.h>
 #include <Arduino.h>
 #if ESP32_17320S019N
+#include <Arduino_GFX_Library.h>
+extern Arduino_GFX *gfx;
 #else
 #include <esp32_smartdisplay.h>
 #endif
@@ -14,6 +16,7 @@ bool is_tft_sleeping(){ return isTftSleeping;}
 
 void tft_sleep(void){
 #if ESP32_17320S019N
+    gfx->displayOff();
 #else
     smartdisplay_tft_sleep();
 #endif
@@ -23,6 +26,7 @@ void tft_sleep(void){
 
 void tft_wakeup(void){
 #if ESP32_17320S019N
+    gfx->displayOn();
 #else
     smartdisplay_tft_wake();
 #endif

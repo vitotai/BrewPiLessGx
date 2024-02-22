@@ -229,7 +229,7 @@ void ExternalData::_setOriginalGravity(float og){
 #endif
 }
 
-float ExternalData::_calculateGravity(float raw,float temp){
+float ExternalData::_calculateGravity(float raw){
 		// calculate Gravity
 	float sg = _cfg->coefficients[0]
             +  _cfg->coefficients[1] * raw
@@ -237,12 +237,13 @@ float ExternalData::_calculateGravity(float raw,float temp){
             +  _cfg->coefficients[3] * raw * raw * raw;
 
 	// temp. correction
-	//if(_cfg->ispindelTempCal){
-		if(_cfg->usePlato){
-			sg =SG2Brix(temperatureCorrection(Brix2SG(sg),C2F(temp),68));
-		}else
-	    	sg = temperatureCorrection(sg,C2F(temp),68);
-	//}
+	float temp= (brewPi.getUnit() == 'C')? C2F(_auxTemp):_auxTemp;
+	if(_cfg->usePlato){
+		sg =SG2Brix(temperatureCorrection(Brix2SG(sg),temp,68));
+	}else{
+	    sg = temperatureCorrection(sg,temp,68);
+	}
+
 	return sg;
 }
 /*
@@ -274,8 +275,8 @@ void ExternalData::_setGravity(float sg){
 #endif
 
 	#if SMART_DISPLAY
-			char unit = brewPi.getUnit();
-			smartDisplay.gravityDeviceData(_cfg->gravityDeviceType, sg,_auxTemp,_lastUpdate,unit,_cfg->usePlato,_deviceVoltage,_tiltAngle,_rssi);
+		char unit = brewPi.getUnit();
+		smartDisplay.gravityDeviceData(_cfg->gravityDeviceType, sg,_auxTemp,_lastUpdate,unit,_cfg->usePlato,_deviceVoltage,_tiltAngle,_rssi);
 	#endif
 
 	#if ESP32Graphics
@@ -417,7 +418,7 @@ void  ExternalData::_remoteHydrometerReport(float gravity,float tilt){
 
 	if(_cfg->calbybpl){
 		if( _formulaValid){
-			float calculated=_calculateGravity(tilt, _auxTemp);
+			float calculated=_calculateGravity(tilt);
 			brewLogger.addGravity(calculated);
 			_setGravity(calculated);
 		}
@@ -463,6 +464,7 @@ void  ExternalData::_deriveFormula(void){
 		DBG_PRINTF("\n");
 	}
 }
+
 
 const char* ExternalData::getDeviceName(void){
 	if(_cfg->gravityDeviceType == GravityDeviceIspindel){

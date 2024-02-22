@@ -10,8 +10,11 @@ typedef struct _SkinEntry{
 extern const uint8_t skin_brwpi_start[] asm("_binary_src_skins_skin_brewpi19_json_start");
 extern const uint8_t skin_brwpi_end[] asm("_binary_src_skins_skin_brewpi19_json_end");
 
+extern const uint8_t skin_hydrometer_start[] asm("_binary_src_skins_skin_hydro19_json_start");
+
 static SkinEntry embeddedSkins[]={
-{"BrwPi",skin_brwpi_start}
+{"BrwPi",skin_brwpi_start},
+{"Hydrometer",skin_hydrometer_start}
 };
 #else
 extern const uint8_t skin_brwpi_start[] asm("_binary_src_skins_skin_brewpi_json_start");

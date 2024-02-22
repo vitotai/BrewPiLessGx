@@ -137,6 +137,7 @@ public:
 	uint32_t lastGravityDeviceUpdate(void){return _lastGravityDeviceUpdate;}
 
 	void addCalibrateData(void){ _newcalibratingdata =true; }
+	int getErrorCode(void){ return _errorCode; }
 private:
 	size_t _fsspace;
 	uint32_t  _chartTime;
@@ -188,6 +189,7 @@ private:
 	bool _newcalibratingdata;
 	uint16_t  _headData[VolatileDataHeaderSize];
 	bool _writeOnBufferFull;
+	int _errorCode;
 
 	void _resetTempData(void);
 	void _checkspace(void);

@@ -192,6 +192,8 @@ const char *nocache_list[]={
 "/brewing.json",
 "/brewpi.cfg"
 };
+String ApplicationJsonType="Application/JSON";
+
 extern "C"{
 void updateScreenSaverTime(void);
 }
@@ -276,7 +278,7 @@ class BrewPiWebHandler: public AsyncWebHandler
           		}
 			  }
           	output += "]";
-          	request->send(200, "text/json", output);
+          	request->send(200,ApplicationJsonType, output);
           	output = String();
 
 
@@ -300,12 +302,12 @@ class BrewPiWebHandler: public AsyncWebHandler
             		entry.close();
           	}
           	output += "]";
-          	request->send(200, "text/json", output);
+          	request->send(200, ApplicationJsonType, output);
           	output = String();
 			#endif
-        }
-        else
+        }else{
           request->send(400);
+		}
 	}
 
 	void handleFileDelete(AsyncWebServerRequest *request){
@@ -318,8 +320,9 @@ class BrewPiWebHandler: public AsyncWebHandler
 			ESP.wdtEnable(10);
 			#endif
             request->send(200, "", "DELETE: "+request->getParam("path", true)->value());
-        } else
-          request->send(404);
+        } else{
+          	request->send(400);
+		}
     }
 	#if UseLittleFS
 	void createDirectoryIfNeeded(String path){
@@ -362,10 +365,11 @@ class BrewPiWebHandler: public AsyncWebHandler
 			#if !defined(ESP32)
         	ESP.wdtEnable(10);
 			#endif
-            request->send(200,"application/json","{}");
+            request->send(200,ApplicationJsonType,"{}");
             DBG_PRINTF("fputs path=%s\n",file.c_str());
-        } else
-          request->send(404);
+        } else{
+          	request->send(400);
+		}
     }
 
     bool fileExists(String path)
@@ -496,7 +500,7 @@ public:
 
 		#if SupportMqttRemoteControl
 		if(request->method() == HTTP_GET && request->url() == MQTT_PATH){
-			request->send(200,"application/json",theSettings.jsonMqttRemoteControlSettings());
+			request->send(200,ApplicationJsonType,theSettings.jsonMqttRemoteControlSettings());
 	 	}else if(request->method() == HTTP_POST && request->url() == MQTT_PATH){
 	 	    if(!request->authenticate(syscfg->username, syscfg->password))
 	        return request->requestAuthentication();
@@ -504,10 +508,10 @@ public:
 			if(request->hasParam("data", true)){
 				if(theSettings.dejsonMqttRemoteControlSettings(request->getParam("data", true)->value())){
 					theSettings.save();
-					request->send(200,"application/json","{}");
+					request->send(200,ApplicationJsonType,"{}");
 					mqttRemoteControl.reset();
 				}else{
-  					request->send(500);
+  					request->send(406);
 					DBG_PRINTF("json format error\n");
   					return;
 				}
@@ -521,7 +525,7 @@ public:
 		if(request->method() == HTTP_GET && request->url() == CONFIG_PATH){
 			if(!request->authenticate(syscfg->username, syscfg->password)) return request->requestAuthentication();
 			if(request->hasParam("cfg"))
-				request->send(200,"application/json",theSettings.jsonSystemConfiguration());
+				request->send(200,ApplicationJsonType,theSettings.jsonSystemConfiguration());
 			else 
 				request->redirect(request->url() + ".htm");
 	 	}else if(request->method() == HTTP_POST && request->url() == CONFIG_PATH){
@@ -534,7 +538,7 @@ public:
 				if(theSettings.dejsonSystemConfiguration(request->getParam("data", true)->value())){
 					theSettings.save();
 					DBG_PRINTF("config saved: %s\n",theSettings.systemConfiguration()->hostnetworkname);
-					request->send(200,"application/json","{}");
+					request->send(200,ApplicationJsonType,"{}");
 					//display.setAutoOffPeriod(theSettings.systemConfiguration()->backlite);
 					updateScreenSaverTime();
 
@@ -551,7 +555,7 @@ public:
 						requestRestart(false);
 					}
 				}else{
-  					request->send(500);
+  					request->send(406);
 					DBG_PRINTF("json format error\n");
   					return;
   				}			
@@ -560,7 +564,7 @@ public:
 				DBG_PRINTF("no data in post\n");
   			}
 	 	}else if(request->method() == HTTP_GET &&  request->url() == TIME_PATH){
-			AsyncResponseStream *response = request->beginResponseStream("application/json");
+			AsyncResponseStream *response = request->beginResponseStream(ApplicationJsonType);
 			response->printf("{\"t\":\"%s\",\"e\":%lu,\"o\":%d}",TimeKeeper.getDateTimeStr(),(unsigned long)TimeKeeper.getTimeSeconds(),TimeKeeper.getTimezoneOffset());
 			request->send(response);
 		}else if(request->method() == HTTP_POST &&  request->url() == TIME_PATH){
@@ -575,7 +579,7 @@ public:
 				DBG_PRINTF("Set timezone:%ld\n",tvalue->value().toInt());
 			   TimeKeeper.setTimezoneOffset(tvalue->value().toInt());
 		    }		   
-			request->send(200,"application/json","{}");
+			request->send(200,ApplicationJsonType,"{}");
 			 
 		}else if(request->method() == HTTP_GET &&  request->url() == RESETWIFI_PATH){
 	 	    if(!request->authenticate(syscfg->username, syscfg->password))
@@ -630,7 +634,7 @@ public:
 			+ String(",\"fridgeTemp\":") + TEMPorNull(fridgeTemp)
 			+ String(",\"roomTemp\":") + TEMPorNull(roomTemp)
 			+String("}");
-			request->send(200,"application/json",json);
+			request->send(200,ApplicationJsonType,json);
 		}
 	 	#ifdef ENABLE_LOGGING
 	 	else if (request->url() == LOGGING_PATH){
@@ -638,17 +642,17 @@ public:
 				if(!request->authenticate(syscfg->username, syscfg->password)) return request->requestAuthentication();
 				if(request->hasParam("data", true)){
 		    		if(theSettings.dejsonRemoteLogging(request->getParam("data", true)->value())){
-		    			request->send(200,"application/json","{}");
+		    			request->send(200,ApplicationJsonType,"{}");
 						theSettings.save();
 					}else{
-						request->send(401);
+						request->send(406);
 					}
         		} else{
-        		  request->send(404);
+        		  request->send(400);
     			}
 	 		}else{
 				if(request->hasParam("data")){
-					request->send(200,"application/json",theSettings.jsonRemoteLogging());
+					request->send(200,ApplicationJsonType,theSettings.jsonRemoteLogging());
 				}else{
 					request->redirect(request->url() + ".htm");
 				} 
@@ -660,15 +664,17 @@ public:
 			if(request->method() == HTTP_POST){
 				if(request->hasParam("c", true)){
 		    		String content=request->getParam("c", true)->value();
-					if(parasiteTempController.updateSettings(content))
-			            request->send(200,"application/json","{}");
-					else 
-						request->send(400);	
-        		} else
-          			request->send(404);
+					if(parasiteTempController.updateSettings(content)){
+			            request->send(200,ApplicationJsonType,"{}");
+					}else{ 
+						request->send(406);	
+					}
+        		} else{
+          			request->send(400);
+				}
 	 		}else{
 				String status=parasiteTempController.getSettings();
-				request->send(200,"application/json",status);
+				request->send(200,ApplicationJsonType,status);
 	 		}
 		}
 		#endif
@@ -701,7 +707,7 @@ public:
 				request->send(400);
 				response=false;
 			}
-			if(response) request->send(200,"application/json","{}");
+			if(response) request->send(200,ApplicationJsonType,"{}");
 			capStatusReport();
 		}
 		#endif
@@ -713,9 +719,9 @@ public:
 			if(request->method() == HTTP_GET){
 				if(request->hasParam("r")){
 					int reading=PressureMonitor.currentAdcReading();
-					request->send(200,"application/json",String("{\"a0\":")+String(reading)+String("}"));
+					request->send(200,ApplicationJsonType,String("{\"a0\":")+String(reading)+String("}"));
 				}else{
-					request->send(200,"application/json",theSettings.jsonPressureMonitorSettings());
+					request->send(200,ApplicationJsonType,theSettings.jsonPressureMonitorSettings());
 				}
 			}else{
 				// post
@@ -725,14 +731,14 @@ public:
 					if(theSettings.dejsonPressureMonitorSettings(request->getParam("data",true)->value())){
 						theSettings.save();
 						PressureMonitor.configChanged();
-						request->send(200,"application/json","{}");
+						request->send(200,ApplicationJsonType,"{}");
 					}else{
 						DBG_PRINTF("invalid Json\n");
-						request->send(402);
+						request->send(406);
 					}
 				}else{
 					DBG_PRINTF("no data\n");
-					request->send(401);
+					request->send(400);
 				}
 			}
 		}
@@ -745,16 +751,16 @@ public:
 				humidityControl.setMode(mode);
 				humidityControl.setTarget(target);
 				theSettings.save();
-				request->send(200,"application/json","{}");
+				request->send(200,ApplicationJsonType,"{}");
 			}else{
-				request->send(404);
+				request->send(400);
 				DBG_PRINTF("missing parameter:m =%d, t=%d\n",request->hasParam("m",true), request->hasParam("t",true) );
 			}
 		}
 		#endif
 		else if(request->url() == BEER_PROFILE_PATH){
 			if(request->method() == HTTP_GET){
-				request->send(200,"application/json",theSettings.jsonBeerProfile());
+				request->send(200,ApplicationJsonType,theSettings.jsonBeerProfile());
 			}else{ //if(request->method() == HTTP_POST){
 
 				if(!request->authenticate(syscfg->username, syscfg->password)) return request->requestAuthentication();
@@ -763,11 +769,12 @@ public:
 					if(theSettings.dejsonBeerProfile(request->getParam("data",true)->value())){
 						theSettings.save();
 						brewKeeper.profileUpdated();
-						request->send(200,"application/json","{}");
-					}else
-						request->send(402);
+						request->send(200,ApplicationJsonType,"{}");
+					}else{
+						request->send(406);
+					}
 				}else{
-					request->send(401);
+					request->send(400);
 				}
 			}
 		}else if(request->method() == HTTP_GET){
@@ -1200,7 +1207,7 @@ public:
 				brewLogger.addIgnoredCalPointMask(mask);
 				request->send(200,"application/json","{}");
 			}else{
-				request->send(404);
+				request->send(400);
 			}
 		}else */
 		if( request->url() == LOGLIST_PATH){
@@ -1218,7 +1225,7 @@ public:
 				DBG_PRINTF("Delete log file %d\n",index);
 				brewLogger.rmLog(index);
 
-				request->send(200,"application/json",brewLogger.fsinfo());
+				request->send(200,ApplicationJsonType,brewLogger.fsinfo());
 			}else if(request->hasParam("start")){
 				String filename=request->getParam("start")->value();
 				bool cal=false;
@@ -1234,19 +1241,20 @@ public:
 				DBG_PRINTF("start logging:%s, cal:%d, wobf:%d\n",filename.c_str(),cal,wobf);
 
 				if(brewLogger.startSession(filename.c_str(),cal,wobf)){
-					request->send(200,"application/json","{}");
+					request->send(200,ApplicationJsonType,"{}");
 					notifyLogStatus();
-				}else
-					request->send(404);
+				}else{
+					request->send(500,ApplicationJsonType,String("{\"error\":")+ String(brewLogger.getErrorCode())+ String("}"));
+				}
 			}else if(request->hasParam("stop")){
 				DBG_PRINTF("Stop logging\n");
 				brewLogger.endSession();
-				request->send(200,"application/json","{}");
+				request->send(200,ApplicationJsonType,"{}");
 				notifyLogStatus();
 			}else{
 				// default. list information
 				String status=brewLogger.loggingStatus();
-				request->send(200,"application/json",status);
+				request->send(200,ApplicationJsonType,status);
 			}
 			return;
 		} // end of logist path
@@ -1326,14 +1334,14 @@ private:
 	bool   _error;
 
 	void processGravity(AsyncWebServerRequest *request,char data[],size_t length){
-		if(length ==0) return request->send(500);;
+		if(length ==0) return request->send(400);;
 		SystemConfiguration *syscfg=theSettings.systemConfiguration();
         uint8_t error;
 		if(externalData.processGravityReport(data,length,request->authenticate(syscfg->username,syscfg->password),error)){
-    		request->send(200,"application/json","{}");
+    		request->send(200,ApplicationJsonType,"{}");
 		}else{
 		    if(error == ErrorAuthenticateNeeded) return request->requestAuthentication();
-		    else request->send(500);
+		    else request->send(400);
 		}
 	}
 
@@ -1379,13 +1387,13 @@ public:
 										String("}}");
 						bleDeviceScanResult(ret);
 					 });
-					 request->send(200);
+					 request->send(200,ApplicationJsonType,"{}");
 				}else{
 					tiltScanner.stopScan();
-					request->send(200);
+					request->send(200,ApplicationJsonType,"{}");
 				}
 			 }else{
-				request->send(404);
+				request->send(400);
 			 }
 			 return;
 		 }
@@ -1409,14 +1417,14 @@ public:
 										String("}}");
 						bleDeviceScanResult(ret);
 					});
-					request->send(200);
+					request->send(200,ApplicationJsonType,"{}");
 				}else{
 					// stop
 					pillScanner.stopScan();
-					request->send(200);
+					request->send(200,ApplicationJsonType,"{}");
 				}
 			 }else{
-				request->send(404);
+				request->send(400);
 			 }
 			 return;
 		 }
@@ -1449,7 +1457,7 @@ public:
 
 				brewLogger.addIgnoredCalPointMask(npt & 0xFFFFFF);
   				
-				request->send(200,"application/json","{}");
+				request->send(200,ApplicationJsonType,"{}");
 			}else{
 				DBG_PRINTF("Invalid parameter\n");
   				request->send(400);
@@ -1460,7 +1468,7 @@ public:
 		// config
 		if(request->method() == HTTP_POST){
   			if(externalData.processconfig(_data)){
-		  		request->send(200,"application/json","{}");
+		  		request->send(200,ApplicationJsonType,"{}");
 			}else{
 				request->send(400);
 			}
@@ -1468,7 +1476,7 @@ public:
 		}//else{
 			// get
 		if(request->hasParam("data")){
-			request->send(200,"application/json",theSettings.jsonGravityConfig());
+			request->send(200,ApplicationJsonType,theSettings.jsonGravityConfig());
 		}else{
 			// get the HTML
 			request->redirect(request->url() + ".htm");
@@ -1535,17 +1543,18 @@ public:
 	}
 
 	void handleNetworkScan(AsyncWebServerRequest *request){
-		if(WiFiSetup.requestScanWifi())
-			request->send(200,"application/json","{}");
-		else 
-			request->send(403);
+		if(WiFiSetup.requestScanWifi()){
+			request->send(200,ApplicationJsonType,"{}");
+		}else{ 
+			request->send(500);
+		}
 	}
 
 	void handleNetworkDisconnect(AsyncWebServerRequest *request){
 		theSettings.systemConfiguration()->wifiMode=WIFI_AP;
 		WiFiSetup.setMode(WIFI_AP);
 
-		request->send(200,"application/json","{}");
+		request->send(200,ApplicationJsonType,"{}");
 	}
 
 	
@@ -1608,7 +1617,7 @@ public:
 		//MDNS.notifyAPChange();		
 		theSettings.save();
 
-		request->send(200,"application/json","{}");
+		request->send(200,ApplicationJsonType,"{}");
 	}
 
 	bool canHandle(AsyncWebServerRequest *request){
