@@ -47,7 +47,7 @@ byte DS2413::accessRead(uint8_t maxTries) /* const */
 	do
 	{
 		data = oneWire->read();
-		success = (data>>4)==(!data&0xF);
+		success = (data>>4)==(~data&0xF);
 		data &= 0xF;
 	} while (!success && maxTries-->0);
 
