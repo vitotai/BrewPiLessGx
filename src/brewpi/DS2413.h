@@ -82,7 +82,7 @@ public:
 	 */
 	bool isConnected()
 	{
-		return validAddress(oneWire, this->address) && accessRead()>=0;
+		return validAddress(oneWire, this->address) && ((accessRead()&0x80)==0);
 	}
 
 	// assumes pio is either 0 or 1, which translates to masks 0x1 and 0x2
@@ -95,7 +95,7 @@ public:
 	bool channelRead(pio_t pio, bool defaultValue)
 	{
 		byte result = channelReadAll();
-		if (result<0)
+		if ((result&0x80)!=0)
 			return defaultValue;
 		return (result & pioMask(pio));
 	}
@@ -108,7 +108,7 @@ public:
 	bool channelSense(pio_t pio, bool defaultValue)
 	{
 		byte result = channelSenseAll();
-		if (result<0)
+		if ((result&0x80)!=0)
 			return defaultValue;
 		return (result & pioMask(pio));
 	}
@@ -117,7 +117,7 @@ public:
 	{
 		byte result = accessRead();
 		// save bit3 and bit1 (PIO
-		return result<0 ? result : ((result&0x4)>>1 | (result&1));
+		return (result&0x80)!=0 ? result : ((result&0x4)>>1 | (result&1));
 	}
 
 #endif
@@ -129,7 +129,7 @@ public:
 	{
 		byte result = accessRead();
 		// save bit3 and bit1 (PIO
-		return result<0 ? result : ((result&0x8)>>2 | (result&2)>>1);
+		return (result&0x80)!=0 ? result : ((result&0x8)>>2 | (result&2)>>1);
 	}
 
 	/*
@@ -140,7 +140,7 @@ public:
 	{
 		bool ok = false;
 		byte result = channelReadAll();
-		if (result>=0) {
+		if ((result&0x80)==0) {
 			uint8_t mask = pioMask(pio);
 			if (set)
 				result |= mask;
