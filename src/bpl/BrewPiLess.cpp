@@ -38,7 +38,6 @@
 #if EnableColorLED
 #include "ledstatus.h"
 #endif
-
 #if BREWPI_SIMULATE
 #include "Simulator.h"
 #endif
