@@ -2,9 +2,10 @@
 #include <ui.h>
 #include <Arduino.h>
 
-#if ESP32_17320S019N
+#if 1 //ESP32_17320S019N
 
 extern void display_setup();
+extern void touch_setup();
 
 #else
 #include <esp32_smartdisplay.h>
@@ -22,8 +23,9 @@ void setup()
 {
     bpl_setup();
 //    driver_setup();
-    #if ESP32_17320S019N    
+    #if 1 //ESP32_17320S019N    
     display_setup();
+    touch_setup();
     #else
     smartdisplay_init();
     smartdisplay_set_led_color( lv_color32_t({.ch = {0xFF,0xFF,0xFF,0xFF}}));

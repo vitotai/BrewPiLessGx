@@ -1,19 +1,22 @@
 
 #include <lvgl.h>
 #include <Arduino_GFX_Library.h>
-#if ESP32_17320S019N
+#include "lv_drv_conf.h"
 
+#define TFT_PWM_MAX_BL ((1 << TFT_PWM_BITS_BL) - 1)
 
-#define GFX_BL DF_GFX_BL // default backlight pin, you may replace DF_GFX_BL to actual backlight pin
-#ifdef TFT_BL
-#undef TFT_BL
-#endif
-#define TFT_BL 14
 /* More dev device declaration: https://github.com/moononournation/Arduino_GFX/wiki/Dev-Device-Declaration */
 
-Arduino_DataBus *bus = new Arduino_ESP32SPI(11 /* DC */, 10 /* CS */, 12 /* SCK */, 13 /* MOSI */, GFX_NOT_DEFINED /* MISO */);
-Arduino_GFX *gfx = new Arduino_ST7789(bus, 1 /* RST */, 1 /* rotation */, true /* IPS */, 170 /* width */, 320 /* height */, 35 /* col offset 1 */, 0 /* row offset 1 */, 35 /* col offset 2 */, 0 /* row offset 2 */);
-  
+#ifdef TFT_BUS_SPI
+Arduino_DataBus *bus = new Arduino_ESP32SPI( SPI_DC, SPI_CS, SPI_SCK, SPI_MOSI, SPI_MISO);
+#endif
+
+#ifdef TFT_ST7789
+Arduino_GFX *gfx = new Arduino_ST7789(bus, TFT_RST, TFT_ROTATION, TFT_IPS,TFT_WIDTH, TFT_HEIGHT,TFT_COL_OFFSET_1,TFT_ROW_OFFSET_1, TFT_COL_OFFSET_2,TFT_ROW_OFFSET_2);
+#endif
+#ifdef ILI9341
+Arduino_GFX *gfx = new Arduino_ILI9341(bus,TFT_RST,TFT_ROTATION,TFT_IPS);
+#endif
 #define BUFFER_SIZE (320 *10)
 /*******************************************************************************
  * End of Arduino_GFX setting
@@ -48,16 +51,19 @@ void display_setup()
 
    // Init Display
    //gfx->begin();
-   gfx->begin(80000000); /* specify data bus speed */
+   gfx->begin(DISPLAY_BUS_SPEED); /* specify data bus speed */
    gfx->fillScreen(BLACK);
 
 #ifdef TFT_BL
    pinMode(TFT_BL, OUTPUT);
    digitalWrite(TFT_BL, HIGH);
 #endif
-   ledcSetup(0, 2000, 8);
-   ledcAttachPin(TFT_BL, 0);
-   ledcWrite(0, 255); /* Screen brightness can be modified by adjusting this parameter. (0-255) */
+   //ledcSetup(0, 2000, 8);
+   //ledcAttachPin(TFT_BL, 0);
+  ledcSetup(TFT_PWM_CHANNEL_BL, TFT_PWM_FREQ_BL, TFT_PWM_BITS_BL);
+  ledcAttachPin(TFT_BL, TFT_PWM_CHANNEL_BL);
+
+   ledcWrite(TFT_PWM_CHANNEL_BL, TFT_PWM_MAX_BL); /* Screen brightness can be modified by adjusting this parameter. (0-255) */
    lv_init();
 
    screenWidth = gfx->width();
@@ -93,5 +99,3 @@ void display_setup()
    }
    last_ms = millis();
 }
-
-#endif
