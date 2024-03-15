@@ -4,7 +4,7 @@
 #include "tft_functions.h"
 #include "ledstatus.h"
 #include "TempControl.h"
-
+#if EnableColorLED
 const lv_color32_t StateColor[]={
 	{.full = 0x002200}, // idle
 	{.full = 0x220000}, // off
@@ -47,3 +47,4 @@ void LedStatusClass::setState(uint8_t state){
     }
     */
 }
+#endif

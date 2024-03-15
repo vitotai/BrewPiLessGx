@@ -35,7 +35,9 @@
 #include "Sensor.h"
 #include "SettingsManager.h"
 #include "EepromFormat.h"
+#if EnableColorLED
 #include "ledstatus.h"
+#endif
 
 #if BREWPI_SIMULATE
 #include "Simulator.h"
@@ -1809,7 +1811,9 @@ void brewpiLoop(void)
 #endif
 #if ESP32Graphics
 		updateBrewPiInfo();
+#if EnableColorLED		
 		LedStatus.setState(tempControl.getState());
+#endif
 #else
 		// update the lcd for the chamber being displayed
 		display.printState();
@@ -2140,9 +2144,9 @@ void loop(void){
 #if EanbleParasiteTempControl
 	parasiteTempController.run();
 #endif
-
+#if EnableColorLED
 	LedStatus.loop();
-	
+#endif	
 #if (DEVELOPMENT_OTA == true) || (DEVELOPMENT_FILEMANAGER == true)
 	ESPUpdateServer_loop();
 #endif
