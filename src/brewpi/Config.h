@@ -359,6 +359,10 @@
 #define PressureAdcPin  35
 #endif
 
+#define BREWPI_MENU 0
+#define  BREWPI_BUTTONS 0
+
+
 #else
 
 #define PIN_SDA 21
