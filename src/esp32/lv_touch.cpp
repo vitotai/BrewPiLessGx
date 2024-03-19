@@ -3,11 +3,12 @@
 #include <Wire.h>
 #include <Touch_GT911.h>
 #include "lv_drv_conf.h"
-Touch_GT911 ts = Touch_GT911(TOUCH_GT911_SDA, TOUCH_GT911_SCL, TOUCH_GT911_INT, TOUCH_GT911_RST, TOUCH_MAP_MAX_X,  TOUCH_MAP_MAX_Y);
 
+#ifdef TOUCH_GT911
+Touch_GT911 ts = Touch_GT911(TOUCH_GT911_SDA, TOUCH_GT911_SCL, TOUCH_GT911_INT, TOUCH_GT911_RST, TOUCH_MAP_MAX_X,  TOUCH_MAP_MAX_Y);
 int touch_last_x = 0, touch_last_y = 0;
 #define GT911_I2C_SLAVE_ADDR 0x5D
-void gt911_touch_init()
+void touch_drv_init()
 {
     Wire.begin(TOUCH_GT911_SDA, TOUCH_GT911_SCL);
     ts.begin(GT911_I2C_SLAVE_ADDR);
@@ -45,7 +46,7 @@ bool gt911_touch_touched()
 }
 
 
-void gt911_touch_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
+void touch_drv_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
 {
     if (gt911_touch_touched())
     {
@@ -61,12 +62,17 @@ void gt911_touch_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
     }
   
 }
+
+#endif //#ifdef TOUCH_GT911
+
+#if TOUCH_INPUT_ENABLE
 void touch_setup(void){
-    gt911_touch_init();
+    touch_drv_init();
     /* Initialize the (dummy) input device driver */
     static lv_indev_drv_t indev_drv;
     lv_indev_drv_init(&indev_drv);
     indev_drv.type = LV_INDEV_TYPE_POINTER;
-    indev_drv.read_cb = gt911_touch_read;
+    indev_drv.read_cb = touch_drv_read;
     lv_indev_drv_register(&indev_drv);
 }
+#endif

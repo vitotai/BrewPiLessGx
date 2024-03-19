@@ -14,6 +14,7 @@ Arduino_DataBus *bus = new Arduino_ESP32SPI( SPI_DC, SPI_CS, SPI_SCK, SPI_MOSI, 
 #ifdef TFT_ST7789
 Arduino_GFX *gfx = new Arduino_ST7789(bus, TFT_RST, TFT_ROTATION, TFT_IPS,TFT_WIDTH, TFT_HEIGHT,TFT_COL_OFFSET_1,TFT_ROW_OFFSET_1, TFT_COL_OFFSET_2,TFT_ROW_OFFSET_2);
 #endif
+
 #ifdef ILI9341
 Arduino_GFX *gfx = new Arduino_ILI9341(bus,TFT_RST,TFT_ROTATION,TFT_IPS);
 #endif
@@ -23,13 +24,9 @@ Arduino_GFX *gfx = new Arduino_ILI9341(bus,TFT_RST,TFT_ROTATION,TFT_IPS);
  ******************************************************************************/
 
 /* Change to your screen resolution */
-static uint32_t screenWidth;
-static uint32_t screenHeight;
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t *disp_draw_buf;
-//static lv_color_t *disp_draw_buf2;
 static lv_disp_drv_t disp_drv;
-static unsigned long last_ms;
 
 /* Display flushing */
 void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
@@ -66,12 +63,12 @@ void display_setup()
    ledcWrite(TFT_PWM_CHANNEL_BL, TFT_PWM_MAX_BL); /* Screen brightness can be modified by adjusting this parameter. (0-255) */
    lv_init();
 
-   screenWidth = gfx->width();
-   screenHeight = gfx->height();
+   uint32_t screenWidth = gfx->width();
+   uint32_t screenHeight = gfx->height();
 #ifdef ESP32
-   disp_draw_buf = (lv_color_t *)heap_caps_malloc(sizeof(lv_color_t) * BUFFER_SIZE, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+   disp_draw_buf = (lv_color_t *)heap_caps_malloc(sizeof(lv_color_t) * LV_DRAW_BUFFER_SIZE, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
 #else
-   disp_draw_buf = (lv_color_t *)malloc(sizeof(lv_color_t) * BUFFER_SIZE);
+   disp_draw_buf = (lv_color_t *)malloc(sizeof(lv_color_t) * LV_DRAW_BUFFER_SIZE);
 #endif
    if (!disp_draw_buf)
    {
@@ -79,7 +76,7 @@ void display_setup()
    }
    else
    {
-      lv_disp_draw_buf_init(&draw_buf, disp_draw_buf, NULL, BUFFER_SIZE);
+      lv_disp_draw_buf_init(&draw_buf, disp_draw_buf, NULL, LV_DRAW_BUFFER_SIZE);
       /* Initialize the display */
       lv_disp_drv_init(&disp_drv);
       /* Change the following line to your display resolution */
@@ -88,14 +85,7 @@ void display_setup()
       disp_drv.flush_cb = my_disp_flush;
       disp_drv.draw_buf = &draw_buf;
       lv_disp_drv_register(&disp_drv);
-
-      /* Initialize the (dummy) input device driver */
-      static lv_indev_drv_t indev_drv;
-      lv_indev_drv_init(&indev_drv);
-      indev_drv.type = LV_INDEV_TYPE_POINTER;
-      lv_indev_drv_register(&indev_drv);
       
       lv_obj_clean(lv_scr_act());
    }
-   last_ms = millis();
 }

@@ -2,18 +2,17 @@
 #ifndef LV_DRV_CONF_H
 #define LV_DRV_CONF_H
 
-#define CONFIG_LVGL_DISPLAY_WIDTH 320
-#define CONFIG_LVGL_DISPLAY_HEIGHT 240
-
-#define CONFIG_LV_HOR_RES_MAX CONFIG_LVGL_DISPLAY_WIDTH
-#define CONFIG_LV_VER_RES_MAX CONFIG_LVGL_DISPLAY_HEIGHT
-// size of lv_color_t
-// should be greater than 1/10 whole screen.
-#define LV_DRAW_BUFFER_SIZE (CONFIG_LVGL_DISPLAY_WIDTH * CONFIG_LVGL_DISPLAY_HEIGHT /4)
 
 // Display driver Configuration
 
 #if ESP32_17320S019N
+#define CONFIG_LVGL_DISPLAY_WIDTH 320
+#define CONFIG_LVGL_DISPLAY_HEIGHT 170
+// size of lv_color_t
+// should be greater than 1/10 whole screen.
+#define LV_DRAW_BUFFER_SIZE (CONFIG_LVGL_DISPLAY_WIDTH * 10)
+
+
 #define TFT_BUS_SPI
 
 #define SPI_DC 11
@@ -49,6 +48,12 @@
 
 #ifdef ESP32_2432S032C
 
+#define CONFIG_LVGL_DISPLAY_WIDTH 320
+#define CONFIG_LVGL_DISPLAY_HEIGHT 240
+// size of lv_color_t
+// should be greater than 1/10 whole screen.
+#define LV_DRAW_BUFFER_SIZE (CONFIG_LVGL_DISPLAY_WIDTH * 10)
+
 #define TFT_BUS_SPI
 
 #define SPI_DC 2
@@ -73,10 +78,9 @@
 #define TFT_PWM_BITS_BL 8
 
 #define TFT_BL 27
-#endif // ESP32_2432S032C
 
 // Touch driver
-#if ESP32_2432S032C
+#define  TOUCH_INPUT_ENABLE true
  #define TOUCH_GT911
  #define TOUCH_GT911_SCL 32
  #define TOUCH_GT911_SDA 33
