@@ -12,11 +12,11 @@ Arduino_DataBus *bus = new Arduino_ESP32SPI( SPI_DC, SPI_CS, SPI_SCK, SPI_MOSI, 
 #endif
 
 #ifdef TFT_ST7789
-Arduino_GFX *gfx = new Arduino_ST7789(bus, TFT_RST, TFT_ROTATION, TFT_IPS,TFT_WIDTH, TFT_HEIGHT,TFT_COL_OFFSET_1,TFT_ROW_OFFSET_1, TFT_COL_OFFSET_2,TFT_ROW_OFFSET_2);
+Arduino_GFX *gfx = new Arduino_ST7789(bus, TFT_RST_PIN, TFT_ROTATION, TFT_IPS,TFT_WIDTH, TFT_HEIGHT,TFT_COL_OFFSET_1,TFT_ROW_OFFSET_1, TFT_COL_OFFSET_2,TFT_ROW_OFFSET_2);
 #endif
 
 #ifdef ILI9341
-Arduino_GFX *gfx = new Arduino_ILI9341(bus,TFT_RST,TFT_ROTATION,TFT_IPS);
+Arduino_GFX *gfx = new Arduino_ILI9341(bus,TFT_RST_PIN,TFT_ROTATION,TFT_IPS);
 #endif
 #define BUFFER_SIZE (320 *10)
 /*******************************************************************************

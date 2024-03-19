@@ -22,7 +22,7 @@
 #define SPI_MISO GFX_NOT_DEFINED
 
 #define TFT_ST7789
-#define TFT_RST 1
+#define TFT_RST_PIN 1
 #define TFT_ROTATION 1
 #define TFT_IPS true
 #define TFT_WIDTH 170
@@ -44,6 +44,7 @@
 #define TFT_BL 14
 
 #define DISPLAY_BUS_SPEED 80000000
+
 #endif // ESP32_17320S019N
 
 #ifdef ESP32_2432S032C
@@ -68,7 +69,7 @@
 #define ILI9341
 #define DISPLAY_BUS_SPEED 50000000
 
-#define TFT_RST GFX_NOT_DEFINED
+#define TFT_RST_PIN GFX_NOT_DEFINED
 #define TFT_ROTATION 1
 #define TFT_IPS false
 

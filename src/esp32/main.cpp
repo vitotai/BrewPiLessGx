@@ -2,8 +2,8 @@
 #include <ui.h>
 #include <Arduino.h>
 #include "lv_drv_conf.h"
-
 #include "lv_port_fs_littlefs.h"
+#include "wakebutton.h"
 
 extern void display_setup();
 extern void touch_setup();
@@ -23,7 +23,9 @@ void setup()
     lv_port_littlefs_init();
 
     ui_init();
-
+    #if WAKEUP_BUTTON_ENABLED
+    wakebutton_init();
+    #endif
 }
 
 void loop()
@@ -32,4 +34,9 @@ void loop()
     lv_timer_handler(); /* let the GUI do its work */
     bpl_loop();
     delay(5);
+    #if WAKEUP_BUTTON_ENABLED
+    if(wakebutton_pressed()){
+        screenWakeup();
+    }
+    #endif
 }

@@ -18,7 +18,7 @@ void screenSaverUpdate(void);
 
 void userStopSaver(void);
 
-void displayWakeup(void);
+void screenWakeup(void);
 
 #ifdef __cplusplus
 } //extern "C" {
