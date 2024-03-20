@@ -117,8 +117,6 @@ void screenSaverTimeout(lv_timer_t *timer);
 
 void startScreenSaverTimer(void);
 
-void prepareTftSleep();
-void postTftWakeup();
 lv_obj_t* createWholeScreenButton();
 
 

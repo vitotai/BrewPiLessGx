@@ -1,10 +1,9 @@
 #include "Arduino.h"
 #include "math.h"
-#include "lvgl.h"
-#include "tft_functions.h"
 #include "ledstatus.h"
 #include "TempControl.h"
 #if EnableColorLED
+
 const lv_color32_t StateColor[]={
 	{.full = 0x002200}, // idle
 	{.full = 0x220000}, // off
@@ -24,14 +23,29 @@ const lv_color32_t StateColor[]={
 
  LedStatusClass::LedStatusClass(void){
     _state=NUM_STATES;
-    set_led_color(lv_color32_t({.ch = {.blue=0,.green = 0x00,.red=0}}));
+    pinMode(LED_PIN_R, OUTPUT);
+    digitalWrite(LED_PIN_R, true);
+    ledcSetup(LED_PWM_CHANNEL_R, LED_PWM_FREQ, LED_PWM_BITS);
+    ledcAttachPin(LED_PIN_R, LED_PWM_CHANNEL_R);
+
+    pinMode(LED_PIN_G, OUTPUT);
+    digitalWrite(LED_PIN_G, true);
+    ledcSetup(LED_PWM_CHANNEL_G, LED_PWM_FREQ, LED_PWM_BITS);
+    ledcAttachPin(LED_PIN_G, LED_PWM_CHANNEL_G);
+
+    pinMode(LED_PIN_B, OUTPUT);
+    digitalWrite(LED_PIN_B, true);
+    ledcSetup(LED_PWM_CHANNEL_B, LED_PWM_FREQ, LED_PWM_BITS);
+    ledcAttachPin(LED_PIN_B, LED_PWM_CHANNEL_B);
+
+    _set_led_color(lv_color32_t({.ch = {.blue=0,.green = 0x00,.red=0}}));
  }
 
 
 void LedStatusClass::setState(uint8_t state){
     if(_state == state) return;
    _state = state;
-   set_led_color(StateColor[state]);
+   _set_led_color(StateColor[state]);
 }
 
 
@@ -47,4 +61,12 @@ void LedStatusClass::setState(uint8_t state){
     }
     */
 }
+
+void LedStatusClass::_set_led_color(lv_color32_t rgb)
+{
+  ledcWrite(LED_PWM_CHANNEL_R, LED_PWM_MAX - rgb.ch.red);
+  ledcWrite(LED_PWM_CHANNEL_G, LED_PWM_MAX - rgb.ch.green);
+  ledcWrite(LED_PWM_CHANNEL_B, LED_PWM_MAX - rgb.ch.blue);
+}
+
 #endif

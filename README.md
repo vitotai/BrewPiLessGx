@@ -2,6 +2,12 @@
 
 BrewPiLessGx is [BrewPiLess](https://github.com/vitotai/BrewPiLess) running on ESP32_2432S032C, which is a ESP32 with a touch enabled TFT. Built on top of [lvgl](https://lvgl.io), flexbile display and touch based GUI are implemented.
 
+# Update Note
+
+- 2024/03/20
+    - Make Generic display drivers, ArduinoGFX, default configuration.
+    - Add wakeup button(boot button) to ESP32_17320S019N
+
 # Feature
 
 - TFT with touch enabled
@@ -67,3 +73,6 @@ To input Original Gravity, tap the area of OG, ATT, and ABV. To input current gr
 The main screen and tapping area are all customizable. For example, display only information of Pill to serve as a Pill gateway is possible.
 
 ![Pill Information](doc/img/main_pill.jpg)
+
+# ESP32_17320S019N
+ESP32_17320S019N is an ESP32-S3 based device with 1.9 inch TFT 320x170 display. It's tiny and cute, but it doesn't equiped with touch screen. To wake up it from screen saving(display off) mode, push "Boot" button.

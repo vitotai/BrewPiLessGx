@@ -1,32 +1,32 @@
 
 #include <lvgl.h>
 #include <Arduino_GFX_Library.h>
-#if ESP32_17320S019N
+#include "lv_drv_conf.h"
 
+#define TFT_PWM_MAX_BL ((1 << TFT_PWM_BITS_BL) - 1)
 
-#define GFX_BL DF_GFX_BL // default backlight pin, you may replace DF_GFX_BL to actual backlight pin
-#ifdef TFT_BL
-#undef TFT_BL
-#endif
-#define TFT_BL 14
 /* More dev device declaration: https://github.com/moononournation/Arduino_GFX/wiki/Dev-Device-Declaration */
 
-Arduino_DataBus *bus = new Arduino_ESP32SPI(11 /* DC */, 10 /* CS */, 12 /* SCK */, 13 /* MOSI */, GFX_NOT_DEFINED /* MISO */);
-Arduino_GFX *gfx = new Arduino_ST7789(bus, 1 /* RST */, 1 /* rotation */, true /* IPS */, 170 /* width */, 320 /* height */, 35 /* col offset 1 */, 0 /* row offset 1 */, 35 /* col offset 2 */, 0 /* row offset 2 */);
-  
+#ifdef TFT_BUS_SPI
+Arduino_DataBus *bus = new Arduino_ESP32SPI( SPI_DC, SPI_CS, SPI_SCK, SPI_MOSI, SPI_MISO);
+#endif
+
+#ifdef TFT_ST7789
+Arduino_GFX *gfx = new Arduino_ST7789(bus, TFT_RST_PIN, TFT_ROTATION, TFT_IPS,TFT_WIDTH, TFT_HEIGHT,TFT_COL_OFFSET_1,TFT_ROW_OFFSET_1, TFT_COL_OFFSET_2,TFT_ROW_OFFSET_2);
+#endif
+
+#ifdef ILI9341
+Arduino_GFX *gfx = new Arduino_ILI9341(bus,TFT_RST_PIN,TFT_ROTATION,TFT_IPS);
+#endif
 #define BUFFER_SIZE (320 *10)
 /*******************************************************************************
  * End of Arduino_GFX setting
  ******************************************************************************/
 
 /* Change to your screen resolution */
-static uint32_t screenWidth;
-static uint32_t screenHeight;
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t *disp_draw_buf;
-//static lv_color_t *disp_draw_buf2;
 static lv_disp_drv_t disp_drv;
-static unsigned long last_ms;
 
 /* Display flushing */
 void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
@@ -48,24 +48,27 @@ void display_setup()
 
    // Init Display
    //gfx->begin();
-   gfx->begin(80000000); /* specify data bus speed */
+   gfx->begin(DISPLAY_BUS_SPEED); /* specify data bus speed */
    gfx->fillScreen(BLACK);
 
 #ifdef TFT_BL
    pinMode(TFT_BL, OUTPUT);
    digitalWrite(TFT_BL, HIGH);
 #endif
-   ledcSetup(0, 2000, 8);
-   ledcAttachPin(TFT_BL, 0);
-   ledcWrite(0, 255); /* Screen brightness can be modified by adjusting this parameter. (0-255) */
+   //ledcSetup(0, 2000, 8);
+   //ledcAttachPin(TFT_BL, 0);
+  ledcSetup(TFT_PWM_CHANNEL_BL, TFT_PWM_FREQ_BL, TFT_PWM_BITS_BL);
+  ledcAttachPin(TFT_BL, TFT_PWM_CHANNEL_BL);
+
+   ledcWrite(TFT_PWM_CHANNEL_BL, TFT_PWM_MAX_BL); /* Screen brightness can be modified by adjusting this parameter. (0-255) */
    lv_init();
 
-   screenWidth = gfx->width();
-   screenHeight = gfx->height();
+   uint32_t screenWidth = gfx->width();
+   uint32_t screenHeight = gfx->height();
 #ifdef ESP32
-   disp_draw_buf = (lv_color_t *)heap_caps_malloc(sizeof(lv_color_t) * BUFFER_SIZE, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+   disp_draw_buf = (lv_color_t *)heap_caps_malloc(sizeof(lv_color_t) * LV_DRAW_BUFFER_SIZE, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
 #else
-   disp_draw_buf = (lv_color_t *)malloc(sizeof(lv_color_t) * BUFFER_SIZE);
+   disp_draw_buf = (lv_color_t *)malloc(sizeof(lv_color_t) * LV_DRAW_BUFFER_SIZE);
 #endif
    if (!disp_draw_buf)
    {
@@ -73,7 +76,7 @@ void display_setup()
    }
    else
    {
-      lv_disp_draw_buf_init(&draw_buf, disp_draw_buf, NULL, BUFFER_SIZE);
+      lv_disp_draw_buf_init(&draw_buf, disp_draw_buf, NULL, LV_DRAW_BUFFER_SIZE);
       /* Initialize the display */
       lv_disp_drv_init(&disp_drv);
       /* Change the following line to your display resolution */
@@ -82,16 +85,7 @@ void display_setup()
       disp_drv.flush_cb = my_disp_flush;
       disp_drv.draw_buf = &draw_buf;
       lv_disp_drv_register(&disp_drv);
-
-      /* Initialize the (dummy) input device driver */
-      static lv_indev_drv_t indev_drv;
-      lv_indev_drv_init(&indev_drv);
-      indev_drv.type = LV_INDEV_TYPE_POINTER;
-      lv_indev_drv_register(&indev_drv);
       
       lv_obj_clean(lv_scr_act());
    }
-   last_ms = millis();
 }
-
-#endif

@@ -161,7 +161,10 @@ void screenSaver_start(lv_obj_t* parent){
 }
 
 void onScreenSaverClicked(lv_event_t * e){
+    screenWakeup();
+}
 
+void screenWakeup(void){
     if(_screenState == ScreenSavingSleep){
         tft_wakeup();
     }else{
