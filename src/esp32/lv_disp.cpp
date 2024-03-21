@@ -8,11 +8,11 @@
 /* More dev device declaration: https://github.com/moononournation/Arduino_GFX/wiki/Dev-Device-Declaration */
 
 #ifdef TFT_BUS_SPI
-Arduino_DataBus *bus = new Arduino_ESP32SPI( SPI_DC, SPI_CS, SPI_SCK, SPI_MOSI, SPI_MISO);
+Arduino_DataBus *bus = new Arduino_ESP32SPI( TFT_SPI_DC_PIN, TFT_SPI_CS_PIN, TFT_SPI_SCK_PIN, TFT_SPI_MOSI, TFT_SPI_MISO);
 #endif
 
 #ifdef TFT_ST7789
-Arduino_GFX *gfx = new Arduino_ST7789(bus, TFT_RST_PIN, TFT_ROTATION, TFT_IPS,TFT_WIDTH, TFT_HEIGHT,TFT_COL_OFFSET_1,TFT_ROW_OFFSET_1, TFT_COL_OFFSET_2,TFT_ROW_OFFSET_2);
+Arduino_GFX *gfx = new Arduino_ST7789(bus, TFT_RST_PIN, TFT_ROTATION, TFT_IPS,TFT_DRV_WIDTH, TFT_DRV_HEIGHT,TFT_COL_OFFSET_1,TFT_ROW_OFFSET_1, TFT_COL_OFFSET_2,TFT_ROW_OFFSET_2);
 #endif
 
 #ifdef ILI9341
@@ -47,18 +47,15 @@ void display_setup()
 {
 
    // Init Display
-   //gfx->begin();
    gfx->begin(DISPLAY_BUS_SPEED); /* specify data bus speed */
    gfx->fillScreen(BLACK);
 
-#ifdef TFT_BL
-   pinMode(TFT_BL, OUTPUT);
-   digitalWrite(TFT_BL, HIGH);
+#ifdef TFT_BL_PIN
+   pinMode(TFT_BL_PIN, OUTPUT);
+   digitalWrite(TFT_BL_PIN, HIGH);
 #endif
-   //ledcSetup(0, 2000, 8);
-   //ledcAttachPin(TFT_BL, 0);
   ledcSetup(TFT_PWM_CHANNEL_BL, TFT_PWM_FREQ_BL, TFT_PWM_BITS_BL);
-  ledcAttachPin(TFT_BL, TFT_PWM_CHANNEL_BL);
+  ledcAttachPin(TFT_BL_PIN, TFT_PWM_CHANNEL_BL);
 
    ledcWrite(TFT_PWM_CHANNEL_BL, TFT_PWM_MAX_BL); /* Screen brightness can be modified by adjusting this parameter. (0-255) */
    lv_init();
