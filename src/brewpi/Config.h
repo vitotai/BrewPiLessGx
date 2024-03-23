@@ -348,17 +348,7 @@
 
 
 #if BOARD == ESP32TFT
-
-#if ESP32_17320S019N
-#define oneWirePin    21
-#define actuatorPin1  47
-#define PressureAdcPin  4
-#else 
-#define oneWirePin    22
-#define actuatorPin1  21
-#define PressureAdcPin  35
-#endif
-
+// the PIN assignment is moved to pindef.h
 #define BREWPI_MENU 0
 #define  BREWPI_BUTTONS 0
 

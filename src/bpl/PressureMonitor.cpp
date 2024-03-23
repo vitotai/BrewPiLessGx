@@ -9,7 +9,7 @@
 #include "BPLSettings.h"
 #include "AutoCapControl.h"
 #include "BrewLogger.h"
-
+#include "pindef.h"
 #include "PressureMonitor.h"
 
 #if SMART_DISPLAY

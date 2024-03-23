@@ -28,7 +28,7 @@
 #include "OneWireDevices.h"
 #include "Pins.h"
 #include "EepromStructs.h"
-
+#include "pindef.h"
 
 #ifdef ARDUINO
 #include "DallasTemperature.h"	// for DeviceAddress
@@ -205,20 +205,22 @@ public:
 #ifdef ESP32
 		switch (offset) {
 			case 0: return actuatorPin1;
-#if actuatorPin2			
+#ifdef actuatorPin2			
 			case 1: return actuatorPin2;
 #endif
-#if actuatorPin3			
+#ifdef actuatorPin3			
 			case 2: return actuatorPin3;
 #endif			
-#if actuatorPin4			
+#ifdef actuatorPin4			
 			case 3: return actuatorPin4;
 #endif
-#if actuatorPin5
+#ifdef actuatorPin5
 			case 4: return actuatorPin5;
 #endif
-#if MORE_PINS_CONFIGURATION
+#ifdef actuatorPin6
 			case 5: return actuatorPin6;
+#endif
+#ifdef fanPin
 			case 6: return fanPin;
 #endif
 			default: return -1;
