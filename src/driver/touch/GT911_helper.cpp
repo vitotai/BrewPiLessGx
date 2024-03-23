@@ -64,15 +64,3 @@ void touch_drv_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
 }
 
 #endif //#ifdef TOUCH_GT911
-
-#if TOUCH_INPUT_ENABLE
-void touch_setup(void){
-    touch_drv_init();
-    /* Initialize the (dummy) input device driver */
-    static lv_indev_drv_t indev_drv;
-    lv_indev_drv_init(&indev_drv);
-    indev_drv.type = LV_INDEV_TYPE_POINTER;
-    indev_drv.read_cb = touch_drv_read;
-    lv_indev_drv_register(&indev_drv);
-}
-#endif

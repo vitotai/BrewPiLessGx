@@ -1,7 +1,7 @@
 #include "ui.h"
 #include "screensaver.h"
 #include "canvasdraw.h"
-#include "tft_functions.h"
+#include "driver_if.h"
 #include "BrewPiInterface.h"
 
 #define UPDATE_TIMER 150
@@ -38,7 +38,7 @@ static uint32_t timerCount;
 static uint32_t sleepCounter;
 
 static ScreenSavingState _screenState;
-
+static bool isTftSleeping=false;
 
 void screenSaver_start(lv_obj_t* parent);
 void onScreenSaverClicked(lv_event_t * e);
@@ -62,6 +62,9 @@ lv_color_t SRMColor[] = {
     LV_COLOR_MAKE(0x1f,0x11,0x01)
     };
 
+bool isScreenSleeping(void){
+    return isTftSleeping;
+}
 
 void screenSaver_create(lv_obj_t *parent){
     static lv_color_t *canvasBuffer;
@@ -102,7 +105,7 @@ void screenSaver_create(lv_obj_t *parent){
 
 void delay_sleep(void *timer){
 	(void) timer;
-	tft_sleep();
+	display_drv_sleep();
 }
 
 void periodic_timer_handler(lv_timer_t *timer){
@@ -166,7 +169,9 @@ void onScreenSaverClicked(lv_event_t * e){
 
 void screenWakeup(void){
     if(_screenState == ScreenSavingSleep){
-        tft_wakeup();
+        display_drv_wakeup();
+//        delay(10);
+        isTftSleeping=false;
     }else{
         lv_timer_pause(updateTimer);
     }

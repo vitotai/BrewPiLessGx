@@ -12,7 +12,6 @@
 #include "screensaver.h"
 #include "timeformat.h"
 #include "skindef.h"
-#include "tft_functions.h"
 
 #define GRAVITY_TITLE "Gravity"
 #define ORIGINAL_GRAVITY_TITLE "Original Gravity"
@@ -127,7 +126,7 @@ lv_timer_t *screen_saver_timer;
 /* called by BrewPiLess*/
 /* ****************************************************************** */
 void updateBrewPiInfo(void){
-	if(is_tft_sleeping()) return;
+	if(isScreenSleeping()) return;
 	if(lv_scr_act() != ui_screenMain) return;
 	uiUpdateWiFiStatus();
 	// mode

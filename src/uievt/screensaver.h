@@ -19,7 +19,7 @@ void screenSaverUpdate(void);
 void userStopSaver(void);
 
 void screenWakeup(void);
-
+bool isScreenSleeping(void);
 #ifdef __cplusplus
 } //extern "C" {
 #endif
