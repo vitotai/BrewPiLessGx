@@ -4,6 +4,7 @@
 #include "lv_drv_conf.h"
 
 #ifdef LGFX_DRIVER
+#define LGFX_USE_V1
 
 #include "LGFX_custom/LGFX_ESP32_2432S032C.h"
 
