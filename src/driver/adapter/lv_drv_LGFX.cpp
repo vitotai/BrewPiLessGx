@@ -1,10 +1,11 @@
 #include <lvgl.h>
 #include <ui.h>
 #include <Arduino.h>
+#include "lv_drv_conf.h"
 
 #ifdef LGFX_DRIVER
 
-#include "LGFX_user/LGFX_ESP32_2432S032C.h"
+#include "LGFX_custom/LGFX_ESP32_2432S032C.h"
 
 LGFX gfx;
 
@@ -33,9 +34,7 @@ void display_drv_flush( lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *
 
     gfx.startWrite();
     gfx.setAddrWindow(area->x1, area->y1, w, h);
-    gfx.pushPixelsDMA((uint16_t *)&color_p->full, w * h, true);
-//    gfx.pushPixelsDMA((uint16_t *)&color_p->full, w * h);
-//    lcd.pushImageDMA(area->x1, area->y1, area->x2 - area->x1 + 1, area->y2 - area->y1 + 1, (lgfx::swap565_t *)&color_p->full);
+    gfx.writePixelsDMA((lgfx::rgb565_t *)&color_p->full, w * h);
     gfx.endWrite();
 
     lv_disp_flush_ready(disp);

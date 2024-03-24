@@ -3,6 +3,9 @@
 BrewPiLessGx is [BrewPiLess](https://github.com/vitotai/BrewPiLess) running on ESP32_2432S032C, which is a ESP32 with a touch enabled TFT. Built on top of [lvgl](https://lvgl.io), flexbile display and touch based GUI are implemented.
 
 # Update Note
+- 2024/03/24
+    - reorgnize source structure to make it easier for hardware adpation.
+    - LovyanGFX driver integration
 
 - 2024/03/20
     - Make Generic display drivers, ArduinoGFX, default configuration.
@@ -39,6 +42,33 @@ If more actuators are needed, DS2413 based one-wire relays might be an option.
 
 
 Most functionalities of BrewPiLess are supported, but due to limitation of the hardware not all of them are available.
+
+# Custom Hardware
+There are so many difference hardware configurations that I can make it to support all of them. Even with the same driver IC, there might be different configurations. Without verification with the real devices, I won't declare that it is supported. The adpation is not diffucult if you can find the drivers for your hardware.
+
+`/src/driver` has all the files to support custom hardware.
+
+### Preparing
+Find out the pin usages/connections of your hardware. Give your platform a name. You will need a macro to seperate your definition from others.
+
+### /src/driver/pindef.h
+The pin definition is isolated from legacy `brewpi/Config.h`. Usually, at least two PINs are needed to make BrewPiLessGx work as a temperature controller: `oneWirePin` for temperature sensors and `actuatorPin1` for cooling or heating control. If there are more free PINs available, up to `actuatorPin6` can be defined. Don't define PINs that is not available/free.
+
+`PressureAdcPin` is for pressure trasductor, only PINs supports ADC(Analog to Digial Conversion) can be used. Add `-DSupportPressureTransducer=false` in `platformio.ini` if you don't use it.
+
+### /src/driver/lv_drv_conf.h
+This file defines screen Width and Height as well as the draw buffer size. Usually, only width and height will be changed. We are running out of memory, so don't oversize the buffer.
+
+### /src/driver/driver_if.h
+This file defines all functions needed for LVGL. The porting/adaption is to implement those functions.
+
+### Adapton of the driver, with LovyanGFX
+LovyanGFX has a good collection of TFT and touch panel drivers. You might find your platform is supported. Change the include path to your platform. 
+
+If you don't have the luck, you might still be able to adpat LGFX to support your platform. Check LovyanGFX on github for more information. The platform 'ESP32_2432S032C_lgfx' is an example for reference.
+
+### Adapton of the driver, with ArduinoGFX
+ArduinoGFX supports many TFT drivers. Hoever, it doesn't include touch panel drivers. Check 'ESP32_2432S032C' for reference.
 
 
 # Difference between BrewPiLess
