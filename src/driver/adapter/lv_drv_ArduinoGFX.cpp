@@ -20,6 +20,13 @@ Arduino_GFX *gfx = new Arduino_ILI9341(bus, GFX_NOT_DEFINED /* RST */, 1 /* rota
 #define DISPLAY_BUS_SPEED 50000000
 #endif
 
+#if ESP32_2432S028R
+#define GFX_BL 21
+Arduino_DataBus *bus = new Arduino_ESP32SPI(2 /* DC */, 15 /* CS */, 14 /* SCK */, 13 /* MOSI */, 12 /* MISO */);
+Arduino_GFX *gfx = new Arduino_ST7789(bus, 1 /* RST */, 1 /* rotation */, true /* IPS */, 240 /* width */, 320 /* height */, 0 /* col offset 1 */, 0 /* row offset 1 */, 0 /* col offset 2 */, 0 /* row offset 2 */);
+#define DISPLAY_BUS_SPEED 50000000
+#endif
+
 
 #define TFT_PWM_CHANNEL_BL 7
 #define TFT_PWM_FREQ_BL 5000
