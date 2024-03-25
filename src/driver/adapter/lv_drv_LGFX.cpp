@@ -5,8 +5,13 @@
 
 #ifdef LGFX_DRIVER
 #define LGFX_USE_V1
-
+#ifdef ESP32_2432S032C
 #include "LGFX_custom/LGFX_ESP32_2432S032C.h"
+#endif // ESP32_2432S032C
+
+#ifdef ESP32_2432S028R
+#include "LGFX_custom/LGFX_ESP32_2432S028R.h"
+#endif // ESP32_2432S028R
 
 LGFX gfx;
 
