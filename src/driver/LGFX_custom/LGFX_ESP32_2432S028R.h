@@ -71,7 +71,7 @@ public:
             cfg.y_max = 3700;         // タッチスクリーンから得られる最大のY値(生の値)
             cfg.pin_int = -1;        // INTが接続されているピン番号, TP IRQ 36
             cfg.bus_shared = false;  // 画面と共通のバスを使用している場合 trueを設定
-            cfg.offset_rotation = 5; // 表示とタッチの向きのが一致しない場合の調整 0~7の値で設定
+            cfg.offset_rotation = 1; // 表示とタッチの向きのが一致しない場合の調整 0~7の値で設定
             // SPI接続の場合
             cfg.spi_host = VSPI_HOST; // 使用するSPIを選択 (HSPI_HOST or VSPI_HOST)
             cfg.freq = 1000000;       // SPIクロックを設定
