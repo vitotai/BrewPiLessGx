@@ -3,15 +3,7 @@
 #include "canvasdraw.h"
 #include "driver_if.h"
 #include "BrewPiInterface.h"
-
-#define UPDATE_TIMER 150
-#define BubbleSize 4
-#define BubbleFloatStep 8
-#define BubbleMoveDistance 4
-#define BubbleCount 20
-
-#define BubbleTime (10000/UPDATE_TIMER)
-#define MainScreenTime (5000/UPDATE_TIMER)
+#include "ui_config.h"
 
 #define COLOR_INDEX_BACKGROUND 0
 #define COLOR_INDEX_BUBBLE 1
@@ -147,7 +139,7 @@ void screenSaver_start(lv_obj_t* parent){
     if(!cui_canvasSaver){
         screenSaver_create(parent);
     }
-    if(0 == getScreenSaverTime()){
+    if(getScreenSaverTime() == 0){
         lv_obj_clear_flag(cui_btnScreen,LV_OBJ_FLAG_HIDDEN);
         // sleep
          _screenState = ScreenSavingSleep;
@@ -172,7 +164,10 @@ void screenWakeup(void){
         display_drv_wakeup();
 //        delay(10);
         isTftSleeping=false;
-    }else{
+    } else if(_screenState == ScreenSavingBubbling){
+        screenSaver_hide();
+    }
+    else{
         lv_timer_pause(updateTimer);
     }
     screenSaver_hide();
