@@ -596,7 +596,10 @@ $(function(){
         // Update the content of the coordinates paragraph
         $('#coordinates').text('(' + mouseX + ', ' + mouseY + ')');
       });
-
+    $(".lcd-dim").change(function(){
+        $("#lcd").width(parseInt($("#lcd-width").val()));
+       $("#lcd").height(parseInt($("#lcd-height").val()));
+    });
     moveable($(".lcd-text, .rectangle-blocks"));
     initFileDrop();
 });

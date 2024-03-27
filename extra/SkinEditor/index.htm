@@ -68,7 +68,7 @@ font-style: normal;
 
 .lcddisplay {
 	width: 320px;
-	height: 170px;
+	height: 240px;
 	margin-left: auto;
 	margin-right: auto;
 	margin-top:3em;
@@ -109,6 +109,15 @@ input[type=number] {
 </style>
 <body>
 <div class="container">
+	<div class="row">
+		<div class="col align-items-right">
+			LCD Width: <input id="lcd-width" class="lcd-dim" type="number" value="320">
+		</div>
+		<div class="col">
+			LCD Height: <input id="lcd-height" class="lcd-dim" type="number" value="240">
+		</div>
+	</div>
+
 <div class="row">
 	<div class="col-lg-10">
 		<div id="lcd" class="lcddisplay">

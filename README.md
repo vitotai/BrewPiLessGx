@@ -78,7 +78,7 @@ ArduinoGFX supports many TFT drivers. Hoever, it doesn't include touch panel dri
 - NO traditional I2C LCD support
 
 # Operation
-The main display is customizable, defined by a JSON file. The syntax and format is described in the [document](doc/skin.md).
+The main display is customizable, defined by a JSON file. The syntax and format is described in the [document](doc/skin.md). There is a not-so-good UI designer in "extra/SkinEditor".
 
 There are two built-in skins. The first one is "brewpi" for who just use traditional BrewPi functionality. 
 
