@@ -40,6 +40,9 @@ void TempSensor::init()
 
 void TempSensor::update()
 {
+	// only update if filters have been initialized
+	if (failedReadCount<0){return;}
+	
 	temperature temp;
 	#if 1 // FridgeSensorFallBack
 
