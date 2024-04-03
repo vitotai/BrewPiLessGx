@@ -44,15 +44,13 @@ void onScreenNetworkListLoadStart(lv_event_t * e);
 void onScreenNetworkListUnloadStart(lv_event_t * e);
 
 extern lv_obj_t *cui_screenNetworkList;
-extern lv_obj_t *cui_tableNetworks;
+extern lv_obj_t *cui_listNetworks;
 extern lv_obj_t *cui_btnNetworkScanBack;
 void  cui_event_btnNetworkScanBack( lv_event_t * e);
 
 void cui_screenNetworkScan_screen_scandone(void);
 void cui_event_btnNetworkScanBack( lv_event_t * e);
 void cui_event_table_event( lv_event_t * e);
-
-void onTableItemSelected( uint16_t index);
 
 /* fixed IP screen */
 void cui_screenQueryAutoIP_init();

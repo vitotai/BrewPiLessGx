@@ -1,7 +1,7 @@
 
 #include "ui.h"
 #include "ui_helpers.h"
-
+#define BACK_BUTTON_HEIGHT 36
 
 void cui_screenNetworkScan_screen_init(void);
 void cui_event_screenNetworkScan( lv_event_t * e);
@@ -16,15 +16,12 @@ void onScreenNetworkListLoadStart(lv_event_t * e);
 void onScreenNetworkListUnloadStart(lv_event_t * e);
 
  lv_obj_t *cui_screenNetworkList;
- lv_obj_t *cui_tableNetworks;
+ lv_obj_t *cui_listNetworks;
  lv_obj_t *cui_btnNetworkScanBack;
 void  cui_event_btnNetworkScanBack( lv_event_t * e);
 
 void cui_screenNetworkScan_screen_scandone(void);
 void cui_event_btnNetworkScanBack( lv_event_t * e);
-void cui_event_table_event( lv_event_t * e);
-
-void onTableItemSelected( uint16_t index);
 
 
 void cui_screenNetworkScan_screen_init(void)
@@ -73,28 +70,15 @@ lv_obj_set_y( cui_btnNetworkScanBack, 0 );
 lv_obj_set_align( cui_btnNetworkScanBack, LV_ALIGN_TOP_LEFT );
 lv_obj_add_event_cb(cui_btnNetworkScanBack,cui_event_btnNetworkScanBack , LV_EVENT_ALL, NULL);
 /* network list*/
-     cui_tableNetworks = lv_table_create(cui_screenNetworkList);
+     cui_listNetworks = lv_list_create(cui_screenNetworkList);
 
     /*Set a smaller height to the table. It'll make it scrollable*/
-    lv_obj_set_height( cui_tableNetworks, lv_pct(90));
-    lv_obj_set_width( cui_tableNetworks, 220);
-    lv_obj_set_x( cui_tableNetworks, 0 );
-    lv_obj_set_y( cui_tableNetworks, 0 );
-    lv_obj_set_align( cui_tableNetworks, LV_ALIGN_CENTER );
+    lv_obj_set_height( cui_listNetworks,lv_obj_get_width(cui_screenNetworkList) - BACK_BUTTON_HEIGHT);
+    lv_obj_set_width( cui_listNetworks, lv_pct(100));
+    lv_obj_set_y(cui_listNetworks,BACK_BUTTON_HEIGHT);
+    lv_obj_set_align(cui_listNetworks,LV_ALIGN_TOP_LEFT);
     
-    lv_table_set_col_width(cui_tableNetworks, 0,160);
-    lv_table_set_col_width(cui_tableNetworks, 1, 40);
-    lv_table_set_col_cnt(cui_tableNetworks, 2);
-
-    /*Don't make the cell pressed, we will draw something different in the event*/
-    //lv_obj_remove_style(cui_tableNetworks, NULL, LV_PART_ITEMS | LV_STATE_PRESSED);
-
-    /*Add an event callback to to apply some custom drawing*/
-    //lv_obj_add_event_cb(cui_tableNetworks, nwlist_draw_event_cb, LV_EVENT_DRAW_PART_END, NULL);
-
-//
     lv_obj_add_event_cb(cui_screenNetworkList, cui_event_screenNetworkList, LV_EVENT_ALL, NULL);
-    lv_obj_add_event_cb(cui_tableNetworks, cui_event_table_event,LV_EVENT_VALUE_CHANGED,NULL);
 }
 
 
@@ -114,12 +98,4 @@ void cui_event_btnNetworkScanBack( lv_event_t * e) {
 if ( event_code == LV_EVENT_CLICKED) {
       _ui_screen_change( &ui_screenSetting, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, &ui_screenSetting_screen_init);
 }
-}
-
-void cui_event_table_event( lv_event_t * e) {
-    lv_obj_t * obj = lv_event_get_target(e);
-    uint16_t col;
-    uint16_t row;
-    lv_table_get_selected_cell(obj, &row, &col);
-    onTableItemSelected(row);
 }

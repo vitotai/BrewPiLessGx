@@ -25,8 +25,8 @@ LV_FONT_DECLARE(Robo108);
 lv_font_t *customFont_1;
 lv_font_t *customFont_2;
 lv_font_t *customFont_3;
-const void* control_screen_background=NULL;
-const void* setting_screen_background=NULL;
+const void* control_screen_label_image=NULL;
+const void* setting_screen_label_image=NULL;
 
 static void setDimension(lv_obj_t* obj,JsonVariant json,void (*setaction)(lv_obj_t*,lv_coord_t)){
     if(json.is<signed int>()){
@@ -391,23 +391,23 @@ static bool skinMainScreen(char* data){
     }else{
         lv_obj_set_style_bg_color(ui_screenMain,lv_color_black(),0);
     }
-    if(root.containsKey(JsonKey_ControlBackgroundImage)){
-        const char *imgsrc=root[JsonKey_ControlBackgroundImage].as<const char*>();
+    if(root.containsKey(JsonKey_ControlLabelImage)){
+        const char *imgsrc=root[JsonKey_ControlLabelImage].as<const char*>();
         const lv_img_dsc_t *img=getEmbeddedImage(imgsrc);
         if(img){
-            control_screen_background=img;
+            control_screen_label_image=img;
         }else{
-            control_screen_background=strdup(imgsrc);
+            control_screen_label_image=strdup(imgsrc);
         }
     }
 
-    if(root.containsKey(JsonKey_SettingBackgroundImage)){
-        const char *imgsrc=root[JsonKey_SettingBackgroundImage].as<const char*>();
+    if(root.containsKey(JsonKey_SettingLabelImage)){
+        const char *imgsrc=root[JsonKey_SettingLabelImage].as<const char*>();
         const lv_img_dsc_t *img=getEmbeddedImage(imgsrc);
         if(img){
-            setting_screen_background=img;
+            setting_screen_label_image=img;
         }else{
-            setting_screen_background=strdup(imgsrc);
+            setting_screen_label_image=strdup(imgsrc);
         }
     }
     // 3. drawing

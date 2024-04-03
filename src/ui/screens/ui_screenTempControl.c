@@ -9,8 +9,18 @@ void ui_screenTempControl_screen_init(void)
 {
 ui_screenTempControl = lv_obj_create(NULL);
 lv_obj_clear_flag( ui_screenTempControl, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
-if(control_screen_background) lv_obj_set_style_bg_img_src( ui_screenTempControl,control_screen_background, LV_PART_MAIN | LV_STATE_DEFAULT );
-else lv_obj_set_style_bg_img_src( ui_screenTempControl, &ui_img_control_320240_png, LV_PART_MAIN | LV_STATE_DEFAULT );
+lv_obj_set_style_bg_color(ui_screenTempControl,lv_color_black(), LV_PART_MAIN| LV_STATE_DEFAULT);
+
+ui_Image1 = lv_img_create(ui_screenTempControl);
+
+if(control_screen_label_image) lv_img_set_src(ui_Image1,control_screen_label_image);
+else lv_img_set_src(ui_Image1, &ui_img_control_320240_top_png);
+lv_obj_set_width( ui_Image1, LV_SIZE_CONTENT);  /// 1
+lv_obj_set_height( ui_Image1, LV_SIZE_CONTENT);   /// 1
+lv_obj_set_align( ui_Image1, LV_ALIGN_TOP_MID );
+lv_obj_add_flag( ui_Image1, LV_OBJ_FLAG_ADV_HITTEST );   /// Flags
+lv_obj_clear_flag( ui_Image1, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+
 
 ui_btnTempControlBack = lv_imgbtn_create(ui_screenTempControl);
 lv_imgbtn_set_src(ui_btnTempControlBack, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_backbutton_png, NULL);
@@ -26,6 +36,8 @@ lv_obj_set_height( ui_sldMode, 3);
 lv_obj_set_x( ui_sldMode, 0 );
 lv_obj_set_y( ui_sldMode, 64 );
 lv_obj_set_align( ui_sldMode, LV_ALIGN_TOP_MID );
+lv_obj_set_style_bg_color(ui_sldMode, lv_color_hex(0x909090), LV_PART_MAIN | LV_STATE_DEFAULT );
+lv_obj_set_style_bg_opa(ui_sldMode, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
 
 lv_obj_set_style_bg_color(ui_sldMode, lv_color_hex(0x909090), LV_PART_INDICATOR | LV_STATE_DEFAULT );
 lv_obj_set_style_bg_opa(ui_sldMode, 255, LV_PART_INDICATOR| LV_STATE_DEFAULT);
@@ -38,23 +50,25 @@ lv_obj_set_style_outline_pad(ui_sldMode, 0, LV_PART_KNOB| LV_STATE_DEFAULT);
 ui_arcTemperatureSet = lv_arc_create(ui_screenTempControl);
 lv_obj_set_width( ui_arcTemperatureSet, 150);
 lv_obj_set_height( ui_arcTemperatureSet, 150);
-lv_obj_set_align( ui_arcTemperatureSet, LV_ALIGN_BOTTOM_MID );
+lv_obj_set_x( ui_arcTemperatureSet, 0 );
+lv_obj_set_y( ui_arcTemperatureSet, 40 );
+lv_obj_set_align( ui_arcTemperatureSet, LV_ALIGN_CENTER );
 
 
 ui_lbMinTempSet = lv_label_create(ui_screenTempControl);
 lv_obj_set_width( ui_lbMinTempSet, LV_SIZE_CONTENT);  /// 1
 lv_obj_set_height( ui_lbMinTempSet, LV_SIZE_CONTENT);   /// 1
 lv_obj_set_x( ui_lbMinTempSet, -68 );
-lv_obj_set_y( ui_lbMinTempSet, -8 );
-lv_obj_set_align( ui_lbMinTempSet, LV_ALIGN_BOTTOM_MID );
+lv_obj_set_y( ui_lbMinTempSet, 100 );
+lv_obj_set_align( ui_lbMinTempSet, LV_ALIGN_CENTER );
 lv_label_set_text(ui_lbMinTempSet,"0");
 
 ui_lbMaxTempSet = lv_label_create(ui_screenTempControl);
 lv_obj_set_width( ui_lbMaxTempSet, LV_SIZE_CONTENT);  /// 1
 lv_obj_set_height( ui_lbMaxTempSet, LV_SIZE_CONTENT);   /// 1
 lv_obj_set_x( ui_lbMaxTempSet, 68 );
-lv_obj_set_y( ui_lbMaxTempSet, -8 );
-lv_obj_set_align( ui_lbMaxTempSet, LV_ALIGN_BOTTOM_MID );
+lv_obj_set_y( ui_lbMaxTempSet, 100 );
+lv_obj_set_align( ui_lbMaxTempSet, LV_ALIGN_CENTER );
 lv_label_set_text(ui_lbMaxTempSet,"36");
 
 ui_lbTemperatureSet = lv_label_create(ui_screenTempControl);
@@ -72,9 +86,10 @@ ui_lbControlUnit = lv_label_create(ui_screenTempControl);
 lv_obj_set_width( ui_lbControlUnit, LV_SIZE_CONTENT);  /// 1
 lv_obj_set_height( ui_lbControlUnit, LV_SIZE_CONTENT);   /// 1
 lv_obj_set_x( ui_lbControlUnit, 0 );
-lv_obj_set_y( ui_lbControlUnit, -8 );
-lv_obj_set_align( ui_lbControlUnit, LV_ALIGN_BOTTOM_MID );
+lv_obj_set_y( ui_lbControlUnit, 100 );
+lv_obj_set_align( ui_lbControlUnit, LV_ALIGN_CENTER );
 lv_label_set_text(ui_lbControlUnit,"C");
+
 
 lv_obj_add_event_cb(ui_btnTempControlBack, ui_event_btnTempControlBack, LV_EVENT_ALL, NULL);
 lv_obj_add_event_cb(ui_sldMode, ui_event_sldMode, LV_EVENT_ALL, NULL);

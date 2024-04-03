@@ -5,8 +5,8 @@ extern "C" {
 #endif
 
 #define JsonKey_BackgroundImage "bg"
-#define JsonKey_ControlBackgroundImage "cbg"
-#define JsonKey_SettingBackgroundImage "sbg"
+#define JsonKey_ControlLabelImage "clb"
+#define JsonKey_SettingLabelImage "slb"
 
 
 #define JsonKey_Mode "mode"
