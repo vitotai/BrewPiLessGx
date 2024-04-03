@@ -14,14 +14,6 @@ void netScanResultCb(WiFiListEntry* list,uint16_t count);
 void openAutoIPConfirmDialog(void);
 void connectNetwork(void);
 
-static void requestWiFiScan(void* unused){
-    bplRequestWiFiScan(&netScanResultCb);
-}
-
-void onScreenNetworkScanLoaded(lv_event_t * e){
-    //removeTableIfCreated();
-    lv_async_call(requestWiFiScan,NULL);
-}
 static WiFiListEntry* nwlist;
 static uint16_t nwcount;
 
@@ -29,6 +21,36 @@ static char nwpass[64];
 static char ssid[64];
 uint32_t fixedIp,netmask,gateway,nameserver;
 
+
+static void event_network_selected_handler(lv_event_t * e){
+
+    lv_event_code_t code = lv_event_get_code(e);
+    if(code != LV_EVENT_CLICKED) {
+        return;
+    }
+
+    unsigned long index =(unsigned long)lv_event_get_user_data(e);
+
+    strcpy(ssid,nwlist[index].ssid);
+
+    if(nwlist[index].enc){
+        openInputScreen(LV_SCR_LOAD_ANIM_MOVE_LEFT,PASSPHRASE_TITLE,&passphraseInput,&voidCancel,InputTypeText,"");
+    }else{
+        nwpass[0]='\0';
+        openAutoIPConfirmDialog();
+    }
+    // "free" nwlist?
+}
+
+
+static void requestWiFiScan(void* obj){
+    bplRequestWiFiScan(&netScanResultCb);
+}
+
+void onScreenNetworkScanLoaded(lv_event_t * e){
+    //removeTableIfCreated();
+    lv_async_call(requestWiFiScan,NULL);
+}
 
 
 void connectNetwork(void){
@@ -55,27 +77,15 @@ void onScreenNetworkListUnloadStart(lv_event_t * e){
 }
 
 void onScreenNetworkListLoadStart(lv_event_t * e){
-
-    lv_table_set_row_cnt(cui_tableNetworks, nwcount); /*Not required but avoids a lot of memory reallocation lv_table_set_set_value*/
     uint32_t i;
+    lv_obj_t *btn;
     for(i = 0; i < nwcount; i++) {
-        lv_table_set_cell_value(cui_tableNetworks, i, 0, nwlist[i].ssid);
-        lv_table_set_cell_value(cui_tableNetworks, i, 1, nwlist[i].enc? "S":"");
+
+        btn = lv_list_add_btn(cui_listNetworks, nwlist[i].enc? LV_SYMBOL_SETTINGS:LV_SYMBOL_WIFI,nwlist[i].ssid); 
+        lv_obj_add_event_cb(btn, event_network_selected_handler, LV_EVENT_CLICKED,(void*) i);
     }
 }
 
-void onTableItemSelected(uint16_t index){
-
-    strcpy(ssid,nwlist[index].ssid);
-
-    if(nwlist[index].enc){
-        openInputScreen(LV_SCR_LOAD_ANIM_MOVE_LEFT,PASSPHRASE_TITLE,&passphraseInput,&voidCancel,InputTypeText,"");
-    }else{
-        nwpass[0]='\0';
-        openAutoIPConfirmDialog();
-    }
-    // "free" nwlist?
-}
 
 
 void voidCancel(void){

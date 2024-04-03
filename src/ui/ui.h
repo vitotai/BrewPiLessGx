@@ -66,6 +66,7 @@ extern lv_obj_t *ui_lbMinTempSet;
 extern lv_obj_t *ui_lbMaxTempSet;
 extern lv_obj_t *ui_lbTemperatureSet;
 extern lv_obj_t *ui_lbControlUnit;
+extern lv_obj_t *ui_Image1;
 // SCREEN: ui_screenSetting
 void ui_screenSetting_screen_init(void);
 void ui_event_screenSetting( lv_event_t * e);
@@ -83,6 +84,7 @@ extern lv_obj_t *ui_lbUsername;
 extern lv_obj_t *ui_lbPasswd;
 void ui_event_btnSearchNetwork( lv_event_t * e);
 extern lv_obj_t *ui_btnSearchNetwork;
+extern lv_obj_t *ui_Image2;
 // SCREEN: ui_screenInput
 void ui_screenInput_screen_init(void);
 extern lv_obj_t *ui_screenInput;
@@ -94,9 +96,12 @@ extern lv_obj_t *ui____initial_actions0;
 
 LV_IMG_DECLARE( ui_img_main_320240v2_png);   // assets/main_320240v2.png
 LV_IMG_DECLARE( ui_img_control_320240_png);   // assets/control_320240.png
+LV_IMG_DECLARE( ui_img_control_320240_top_png);   // assets/control_320240.png
 LV_IMG_DECLARE( ui_img_backbutton_png);   // assets/BackButton.png
 LV_IMG_DECLARE( ui_img_setting_320240_png);   // assets/setting_320240.png
 LV_IMG_DECLARE( ui_img_203665058);   // assets/search-button-32.png
+LV_IMG_DECLARE( ui_img_setting_320240_left_png);   // assets/setting_320240_left.png
+LV_IMG_DECLARE( ui_img_control_320240_png);   // assets/control_320240.png
 LV_IMG_DECLARE( ui_img_cotrol_3_5_png);   // assets/cotrol_3.5.png
 LV_IMG_DECLARE( ui_img_main3_5_png);   // assets/main3.5.png
 LV_IMG_DECLARE( ui_img_setting_3_5_png);   // assets/setting_3.5.png
@@ -106,8 +111,8 @@ LV_FONT_DECLARE( ui_font_Font1);
 
 void ui_init(void);
 
-extern const void* control_screen_background;
-extern const void* setting_screen_background;
+extern const void* control_screen_label_image;
+extern const void* setting_screen_label_image;
 
 #ifdef __cplusplus
 } /*extern "C"*/

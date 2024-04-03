@@ -3,6 +3,11 @@
 BrewPiLessGx is [BrewPiLess](https://github.com/vitotai/BrewPiLess) running on ESP32_2432S032C, which is a ESP32 with a touch enabled TFT. Built on top of [lvgl](https://lvgl.io), flexbile display and touch based GUI are implemented.
 
 # Update Note
+- 2024/03/28
+    - revise (Network) Setting and (Temperature) Control screen so that even they can be used on 480x320 LCD
+    - use "list" instead of "table" to display Network list.
+    - Wireless Sensor issue solution from BrewPiLess.
+
 - 2024/03/24
     - reorgnize source structure to make it easier for hardware adpation.
     - LovyanGFX driver integration
@@ -78,7 +83,7 @@ ArduinoGFX supports many TFT drivers. Hoever, it doesn't include touch panel dri
 - NO traditional I2C LCD support
 
 # Operation
-The main display is customizable, defined by a JSON file. The syntax and format is described in the [document](doc/skin.md).
+The main display is customizable, defined by a JSON file. The syntax and format is described in the [document](doc/skin.md). There is a not-so-good UI designer in "extra/SkinEditor".
 
 There are two built-in skins. The first one is "brewpi" for who just use traditional BrewPi functionality. 
 

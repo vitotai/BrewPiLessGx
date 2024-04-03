@@ -8,8 +8,8 @@ Global options. They are all **optional**. You don't need to specify them when n
 | Field | code/key | Description |
 |--| -- |--|
 |Background image for main screen| **bg** | specifiy the background image file.|
-|Background image for control screen| **cbg** | specifiy the background image file.|
-|Background image for setting screen| **sbg** | specifiy the background image file.|
+|Label image for control screen| **clb** | specifiy the label image file.|
+|Label image for setting screen| **slb** | specifiy the label image file.|
 |Static Texts | **stxt** | A list of static texts. |
 |Static Text Style | **stxs** | Default the default style of static texts. | 
 |Rectangle Blocks | **cbs** | Define rectangels. |
@@ -18,8 +18,10 @@ Global options. They are all **optional**. You don't need to specify them when n
 | Custom Font 2 | **c2** | file path for custom font 2. | 
 | Custom Font 3 | **c3** | file path for custom font 3. | 
 
-### A.1 Background Images
+### A.1 Background and label Images
 Specify the background images for the screens. Optional. The value can be **Image File** or **Embedded Image File**. See following sections for more detail. These options provide a way to localize the display for non western European languages, given the fact that default fonts include only ASCII table alphabets.
+
+The "Label image" of temperature control and network setting screens contains the plain texts for the screens. It is designed for easier localization, especially for non-Western languages. Since the default fonts do not include non western alphabets, alternative text won't work. For 320x240 LCD, the size of temperature control label image is 320x58 on the top of the screen, while the size of setting screen label image is 160x240 on the left of the screen.
 
 ### A.2 Static Texts and styles
 To display static texts on main screen, specify the text and text properties.

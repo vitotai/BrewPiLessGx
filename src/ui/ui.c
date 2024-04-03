@@ -58,6 +58,7 @@ lv_obj_t *ui_lbMinTempSet;
 lv_obj_t *ui_lbMaxTempSet;
 lv_obj_t *ui_lbTemperatureSet;
 lv_obj_t *ui_lbControlUnit;
+lv_obj_t *ui_Image1;
 
 
 // SCREEN: ui_screenSetting
@@ -77,6 +78,7 @@ lv_obj_t *ui_lbUsername;
 lv_obj_t *ui_lbPasswd;
 void ui_event_btnSearchNetwork( lv_event_t * e);
 lv_obj_t *ui_btnSearchNetwork;
+lv_obj_t *ui_Image2;
 
 
 // SCREEN: ui_screenInput
