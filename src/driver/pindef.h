@@ -16,3 +16,12 @@
 #define PressureAdcPin  35
 #define actuatorPin1  21
 #endif
+
+#if WT32SC01PLUS
+#define oneWirePin    11
+#define PressureAdcPin  10
+#define actuatorPin1  12
+#define actuatorPin2  13
+#define actuatorPin3  14
+#define actuatorPin4  21
+#endif

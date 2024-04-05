@@ -6,7 +6,13 @@
 #ifdef LGFX_DRIVER
 #define LGFX_USE_V1
 
+#ifdef ESP32_2432S032C
 #include "LGFX_custom/LGFX_ESP32_2432S032C.h"
+#endif
+
+#ifdef WT32SC01PLUS
+#include "LGFX_custom/conf_WT32SCO1-Plus.h"
+#endif
 
 LGFX gfx;
 

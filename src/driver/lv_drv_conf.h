@@ -5,6 +5,16 @@
 
 // Display driver Configuration
 
+#if WT32SC01PLUS
+#define CONFIG_LVGL_DISPLAY_WIDTH 480
+#define CONFIG_LVGL_DISPLAY_HEIGHT 320
+// size of lv_color_t
+// should be greater than 1/10 whole screen.
+#define LV_DRAW_BUFFER_SIZE (CONFIG_LVGL_DISPLAY_WIDTH * 10)
+
+#endif // WT32SC01PLUS
+
+
 #if ESP32_17320S019N
 #define CONFIG_LVGL_DISPLAY_WIDTH 320
 #define CONFIG_LVGL_DISPLAY_HEIGHT 170
