@@ -1,4 +1,60 @@
 
+//rssi
+var RssiWidgets={};
+const default_Rssi_prop={
+    ble:false,
+    color:"white",
+    shadow:"#333333"
+};
+
+function Rssibar(ele,prop){
+    this.ele=ele;
+    this.prop=Object.assign({}, default_Rssi_prop, prop);
+}
+Rssibar.prototype.updateProp=function(prop){
+    this.prop=Object.assign({}, this.prop, prop);
+//    this.setRssi(this.rssi);
+};
+Rssibar.prototype.rmProp=function(prop){
+    this.prop[prop]=default_Rssi_prop[prop];
+//    this.setRssi(this.rssi);
+};
+
+Rssibar.prototype.setHidden=function(hidden){
+    if(hidden)$(this.ele).hide();
+    else $(this.ele).show();
+};
+
+Rssibar.prototype.setRssi=function(x){
+    var t=this;
+    t.rssi=x;
+    // calculate number of "bar"
+    var strength =t.ble? [-1000, -90, -80, -70, -67]:[-1000,-100,-80,-55];
+    var bar = 4;
+    for (; bar >= 0; bar--) {
+        if (strength[bar] < x) break;
+    }
+    // update display
+    var wu=$(t.ele).width()/7;
+    var hu=$(t.ele).height()/4;
+    var x =0;
+    var y=$(t.ele).height() - hu;
+    var height= hu;
+
+    $(t.ele).find(".rssi-bar").each(function(i,div){
+        $(div).css({"background-color":(i < bar) ? t.prop.color :t.prop.shadow,
+        "left": x,
+        "top": y,
+        "height": height,
+        "width": wu
+        });
+        x += 2 * wu;
+        y -= hu;
+        height +=hu;
+    });
+    $(t.ele).title = (x > 0) ? "?" : ""+x;
+};
+
 function getStringWidth(text, font) {
     // Create a temporary canvas element
     var canvas = document.createElement('canvas');
@@ -281,6 +337,32 @@ function dejsonRectangles(blocks){
     });
 }
 
+function djsonWgtStyle(tr,json){
+    if(typeof json["a"] !="undefined") $(tr).find('select[target="align"]').val(json.a);
+
+    if(typeof json["x"] !="undefined") $(tr).find('input[target="posx"]').val(json.x);    
+    if(typeof json["y"] !="undefined") $(tr).find('input[target="posy"]').val(json.y);
+
+    if(typeof json["w"] !="undefined" && json.w != "c") $(tr).find('input[target="width"]').val(json.w);
+    if(typeof json["h"] !="undefined" && json.h != "c") $(tr).find('input[target="height"]').val(json.h);
+
+    if(typeof json["fc"] !="undefined") $(tr).find('input[target="color"]').val(json.fc);    
+    if(typeof json["bc"] !="undefined") $(tr).find('input[target="bg-color"]').val(json.bc);    
+    if(typeof json["sc"] !="undefined") $(tr).find('input[target="shadow-color"]').val(json.sc);    
+    $(tr).find('input[target="show"]').prop('checked',true);
+}
+
+function rssiBarFromJson(target, json){
+    var prop={};    
+    if(typeof json["fc"] !="undefined") prop["color"] = json.fc;
+    if(typeof json["sc"] !="undefined") prop["shadow-color"] = json.sc;
+
+    var wgt = new Rssibar("#"+target,prop);
+    RssiWidgets[target]=wgt;
+
+    return wgt;
+}
+
 function processJson(json){
     $.each(json, function(key, value) {
         if(key =="bg"){
@@ -305,9 +387,23 @@ function processJson(json){
         }else{
             // assume bpl type
             var tr=$('#input-table tr.brewpi-item[target="'+ key +'"]');
-            if(tr.length==0) alert("unknown item:"+key);
-            djsonTextStyle(tr,value);
-            applyBplStyle(key,value);
+            if(typeof value['rep'] != "undefined" && value.rep =="wgt"){
+
+                var wgttarget = $(tr).attr("exclusive");
+                var wtr=$('#input-table tr.brewpi-item[target="'+ wgttarget +'"]');
+                djsonWgtStyle(wtr,value);
+ 
+                $('#'+wgttarget).show();
+                // create the widget
+                var wgt=rssiBarFromJson(wgttarget,value);
+                positionRssiBarWidget(wgttarget,wtr);
+                if(typeof value["bc"] != "undefined") $("#" + wgttarget).css("background-color","#"+value.bc);
+                wgt.setRssi($(wtr).find('input[target="value"]').val());
+            }else{                
+                if(tr.length==0) alert("unknown item:"+key);
+                djsonTextStyle(tr,value);
+                applyBplStyle(key,value);
+            }
         }
     });
 }
@@ -340,8 +436,7 @@ function moveable(obj){
         }
       });
 }
-
-function getTextJson(tr){
+function getCommonProp(tr){
     var json={};
 
     var align = $(tr).find('select[name="align"]').val();
@@ -355,6 +450,11 @@ function getTextJson(tr){
     if(w!="") json.w=w;
     var h= getDimNumber($(tr).find('input[target="height"]').val());
     if(h!="") json.h = h;
+    return json;
+}
+
+function getTextJson(tr){
+    var json=getCommonProp(tr);
     
     var tf=$(tr).find('select[target="font"]').val();
     if(tf && tf !="s") json.tf = tf;
@@ -365,6 +465,19 @@ function getTextJson(tr){
     var tamap={center:"c",left:"l",right:"r"};
     var ta=$(tr).find('select[target="text-align"]').val();
     if(ta !="left") json.ta=tamap[ta];
+    return json;
+}
+
+function getRssiJson(tr){
+    var json=getCommonProp(tr);
+    json.rep="wgt";
+    var fc= $(tr).find('input[target="color"]').val();
+    if(fc != "") json.fc = fc;
+    var bc= $(tr).find('input[target="bg-color"]').val();
+    if(bc != "") json.bc = bc;
+    var sc= $(tr).find('input[target="shadow-color"]').val();
+    if(sc != "") json.sc = sc;
+
     return json;
 }
 
@@ -407,7 +520,9 @@ function generateJson(){
             }
         }else if($(tr).hasClass("brewpi-item")){
            if($(tr).find('input[target="show"]').prop('checked')){
-                json[$(tr).attr('target')] = getTextJson(tr);
+                if($(tr).hasClass("rssi-widget")){
+                    json[$(tr).attr('exclusive')] = getRssiJson(tr);
+                }else json[$(tr).attr('target')] = getTextJson(tr);
            }
         }
     });
@@ -426,9 +541,34 @@ function generateJson(){
         if(Object.keys(stxs)>0) json.stxs=stxs;
         json.stxt = stxt;
     }
-    return JSON.stringify(json);
-}
+    //return JSON.stringify(json);
 
+    return prettierJson(json);
+}
+function prettierJson(json){
+    var out="{\n";
+    var comma=false;
+    $.each(json,function(key,val){
+
+        if(comma) out +=",\n";
+        else comma = true;
+        
+        if(Array.isArray(val)){
+            out += '"' + key + '":[';
+            $.each(val,function(idx,item){
+                if(idx >0) out +=",\n";
+                out += JSON.stringify(item);
+            });
+
+            out += "]";
+        }else{
+            out += '"' + key + '":' + JSON.stringify(val);
+        }
+    });
+
+    out += "\n}";
+    return out;
+}
 
 /************************* */
 
@@ -490,9 +630,106 @@ $("#drop-zone").on('dragleave',function() {
 }
 
 /********************** */
+// RSSI Widget
+function positionRssiBarWidget(target,tr){
+    var iw = parseInt($(tr).find('input[target="width"]').val());
+    var ih = parseInt($(tr).find('input[target="height"]').val());
+    $("#" + target).width(isNaN(iw)? 16:iw);
+    $("#" + target).height(isNaN(ih)? 16:ih);
+
+    var align = $(tr).find('select[target="align"]').val();
+    var x =  $(tr).find('input[target="posx"]').val();
+    var y = $(tr).find('input[target="posy"]').val();
+
+    $("#" + target).css("top",'');
+    $("#" + target).css("bottom",'');
+    $("#" + target).css("left",'');
+    $("#" + target).css("right",'');
 
 
+    if(align == "c"){
+        var w = $("#" + target).width();
+        var h = $("#" + target).height();
+        var pw = $("#" + target).parent().width();
+        var ph = $("#" + target).parent().height();
+        $("#" + target).css("top",y + (ph-h)/2);
+        $("#" + target).css("left",x  + (pw-w)/2);
+    }else if(align == "tl"){
+        // top left
+        $("#" + target).css("top",y);
+        $("#" + target).css("left",x);
+    }else if(align == "bl"){
+        // bottom left
+        $("#" + target).css("bottom",y);
+        $("#" + target).css("left",x);
 
+    }else if(align == "lm"){
+        // left middle
+        var h = $("#" + target).height();
+        var ph = $("#" + target).parent().height();
+
+        $("#" + target).css("top",y + (ph-h)/2);
+        $("#" + target).css("left",x);
+
+    }else if(align == "tr"){
+        // top right
+        $("#" + target).css("top",y);
+        $("#" + target).css("right",x);
+
+    }else if(align == "br"){
+        // bottom right
+        $("#" + target).css("bottom",y);
+        $("#" + target).css("right",x);
+    }else if(align == "rm"){
+        // right middle
+        var h = $("#" + target).height();
+        var ph = $("#" + target).parent().height();
+        $("#" + target).css("top",y + (ph-h)/2);
+        $("#" + target).css("right",x);
+    }
+
+}
+
+function rssiWidgetInput(input){
+    var target=$(input).closest("tr").attr("target");
+    var wgt=RssiWidgets[target];
+    if( typeof wgt == "undefined"){
+        // create the widget
+        wgt = new Rssibar("#"+target,{});
+        RssiWidgets[target]=wgt;
+        var w = parseInt($(input).closest("tr").find('input[target="width"]').val());
+        var h = parseInt($(input).closest("tr").find('input[target="height"]').val());
+        $("#" + target).width(isNaN(w)? 16:w);
+        $("#" + target).height(isNaN(h)? 16:h);
+    }
+    var prop=$(input).attr("target");
+    if(prop == "show"){
+        if($(input).prop("checked"))  $("#"+ target).show();
+        else $("#"+ target).hide();
+        var cp=$(input).closest("tr").attr("exclusive");
+        if(typeof cp != "undefined"){
+            if($(input).prop("checked")){
+                $("#"+ cp).hide();
+                $('tr[target="'+ cp +'"]').find('input[target="show"]').prop("checked",false);
+            }
+        }
+    }else if(prop == "value"){
+        // do nothing, will set before return of function.
+    }else if( prop == "align" || prop == "posx" || prop == "posy" || prop == "width" || prop == "height"){    
+        positionRssiBarWidget(target,$(input).closest("tr"));
+    }else if(prop == "bg-color"){
+        $("#" + target).css("background-color","#"+$(input).val());
+    }else if(prop == "color"){
+        if($(input).val().trim() == "") wgt.rmProp("color");
+        else wgt.updateProp({color:"#"+$(input).val().trim()});
+    }else if(prop == "shadow-color"){
+        if($(input).val().trim() == "") wgt.rmProp("shadow");
+        else wgt.updateProp({shadow:"#"+$(input).val().trim()});
+    }
+    wgt.setRssi($(input).closest("tr").find('input[target="value"]').val());
+}
+
+/********************** */
 
 
 var stxt_tr;
@@ -502,7 +739,7 @@ $(function(){
     $.each($("#input-table tr.brewpi-item"),function(i,tr){
         var i= $(tr).attr("target");
         $("#"+ i).hide();
-        $(tr).find('input[target="value"').val($("#"+ i).text());
+        if(! $(tr).hasClass("rssi-widget")) $(tr).find('input[target="value"').val($("#"+ i).text());
     });
     $("#add-text").click(function(){
         newStaticText();
@@ -512,12 +749,21 @@ $(function(){
     });
     $("#input-table input").change(function(){
         if($(this).closest("tr").hasClass("ststyles")) return staticTextStyleInput(this);
+        
+        if($(this).closest("tr").hasClass("rssi-widget")) return rssiWidgetInput(this);
 
         var target=$(this).closest("tr").attr("target");
         var prop=$(this).attr("target");
         if(prop == "show"){
             if($(this).prop("checked"))  $("#"+ target).show();
             else $("#"+ target).hide();
+            var cp=$(this).closest("tr").attr("exclusive");
+            if(typeof cp != "undefined"){
+                if($(this).prop("checked")){
+                    $("#"+ cp).hide();
+                    $('tr[target="'+ cp +'"]').find('input[target="show"]').prop("checked",false);
+                }
+            }
         }else if(prop == "value"){            
             $("#"+ target).text($(this).val());
             if($(this).closest("tr").hasClass("static-text")){
@@ -561,6 +807,7 @@ $(function(){
         $("#" + target).css("text-align",$(this).val());
     });
     $('select[name="align"').change(function(){
+        if($(this).closest("tr").hasClass("rssi-widget")) return rssiWidgetInput(this);
         calTextPosition($(this).closest("tr").attr("target"));
     });
 
@@ -600,6 +847,6 @@ $(function(){
         $("#lcd").width(parseInt($("#lcd-width").val()));
        $("#lcd").height(parseInt($("#lcd-height").val()));
     });
-    moveable($(".lcd-text, .rectangle-blocks"));
+    moveable($(".lcd-text, .rectangle-blocks, .rssi-bars"));
     initFileDrop();
 });

@@ -79,6 +79,7 @@ ArduinoGFX supports many TFT drivers. Hoever, it doesn't include touch panel dri
 # Difference between BrewPiLess
 
 - No OTA update, due to memory limitation
+    - For 8M+ variance, OTA **will** be supported
 - the filemanager is access at standard port
 - NO traditional I2C LCD support
 
@@ -110,4 +111,4 @@ The main screen and tapping area are all customizable. For example, display only
 ![Pill Information](doc/img/main_pill.jpg)
 
 # ESP32_17320S019N
-ESP32_17320S019N is an ESP32-S3 based device with 1.9 inch TFT 320x170 display. It's tiny and cute, but it doesn't equiped with touch screen. To wake up it from screen saving(display off) mode, push "Boot" button.
+ESP32_17320S019N is an ESP32-S3 based device with 1.9 inch TFT 320x170 display. It's tiny and cute, but it doesn't has touch panel. To wake up it from screen saving(display off) mode, push "Boot" button.

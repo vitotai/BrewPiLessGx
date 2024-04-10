@@ -106,6 +106,23 @@ input[type=number] {
 	border:0;
 	margin:0;
 }
+
+.rssi-bars {
+    position: absolute;
+    display: none;
+	z-index: 10;
+}
+
+.rssi-bar {
+    position: absolute;
+    bottom: 0;
+    float: left;
+    width: 4px;
+    border-radius: 1px;
+    background-color: #444;
+}
+
+
 </style>
 <body>
 <div class="container">
@@ -132,7 +149,7 @@ input[type=number] {
 			<span id="fs" class="bpl lcd-text font-s" >21.1</span>
 			<span id="rt" class="bpl lcd-text font-s" >33.2</span>
 			<span id="tu" class="bpl lcd-text font-s" >&deg;C</span>
-			<span id="rx" class="bpl lcd-text font-s" >-69</span>
+			<span id="rx" class="bpl lcd-text font-s" >-80</span>
 			<span id="lu" class="bpl lcd-text font-s" >12:30</span>
 			<span id="gt" class="bpl lcd-text font-s" >20.4</span>
 			<span id="grx" class="bpl lcd-text font-s">-46</span>
@@ -146,6 +163,21 @@ input[type=number] {
 			<span id="hn" class="bpl lcd-text font-s">Pill</span>
 
 			<span id="statictext-1" class="lcd-text font-s static-text"></span>
+
+			<div id="rx-wgt" class="rssi-bars">
+				<div class="rssi-bar rssi-bar1"></div>
+				<div class="rssi-bar rssi-bar2"></div>
+				<div class="rssi-bar rssi-bar3"></div>
+				<div class="rssi-bar rssi-bar4"></div>
+			</div>
+
+			<div id="grx-wgt" class="rssi-bars">
+				<div class="rssi-bar rssi-bar1"></div>
+				<div class="rssi-bar rssi-bar2"></div>
+				<div class="rssi-bar rssi-bar3"></div>
+				<div class="rssi-bar rssi-bar4"></div>
+			</div>
+
 		</div> <!-- LCD -->
 		<div id="coordinates" class="text-center">(0,0)</div>
 
@@ -636,7 +668,7 @@ input[type=number] {
 	</tr>
 	<!--  Item  End-->
 	<!--  Item  Begin-->
-	<tr target="rx" class="brewpi-item">
+	<tr target="rx" class="brewpi-item" exclusive="rx-wgt">
 		<td><input type="checkbox" target="show"></td>
 		<td>WiFi</td>
 		<td><input type="text" target="value"></td>
@@ -671,6 +703,35 @@ input[type=number] {
 		</td>
 	</tr>
 	<!--  Item  End-->
+	<!--  WiFi Widget-->
+	<tr target="rx-wgt" class="brewpi-item rssi-widget" exclusive="rx">
+		<td><input type="checkbox" target="show"></td>
+		<td>WiFi Widget</td>
+		<td><input type="text" target="value" value="-69"></td>	
+		<td><select name="align" target="align">
+				<option value="c">Center</option>
+				<option value="tl" selected>Top Left</option>
+				<option value="bl">Bottom Left</option>
+				<option value="lm">Left Middle</option>
+				<option value="tr">Top Right</option>
+				<option value="br">Bottom Right</option>
+				<option value="rm">Right Middle</option>
+		</select></td>
+	
+		<td><input type="number" target="posx"></td>
+		<td><input type="number" target="posy"></td>
+		<td><input type="text" target="width" value="16"></td>
+		<td><input type="text" target="height" value="16"></td>
+		<td>
+		BG:<input type="text" target="bg-color" size="8">
+		</td>
+		<td><input type="text" target="color" size="8"></td>
+		<td>
+		Shadow:<input type="text" target="shadow-color" size="8">
+		</td>
+	</tr>
+	<!--  Item  End-->
+
 	<!-- Wireless Hydrometer Items-->
 	<tr>
 		<td colspan="11">Wireless Hydrometer Items</td>
@@ -800,7 +861,7 @@ input[type=number] {
 	</tr>
 	<!--  Item  End-->
 	<!--  Item  Begin-->
-	<tr target="grx" class="brewpi-item">
+	<tr target="grx" class="brewpi-item" exclusive="grx-wgt">
 		<td><input type="checkbox" target="show"></td>
 		<td>RSSI</td>
 		<td><input type="text" target="value"></td>
@@ -835,7 +896,38 @@ input[type=number] {
 		</td>
 	</tr>
 	<!--  Item  End-->
-		<!--  Item  Begin-->
+
+	<!--  Item  Begin-->
+	<tr target="grx-wgt" class="brewpi-item rssi-widget" exclusive="grx">
+		<td><input type="checkbox" target="show"></td>
+		<td>RSSI Widget</td>
+		<td><input type="text" target="value" value="-69"></td>
+		
+			<td><select name="align" target="align">
+				<option value="c">Center</option>
+				<option value="tl" selected>Top Left</option>
+				<option value="bl">Bottom Left</option>
+				<option value="lm">Left Middle</option>
+				<option value="tr">Top Right</option>
+				<option value="br">Bottom Right</option>
+				<option value="rm">Right Middle</option>
+			</select></td>
+	
+			<td><input type="number" target="posx"></td>
+			<td><input type="number" target="posy"></td>
+			<td><input type="text" target="width" value="16"></td>
+			<td><input type="text" target="height" value="16"></td>
+			<td>
+			BG:<input type="text" target="bg-color" size="8">
+			</td>
+			<td><input type="text" target="color" size="8"></td>
+			<td>
+			Shadow:<input type="text" target="shadow-color" size="8">
+			</td>
+		</tr>
+	<!--  Item  End-->
+
+	<!--  Item  Begin-->
 		<tr target="tilt" class="brewpi-item">
 			<td><input type="checkbox" target="show"></td>
 			<td>Angle</td>
