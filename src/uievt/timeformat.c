@@ -7,7 +7,7 @@
 void formatTimePeriod(char* buffer,const char* fmt,unsigned long period){
     unsigned int minutes = period/60;
 	unsigned int hours = minutes/60;
-    minutes -= hours * 60;
+    if(hours > 0) minutes -= hours * 60;
 	unsigned int seconds = period%60;
 
     int i=0;

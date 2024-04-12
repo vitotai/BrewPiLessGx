@@ -44,6 +44,12 @@ extern lv_obj_t *ui_lbUpdate;
 extern lv_obj_t *ui_lbRssi;
 extern lv_obj_t *ui_lbWirelessHydrometer;
 
+//#if	EanbleParasiteTempControl
+extern lv_obj_t *ui_lbGlycolTemperature;
+extern lv_obj_t *ui_lbGlycolTempSet;
+extern lv_obj_t *ui_lbGlycolState;
+extern lv_obj_t *ui_lbGlycolElapsedTime;
+//#endif
 void ui_event_btnSetting( lv_event_t * e);
 extern lv_obj_t *ui_btnSetting;
 void ui_event_btnControl( lv_event_t * e);

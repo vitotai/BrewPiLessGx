@@ -11,6 +11,7 @@
 #include "PressureMonitor.h"
 #include "WiFiSetup.h"
 #include "TimeKeeper.h"
+#include "ParasiteTempController.h"
 
 #if SerialDebug == true
 #define DebugPort Serial
@@ -232,5 +233,28 @@ uint32_t bplGetGravityDeviceUpdateLocalTime(){
 extern const char *bplGetWirelessHydrometerName(){
     return externalData.getDeviceName();
 }
+
+
+//#if EanbleParasiteTempControl
+// glycol(parasiteTemperature)
+
+float bplGetGlycolTemperature(){
+    return parasiteTempController.getTemperature();
+}
+
+float bplGetGlycolSetTemp(){
+    return parasiteTempController.getSetTemperature();
+}
+
+uint8_t bplGetGlycolState(){
+    char state = parasiteTempController.getMode();
+    if(state == 'c') return 2;
+    if(state == 'i') return 1;
+    return 0;    
+}
+extern uint32_t bplGetGlycolElapsedTime(){
+    return parasiteTempController.getTimeElapsed();
+}
+//#endif
 
 #endif

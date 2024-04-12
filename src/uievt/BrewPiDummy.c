@@ -1,6 +1,6 @@
 
 #if SIMULATOR
-
+#include <stdlib.h>
 #include "lvgl.h"
 #include "BrewPiInterface.h"
 //#define SkinFileName "A:/skin-default324.json"
@@ -11,9 +11,23 @@ static float brewpi_beerset=20;
 
 static float brewpi_fridgeset=35;
 
+char bplGravityDeviceBatteryUint(){
+    return 'V';
+}
+const char *bplGetWirelessHydrometerName(){
+    return "iSpindel0001";
+}
+
+
+uint32_t getScreenSaverTime(void){
+    return 0;
+}
+uint32_t getSleepTimeout(void){
+    return 0; // in minutes
+}
 
 uint8_t getSkin(void){
-    return 1;
+    return 3;
 }
 
 float BrewPiGetBeerTemp(){ return 122.2;}
@@ -239,7 +253,9 @@ static WiFiListEntry testList[]={
 };
 
 void my_timer(lv_timer_t * timer){
-    scan_result_cb(testList,sizeof(testList)/sizeof(WiFiListEntry));
+    WiFiListEntry *retval=(WiFiListEntry *) malloc(sizeof(testList));
+    memcpy(retval,testList,sizeof(testList));
+    scan_result_cb(retval,sizeof(testList)/sizeof(WiFiListEntry));
 }
 
 
@@ -272,4 +288,19 @@ uint32_t convertIp(const char* ip){
 
     return result;
 }
+
+float bplGetGlycolTemperature(){
+    return 8.9;
+}
+float bplGetGlycolSetTemp(){
+    return 4.0;
+}
+uint8_t bplGetGlycolState(){
+    return 1;
+}
+
+uint32_t bplGetGlycolElapsedTime(){
+    return 59+3*60+60*60*3;
+}
+
 #endif

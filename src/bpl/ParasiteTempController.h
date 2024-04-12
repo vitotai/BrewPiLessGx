@@ -19,9 +19,13 @@ public:
     char getMode();
     uint32_t getTimeElapsed();
 
+    // the following interface are for web(JSON)
     int getTemp(){ return(int)(_currentTemp * 100.0);}
     int getLowerBound(){return(int)(_settings->setTemp * 100.0);}
     int getUpperBound(){return(int)(_settings->maxIdleTemp * 100.0);}
+
+    float getTemperature(){ return _currentTemp;}
+    float getSetTemperature(){return _settings->setTemp;}
 
     static Actuator *cooler;
 

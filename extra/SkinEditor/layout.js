@@ -183,11 +183,11 @@ function resetInput(){
 
     // clear rectangles
     var rtn=$("#input-table tr.rectangles").length;
-    $("#input-table tr.rtn:gt(1)").remove();
+    $("#input-table tr.rectangles:gt(0)").remove();
     for(var i=2;i<=rtn;i++){
         $("#rectangle-" + i).remove();
     }
-
+    $("#rectangle-1").width(0).height(0);
     $("#input-table tr.static-text").find('input[target="value"]').val('');
     $("#statictext-1").text('');
 }
