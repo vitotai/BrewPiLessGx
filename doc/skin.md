@@ -102,6 +102,10 @@ Note: keys are **case sensitive**.
 | ATT | **att** | text(number),% appended |
 | Pressure | **psi** | text(number) |
 | Wireless Hydrometer name | **hn** | text. For Pill and Tilt, it will be "Pill" and "Tile". |
+| Glycol Temperature | **glt** | text. |
+| Glycol Temperature Set | **glts** | text. |
+| Glycol Cooler state | **gls** | enumeration(text or icons). 0: Off, 1:Idle, 2: Cooling |
+| Glycol status time | **gle** | The time since last state changed. |
 
 ### B.1 Common style specifiers
 All the elements share the following common attributes, which defines the postion on screen. They are derived from CSS concept.
