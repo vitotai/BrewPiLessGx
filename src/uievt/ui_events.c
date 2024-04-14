@@ -72,6 +72,20 @@ IconOffset* stateIconOffsets;
 lv_obj_t *ui_imgGlycolState;
 IconOffset* glycolStateIconOffsets;
 
+#if EnableHumidityControlSupport
+const char* defaultHumidityControlStateString[]={
+"Off",
+"Idle",
+"Dehumidifying",
+"Humidifying"
+};
+
+
+lv_obj_t *ui_imgHumidityControlState;
+IconOffset* humidityControlStateIconOffsets;
+char** humidityControlStateString=(char**) defaultHumidityControlStateString;
+#endif
+
 #define RxLevelWidth 21
 #define RxLevelHeight 16
 
@@ -447,6 +461,26 @@ void	uiUpdateParasiteTempControl(){
 	}
 }
 //#endif
+
+#if EnableHumidityControlSupport
+static void setHumidityValue(lv_obj_t *widget,uint8_t value){
+	if(value>100) lv_label_set_text(widget,"--");
+	else lv_label_set_text_fmt(widget,"%d%%",value);
+} 
+void uiUpdateHumidityControl(){
+	if(ui_lbRoomHumidity) setHumidityValue(ui_lbRoomHumidity,bplGetRoomHumidity());
+	if(ui_lbChamberHumidity) setHumidityValue(ui_lbChamberHumidity,bplGetChamberHumidity());
+	if(ui_lbTargetHumidity) setHumidityValue(ui_lbTargetHumidity,bplGetTargetHumidity());
+	uint8_t state=bplGetHumidityControlState();
+
+	if(ui_lbHumidityControlState){
+		lv_label_set_text(ui_lbHumidityControlState,humidityControlStateString[state]);
+	}else if(ui_imgHumidityControlState && glycolStateIconOffsets){
+		lv_img_set_offset_x(ui_imgHumidityControlState,- humidityControlStateIconOffsets[state].x);
+		lv_img_set_offset_y(ui_imgHumidityControlState, -humidityControlStateIconOffsets[state].y);
+	}
+}
+#endif
 
 
 void userStopSaver(void){

@@ -39,6 +39,10 @@ extern "C" {
 #define JsonKey_GlycolState "gls"
 #define JsonKey_GlycolElaspedTime "gle"
 
+#define JsonKey_ChamberHumidity "hc"
+#define JsonKey_RoomHumidity "hr"
+#define JsonKey_TargetHumidity "ht"
+#define JsonKey_HumidityControlState "hs"
 
 #define JsonKey_ClickArea "click"
 #define JsonKey_TemperatureControl "tc"
@@ -125,7 +129,11 @@ extern lv_obj_t *ui_imgMode;
 extern lv_obj_t *ui_imgState;
 
 extern lv_obj_t *ui_imgGlycolState;
-
+#if EnableHumidityControlSupport
+extern lv_obj_t *ui_imgHumidityControlState;
+extern IconOffset* humidityControlStateIconOffsets;
+extern char** humidityControlStateString;
+#endif
 //extern char* modeIconPath;
 //extern char* stateIconPath;
 extern IconOffset* modeIconOffsets;

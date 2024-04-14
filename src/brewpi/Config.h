@@ -80,13 +80,21 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
+//////////////////////////////////////////////////////////////////////////
+#ifndef EnableHumidityControlSupport
+#define EnableHumidityControlSupport false
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 //
 // Enable humidity sensor
 //
 #ifndef EnableDHTSensorSupport
+#if EnableHumidityControlSupport
+#define EnableDHTSensorSupport true
+#else
 #define EnableDHTSensorSupport false
+#endif
 #endif
 //
 //////////////////////////////////////////////////////////////////////////
@@ -96,13 +104,13 @@
 // Enable humidity sensor
 //
 #ifndef EnableBME280Support
+#if EnableHumidityControlSupport
+#define EnableBME280Support false
+#else
 #define EnableBME280Support false
 #endif
-//
-//////////////////////////////////////////////////////////////////////////
-#ifndef EnableHumidityControlSupport
-#define EnableHumidityControlSupport false
 #endif
+//
 
 #if EnableHumidityControlSupport
 #if !EnableBME280Support && !EnableDHTSensorSupport

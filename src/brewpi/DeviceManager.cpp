@@ -57,9 +57,11 @@ WirelessTempSensor* WirelessTempSensor::theWirelessTempSensor=NULL;
 
 #if EnableDHTSensorSupport
 #include "HumidityControl.h"
+#include "TempSensorEnv.h"
+#endif
+#if EnableBME280Support
 #include "Bme280Sensor.h"
 #include "TempSensorEnv.h"
-
 #endif
 
 /*
@@ -341,8 +343,11 @@ void DeviceManager::uninstallDevice(DeviceConfig& config)
 		#if EnableDHTSensorSupport	 
 		case DEVICETYPE_ENVIRONMENT_SENSOR:
 			if (*ppv!=&nullEnvironmentSensor) {
+				#if EnableBME280Support
 				if( ((EnvironmentSensor*)*ppv)->sensorType() == SensorType_BME280)  delete (Bme280Sensor*)*ppv;
-				else delete (DHTSensor*)*ppv;
+				else 
+				#endif
+				delete (DHTSensor*)*ppv;
 				*ppv = &nullEnvironmentSensor;
 			}
 			break;

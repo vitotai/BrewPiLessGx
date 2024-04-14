@@ -91,6 +91,12 @@ extern uint8_t bplGetGlycolState();
 extern uint32_t bplGetGlycolElapsedTime();
 //#endif
 
+#if EnableHumidityControlSupport
+extern uint8_t bplGetRoomHumidity();
+extern uint8_t bplGetChamberHumidity();
+extern uint8_t bplGetTargetHumidity();
+extern uint8_t bplGetHumidityControlState();
+#endif
 #if 0 //SIMULATOR 
 struct tm {
 int tm_sec; 

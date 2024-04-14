@@ -12,6 +12,9 @@
 #include "WiFiSetup.h"
 #include "TimeKeeper.h"
 #include "ParasiteTempController.h"
+#if EnableHumidityControlSupport
+#include "HumidityControl.h"
+#endif
 
 #if SerialDebug == true
 #define DebugPort Serial
@@ -256,5 +259,35 @@ extern uint32_t bplGetGlycolElapsedTime(){
     return parasiteTempController.getTimeElapsed();
 }
 //#endif
+
+
+#if EnableHumidityControlSupport
+uint8_t bplGetRoomHumidity(){
+    return humidityControl.roomHumidity();
+}
+uint8_t bplGetChamberHumidity(){ 
+    return humidityControl.humidity();
+}
+
+uint8_t bplGetTargetHumidity(){
+    return humidityControl.targetRH();
+}
+
+uint8_t bplGetHumidityControlState(){
+    /*
+        0: Off
+        1: Idle
+        2: Dehumiditying
+        3: Humidifying
+    */
+   if(humidityControl.mode() == HC_ModeOff) return 0;
+   HumidityControlState state = humidityControl.state();
+   if(state == HC_Dehumidifying) return 2;
+   if(state == HC_Humidifying) return 3;
+   if(state == HC_Idle) return 1;
+   return 0;
+}
+
+#endif
 
 #endif

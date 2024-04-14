@@ -372,6 +372,14 @@ static const LabelItem labelItems[]={
    {JsonKey_WirelessHydrometerName,&ui_lbWirelessHydrometer},
    {JsonKey_GlycolTemperature,&ui_lbGlycolTemperature},
    {JsonKey_GlycolTemperatureSet,&ui_lbGlycolTempSet}
+
+#if EnableHumidityControlSupport
+    ,
+    {JsonKey_ChamberHumidity,&ui_lbChamberHumidity},
+    {JsonKey_RoomHumidity,&ui_lbRoomHumidity},
+    {JsonKey_TargetHumidity,&ui_lbTargetHumidity}
+#endif
+
 };
 
 typedef struct _EnumItem{
@@ -386,6 +394,9 @@ static const EnumItem enumItems[]={
     {JsonKey_Mode,&ui_lbMode,&ui_imgMode,&modeString,&modeIconOffsets,5},
     {JsonKey_State,&ui_lbState,&ui_imgState,&stateString,&stateIconOffsets,11},
     {JsonKey_GlycolState,&ui_lbGlycolState,&ui_imgGlycolState,&glycolStateString,&glycolStateIconOffsets,3}
+#if EnableHumidityControlSupport
+    ,{JsonKey_HumidityControlState,&ui_lbHumidityControlState,&ui_imgHumidityControlState,&humidityControlStateString,&humidityControlStateIconOffsets,4}
+#endif
 };
 typedef struct _TimeItem{
     const char *key;
@@ -445,8 +456,8 @@ static bool skinMainScreen(char* data){
             lv_obj_set_style_bg_img_src( ui_screenMain, img, LV_PART_MAIN | LV_STATE_DEFAULT );
         }else{
             //if image src is assigned to "file", the image would not be cached. 
-            lv_obj_t *img=lv_img_create(ui_screenMain);
-            lv_img_set_src(img,strdup(imgsrc));
+            lv_obj_t *nimg=lv_img_create(ui_screenMain);
+            lv_img_set_src(nimg,strdup(imgsrc));
             lv_obj_set_style_bg_img_src( ui_screenMain, img, LV_PART_MAIN | LV_STATE_DEFAULT );
         }
     }else{

@@ -50,6 +50,14 @@ extern lv_obj_t *ui_lbGlycolTempSet;
 extern lv_obj_t *ui_lbGlycolState;
 extern lv_obj_t *ui_lbGlycolElapsedTime;
 //#endif
+#if EnableHumidityControlSupport
+extern lv_obj_t *ui_lbHumidityControlState;
+extern lv_obj_t *ui_lbRoomHumidity;
+extern lv_obj_t *ui_lbChamberHumidity;
+extern lv_obj_t *ui_lbTargetHumidity;
+#endif
+
+
 void ui_event_btnSetting( lv_event_t * e);
 extern lv_obj_t *ui_btnSetting;
 void ui_event_btnControl( lv_event_t * e);

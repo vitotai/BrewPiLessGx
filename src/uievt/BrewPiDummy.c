@@ -157,6 +157,14 @@ float bplGetPressure(){
 }
 
 
+#if EnableHumidityControlSupport
+uint8_t bplGetRoomHumidity(){ return 0xFF;}
+uint8_t bplGetChamberHumidity(){ return 66;}
+uint8_t bplGetTargetHumidity(){ return 85; }
+uint8_t bplGetHumidityControlState(){ return 2;}
+#endif
+
+
 #define isspace(a) ((a)==' ' || (a) == '\t')
 #define isdigit(a) ((a)>='0' && (a)<='9')
 
