@@ -2,6 +2,8 @@
 
 BrewPiLessGx is [BrewPiLess](https://github.com/vitotai/BrewPiLess) running on ESP32_2432S032C, which is a ESP32 with a touch enabled TFT. Built on top of [lvgl](https://lvgl.io), flexbile display and touch based GUI are implemented.
 
+The main display is defined by [JSON format](doc/skin.md). There is a developing [tool](https://www.vito.tw/BrewPiLessGx/extra/SkinEditor) to help compiling the JSON file.
+
 # Update Note
 - 2024/04/14
     - Add Parasite(Glycol) temperature control display
@@ -64,6 +66,8 @@ Find out the pin usages/connections of your hardware. Give your platform a name.
 The pin definition is isolated from legacy `brewpi/Config.h`. Usually, at least two PINs are needed to make BrewPiLessGx work as a temperature controller: `oneWirePin` for temperature sensors and `actuatorPin1` for cooling or heating control. If there are more free PINs available, up to `actuatorPin6` can be defined. Don't define PINs that is not available/free.
 
 `PressureAdcPin` is for pressure trasductor, only PINs supports ADC(Analog to Digial Conversion) can be used. Add `-DSupportPressureTransducer=false` in `platformio.ini` if you don't use it.
+
+ADC2 is also used for WiFi and should be avoided. For ESP32S3, use GPIO1 ~ GPIO10, and GPIO32 ~ GPIO39 for ESP32, if available.
 
 ### /src/driver/lv_drv_conf.h
 This file defines screen Width and Height as well as the draw buffer size. Usually, only width and height will be changed. We are running out of memory, so don't oversize the buffer.
