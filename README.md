@@ -60,8 +60,8 @@ If more actuators are needed, DS2413 based one-wire relays might be an option.
 Most functionalities of BrewPiLess are supported, but due to limitation of the hardware not all of them are available.
 
 ## ESP32_17320S019N
-ESP32_17320S019N is an ESP32-S3 based device with 1.9 inch TFT 320x170 display. It's tiny and cute, but it doesn't has touch panel. To wake up it from screen saving(display off) mode, push "Boot" button.
-( I bought this as my first ESP32-S3 platform for cheap.)
+ESP32_17320S019N is an ESP32-S3 based device with 1.9 inch TFT 320x170 display. It's tiny and cute, but it doesn't has a touch panel. To wake up it from screen saving(display off) mode, push "Boot" button.
+( I bought this as my first ESP32-S3 platform for cheap. It is only for testing/verifying purpose.)
 
 ## WT-SC01 Plus
 - 320x480 16bit TFT, driven by ST7796UI
@@ -71,7 +71,7 @@ ESP32_17320S019N is an ESP32-S3 based device with 1.9 inch TFT 320x170 display. 
     - 11: OneWire, temperature sensors
     - 12, 13, 14, 21: actuators
 
-It's tricky to flash WT-SC01 Plus. Short GPIO 0(pin 6 of debug port) and Ground(pin 7 of debug port) **might** put the device in download mode. At least, it works for me at least one in three times. My device stays in **download mode** afte flashing. Press of the rest button in the back will result in normal boot-up.
+It's tricky to work with the WT-SC01 Plus. Short GPIO 0(pin 6 of debug port) and Ground(pin 7 of debug port) **might** put the device in download mode. At least, it works for me at least one in three times. My device stays in **download mode** afte flashing. Press of the rest button in the back will result in normal boot-up.
 
 # Custom Hardware
 There are so many difference hardware configurations that I can make it to support all of them. Even with the same driver IC, there might be different configurations. Without verification with the real devices, I won't declare that it is supported. The adpation is not diffucult if you can find the drivers for your hardware.
