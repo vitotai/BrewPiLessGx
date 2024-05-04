@@ -82,14 +82,14 @@ public:
       cfg.panel_height     =   TFT_HEIGHT;
       cfg.offset_x         =     0;
       cfg.offset_y         =     0;
-      cfg.offset_rotation  =     2;
+      cfg.offset_rotation  =     1;
       cfg.dummy_read_pixel =     8;
       cfg.dummy_read_bits  =     1;
-      cfg.readable         =  false;
+      cfg.readable         =  true;
       cfg.invert           = true;
       cfg.rgb_order        = false;
       cfg.dlen_16bit       = false;
-      cfg.bus_shared       = false;
+      cfg.bus_shared       = true;
 
       _panel_instance.config(cfg);
     }
@@ -117,7 +117,7 @@ public:
       cfg.bus_shared = true; 
       cfg.offset_rotation = 0;
 
-      cfg.i2c_port = 1;//I2C_NUM_1;
+      cfg.i2c_port = 0;
       cfg.i2c_addr = 0x38;
       cfg.pin_sda  = 6;   
       cfg.pin_scl  = 5;   

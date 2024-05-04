@@ -347,7 +347,7 @@ function djsonWgtStyle(tr,json){
     if(typeof json["h"] !="undefined" && json.h != "c") $(tr).find('input[target="height"]').val(json.h);
 
     if(typeof json["fc"] !="undefined") $(tr).find('input[target="color"]').val(json.fc);    
-    if(typeof json["bc"] !="undefined") $(tr).find('input[target="bg-color"]').val(json.bc);    
+    if(typeof json["bg"] !="undefined") $(tr).find('input[target="bg-color"]').val(json.bc);    
     if(typeof json["sc"] !="undefined") $(tr).find('input[target="shadow-color"]').val(json.sc);    
     $(tr).find('input[target="show"]').prop('checked',true);
 }
@@ -474,7 +474,7 @@ function getRssiJson(tr){
     var fc= $(tr).find('input[target="color"]').val();
     if(fc != "") json.fc = fc;
     var bc= $(tr).find('input[target="bg-color"]').val();
-    if(bc != "") json.bc = bc;
+    if(bc != "") json.bg = bc;
     var sc= $(tr).find('input[target="shadow-color"]').val();
     if(sc != "") json.sc = sc;
 

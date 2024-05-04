@@ -2,6 +2,9 @@
 #ifndef LV_DRV_CONF_H
 #define LV_DRV_CONF_H
 
+#ifndef TOUCH_INPUT_ENABLE 
+#define  TOUCH_INPUT_ENABLE true
+#endif
 
 // Display driver Configuration
 
@@ -11,7 +14,6 @@
 // size of lv_color_t
 // should be greater than 1/10 whole screen.
 #define LV_DRAW_BUFFER_SIZE (CONFIG_LVGL_DISPLAY_WIDTH * 10)
-
 #endif // WT32SC01PLUS
 
 
@@ -22,6 +24,8 @@
 // should be greater than 1/10 whole screen.
 #define LV_DRAW_BUFFER_SIZE (CONFIG_LVGL_DISPLAY_WIDTH * 10)
 
+#undef  TOUCH_INPUT_ENABLE 
+#define  TOUCH_INPUT_ENABLE false
 
 //#define TFT_PWM_CHANNEL_BL 0
 //#define TFT_PWM_FREQ_BL 2000
@@ -39,7 +43,7 @@
 
 
 // Touch driver
-#define  TOUCH_INPUT_ENABLE true
+//#define  TOUCH_INPUT_ENABLE true
  #define TOUCH_GT911_SCL 32
  #define TOUCH_GT911_SDA 33
  #define TOUCH_GT911_INT -1

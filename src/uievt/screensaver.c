@@ -203,8 +203,8 @@ void screenSaverInitDraw(void){
 
     clearBg();
 
-    uint16_t width = lv_obj_get_width(cui_canvasSaver);
-    uint16_t height = lv_obj_get_height(cui_canvasSaver);
+    uint16_t width = lv_obj_get_width(ui_screenMain);
+    uint16_t height = lv_obj_get_height(ui_screenMain);
     lv_color_t color;
     color.full= COLOR_INDEX_BUBBLE;
 

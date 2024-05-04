@@ -5,6 +5,10 @@ BrewPiLessGx is [BrewPiLess](https://github.com/vitotai/BrewPiLess) running on E
 The main display is defined by [JSON format](doc/skin.md). There is a developing [tool](https://www.vito.tw/BrewPiLessGx/extra/SkinEditor) to help compiling the JSON file.
 
 # Update Note
+- 2024/05/04
+    - WT_SC01Plus configuration
+    - screen saver issue
+    - use custom function for lv_mem_alloc/free
 - 2024/04/14
     - Add Parasite(Glycol) temperature control display
     - Add Humidity sensor/control option
@@ -40,6 +44,7 @@ The UI screens
     to view current settings, to enable/disable AP mode, an to connect to a WiFi network.
 
 # Hardware
+## Smart Display 24320S032C
 The hardware is a 3.2" smart display type 24320S032C, bought from [Aliexpress](https://www.aliexpress.com/item/1005005138982767.html).
 
 - 240x320 16bit TFT, driven by ILI9431
@@ -53,6 +58,20 @@ If more actuators are needed, DS2413 based one-wire relays might be an option.
 
 
 Most functionalities of BrewPiLess are supported, but due to limitation of the hardware not all of them are available.
+
+## ESP32_17320S019N
+ESP32_17320S019N is an ESP32-S3 based device with 1.9 inch TFT 320x170 display. It's tiny and cute, but it doesn't has touch panel. To wake up it from screen saving(display off) mode, push "Boot" button.
+( I bought this as my first ESP32-S3 platform for cheap.)
+
+## WT-SC01 Plus
+- 320x480 16bit TFT, driven by ST7796UI
+- Capative touch, FT6336U driver
+- 6 hardware pins available, they are
+    - 10: ADC for Pressure transducer
+    - 11: OneWire, temperature sensors
+    - 12, 13, 14, 21: actuators
+
+It's tricky to flash WT-SC01 Plus. Short GPIO 0(pin 6 of debug port) and Ground(pin 7 of debug port) **might** put the device in download mode. At least, it works for me at least one in three times. My device stays in **download mode** afte flashing. Press of the rest button in the back will result in normal boot-up.
 
 # Custom Hardware
 There are so many difference hardware configurations that I can make it to support all of them. Even with the same driver IC, there might be different configurations. Without verification with the real devices, I won't declare that it is supported. The adpation is not diffucult if you can find the drivers for your hardware.
@@ -118,5 +137,3 @@ The main screen and tapping area are all customizable. For example, display only
 
 ![Pill Information](doc/img/main_pill.jpg)
 
-# ESP32_17320S019N
-ESP32_17320S019N is an ESP32-S3 based device with 1.9 inch TFT 320x170 display. It's tiny and cute, but it doesn't has touch panel. To wake up it from screen saving(display off) mode, push "Boot" button.
