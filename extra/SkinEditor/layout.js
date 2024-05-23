@@ -473,8 +473,8 @@ function getRssiJson(tr){
     json.rep="wgt";
     var fc= $(tr).find('input[target="color"]').val();
     if(fc != "") json.fc = fc;
-    var bc= $(tr).find('input[target="bg-color"]').val();
-    if(bc != "") json.bg = bc;
+    var bg= $(tr).find('input[target="bg-color"]').val();
+    if(bg != "") json.bg = bg;
     var sc= $(tr).find('input[target="shadow-color"]').val();
     if(sc != "") json.sc = sc;
 
@@ -841,7 +841,7 @@ $(function(){
         var mouseY = event.pageY - $('#lcd').offset().top;
   
         // Update the content of the coordinates paragraph
-        $('#coordinates').text('(' + mouseX + ', ' + mouseY + ')');
+        $('#coordinates').text('(' + Math.floor(mouseX) + ', ' + mouseY + ')');
       });
     $(".lcd-dim").change(function(){
         $("#lcd").width(parseInt($("#lcd-width").val()));

@@ -5,6 +5,9 @@ BrewPiLessGx is [BrewPiLess](https://github.com/vitotai/BrewPiLess) running on E
 The main display is defined by [JSON format](doc/skin.md). There is a developing [tool](https://www.vito.tw/BrewPiLessGx/extra/SkinEditor) to help compiling the JSON file.
 
 # Update Note
+- 2024/05/24
+    - OTA support for 8M+ devices by using http://[ip or brewpiless.local]/update
+    - Update Skin Editor
 - 2024/05/04
     - WT_SC01Plus configuration
     - screen saver issue
@@ -105,8 +108,8 @@ ArduinoGFX supports many TFT drivers. Hoever, it doesn't include touch panel dri
 
 # Difference between BrewPiLess
 
-- No OTA update, due to memory limitation
-    - For 8M+ variance, OTA **will** be supported
+- OTA via AsyncElegantOTA library for 8M+ devices.
+    - http://[ip or brewpiless.local]/update
 - the filemanager is access at standard port
 - NO traditional I2C LCD support
 
