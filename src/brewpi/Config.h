@@ -80,21 +80,14 @@
 //
 //////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////
-#ifndef EnableHumidityControlSupport
-#define EnableHumidityControlSupport false
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 //
 // Enable humidity sensor
 //
+
 #ifndef EnableDHTSensorSupport
-#if EnableHumidityControlSupport
-#define EnableDHTSensorSupport true
-#else
 #define EnableDHTSensorSupport false
-#endif
 #endif
 //
 //////////////////////////////////////////////////////////////////////////
@@ -104,16 +97,20 @@
 // Enable humidity sensor
 //
 #ifndef EnableBME280Support
-#if EnableHumidityControlSupport
 #define EnableBME280Support false
-#else
-#define EnableBME280Support false
-#endif
 #endif
 //
+//////////////////////////////////////////////////////////////////////////
+
+
+#ifndef EnableHumidityControlSupport
+#if EnableBME280Support || EnableDHTSensorSupport || SupportBTHomeSensor
+#define EnableHumidityControlSupport true
+#endif
+#endif
 
 #if EnableHumidityControlSupport
-#if !EnableBME280Support && !EnableDHTSensorSupport
+#if !EnableBME280Support && !EnableDHTSensorSupport && !SupportBTHomeSensor
 #error "Humidity Sesonr is needed to support Humidity Control"
 #endif
 #else
@@ -121,7 +118,8 @@
 #define EnableDHTSensorSupport false
 #undef EnableBME280Support 
 #define EnableBME280Support false
-
+#undef SupportBTHomeSensor
+#define SupportBTHomeSensor false
 #endif
 
 //////////////////////////////////////////////////////////////////////////

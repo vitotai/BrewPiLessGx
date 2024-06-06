@@ -2094,7 +2094,7 @@ void setup(void){
 	#endif
 
 #if SupportBleHydrometer
-	bleListener.begin();
+	bleScanner.begin();
 #endif
 
 #if EanbleParasiteTempControl
@@ -2220,7 +2220,7 @@ ArduinoOTA.handle();
 	#endif
 	
 	#if SupportBleHydrometer
-	bleListener.loop();
+	bleScanner.loop();
 	#endif
 
 	#if EnableHumidityControlSupport

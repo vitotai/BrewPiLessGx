@@ -125,15 +125,11 @@ public:
     
     uint8_t mode(){
         return _cfg->mode;
-    }
-    
-    HumidityControlState state(){
-        return _state;
+        modeChanged();
     }
 
     void setMode(uint8_t mode){
         _cfg->mode = mode;
-        modeChanged();
     }    
     
     uint8_t targetRH(){
@@ -185,6 +181,9 @@ public:
         }else {
             _mode = _cfg->mode;
         }
+    }
+    HumidityControlState state(void){
+        return _state;
     }
 private:
     void _startHumidifying(){

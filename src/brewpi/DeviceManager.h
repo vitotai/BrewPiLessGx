@@ -94,6 +94,10 @@ inline bool isAssignable(DeviceType type, DeviceHardware hardware)
 	|| (hardware==DEVICE_HARDWARE_ENVIRONMENT_TEMP && type==DEVICETYPE_TEMP_SENSOR)
 	|| (hardware==DEVICE_HARDWARE_BME280 && type == DEVICETYPE_ENVIRONMENT_SENSOR)
 #endif
+#if SupportBTHomeSensor	
+	|| (hardware==DEVICE_HARDWARE_BTHOME_HUMIDITY && type == DEVICETYPE_ENVIRONMENT_SENSOR)
+	|| (hardware==DEVICE_HARDWARE_BTHOME_THERMOMETER && type == DEVICETYPE_TEMP_SENSOR)
+#endif
 	|| (hardware==DEVICE_HARDWARE_ONEWIRE_TEMP && type==DEVICETYPE_TEMP_SENSOR)
 	|| (hardware==DEVICE_HARDWARE_NONE && type==DEVICETYPE_NONE);
 }
@@ -133,6 +137,14 @@ inline bool isBME280(DeviceHardware hardware) {
 
 #endif
 
+#if SupportBTHomeSensor
+inline bool isBTHomeSensorHumidity(DeviceHardware hardware) {
+	return hardware == DEVICE_HARDWARE_BTHOME_HUMIDITY;
+}
+inline bool isBTHomeThermometer(DeviceHardware hardware) {
+	return hardware == DEVICE_HARDWARE_BTHOME_THERMOMETER;
+}
+#endif
 /**
  * Determines where this devices belongs.
  */
@@ -325,6 +337,9 @@ private:
 	#endif
 	#if EnableBME280Support
 	static void enumerateBME280(EnumerateHardware& h, EnumDevicesCallback callback, DeviceOutput& output);
+	#endif
+	#if SupportBTHomeSensor
+	static void enumerateBTHomeSensor(EnumerateHardware& h, EnumDevicesCallback callback, DeviceOutput& output);
 	#endif
 	#if BREWPI_EXTERNAL_SENSOR //vito: enumerate device
 	static void enumerateExternalDevices(EnumerateHardware& h, EnumDevicesCallback callback, DeviceOutput& output);

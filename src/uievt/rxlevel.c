@@ -76,7 +76,7 @@ rxlevel_widget *lv_rxlevel_create(lv_obj_t *parent,uint16_t width,uint16_t heigh
     lv_canvas_set_buffer(canvas, widget->buffer, width, height, LV_IMG_CF_INDEXED_2BIT);
     lv_canvas_set_palette(canvas,COLOR_INDEX_BACKGROUND,lv_color_black());
     lv_canvas_set_palette(canvas,COLOR_INDEX_WHITE,lv_color_white());
-    lv_canvas_set_palette(canvas,COLOR_INDEX_GREY,lv_color_make(0x08,0x08,0x08));
+    lv_canvas_set_palette(canvas,COLOR_INDEX_GREY,lv_color_make(0x04,0x04,0x04));
     lv_canvas_set_palette(canvas,COLOR_INDEX_RED,lv_color_make(0xFF,0x33,0x33));
 
     return widget;

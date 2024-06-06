@@ -103,10 +103,11 @@ enum DeviceHardware {
 	DEVICE_HARDWARE_ENVIRONMENT_TEMP = 6, 
 //#endif
 //#if EnableBME280Support
-	DEVICE_HARDWARE_BME280 = 7
+	DEVICE_HARDWARE_BME280 = 7,
 //#endif
+	DEVICE_HARDWARE_BTHOME_HUMIDITY =8,
+	DEVICE_HARDWARE_BTHOME_THERMOMETER = 9
 };
-
 
 /*
 * A union of all device types.
