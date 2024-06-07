@@ -57,6 +57,9 @@ extern lv_obj_t *ui_lbChamberHumidity;
 extern lv_obj_t *ui_lbTargetHumidity;
 #endif
 
+extern lv_obj_t *ui_lbGravityChange;
+extern lv_obj_t *ui_lbGravityChange12H;
+extern lv_obj_t *ui_lbGravityChange6H;
 
 void ui_event_btnSetting( lv_event_t * e);
 extern lv_obj_t *ui_btnSetting;

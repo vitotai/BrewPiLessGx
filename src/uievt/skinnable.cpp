@@ -371,8 +371,10 @@ static const LabelItem labelItems[]={
    {JsonKey_Pressure,&ui_lbPressure},
    {JsonKey_WirelessHydrometerName,&ui_lbWirelessHydrometer},
    {JsonKey_GlycolTemperature,&ui_lbGlycolTemperature},
-   {JsonKey_GlycolTemperatureSet,&ui_lbGlycolTempSet}
-
+   {JsonKey_GlycolTemperatureSet,&ui_lbGlycolTempSet},
+   {JsonKey_GravityChange,&ui_lbGravityChange},
+   {JsonKey_GravityChange12H,&ui_lbGravityChange12H},
+   {JsonKey_GravityChange6H,&ui_lbGravityChange6H}
 #if EnableHumidityControlSupport
     ,
     {JsonKey_ChamberHumidity,&ui_lbChamberHumidity},

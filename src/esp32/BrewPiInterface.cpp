@@ -12,6 +12,7 @@
 #include "WiFiSetup.h"
 #include "TimeKeeper.h"
 #include "ParasiteTempController.h"
+#include "GravityTracker.h"
 #if EnableHumidityControlSupport
 #include "HumidityControl.h"
 #endif
@@ -255,11 +256,21 @@ uint8_t bplGetGlycolState(){
     if(state == 'i') return 1;
     return 0;    
 }
-extern uint32_t bplGetGlycolElapsedTime(){
+uint32_t bplGetGlycolElapsedTime(){
     return parasiteTempController.getTimeElapsed();
 }
 //#endif
 
+
+float bplGetGravityDecreasedIn(int hour){
+    int value=gravityTracker.gravityDecreasedIn(hour);
+    if( value == InvalidGravityChangeValue){
+        // return an invalid value
+        return InvalidGravityDecreasedValue;
+    }
+
+    return ((float) value) /10.0;
+}
 
 #if EnableHumidityControlSupport
 uint8_t bplGetRoomHumidity(){

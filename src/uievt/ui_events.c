@@ -128,7 +128,7 @@ void uiUpdateGravityDeviceWiFiStatus();
 void uiUpdateWirelessHydrometerName();
 void uiUpdateGravityDevice();
 void uiUpdatePressure();
-
+void uiUpdateGravityChange();
 //#if	EanbleParasiteTempControl
 void	uiUpdateParasiteTempControl();
 //#endif
@@ -176,7 +176,7 @@ void updateBrewPiInfo(void){
 //#if	EanbleParasiteTempControl
 	uiUpdateParasiteTempControl();
 //#endif
-
+	uiUpdateGravityChange();
 #if EnableHumidityControlSupport
 	uiUpdateHumidityControl();
 #endif
@@ -434,6 +434,24 @@ void uiUpdatePressure(){
 	}
 }
 
+static setGravityChangeValue(lv_obj_t* obj,int hour){
+	float value = bplGetGravityDecreasedIn(hour);
+	if(IsGravityDecreasedValueValid(value)){
+		//lv_label_set_text_fmt(obj,"%.1f",value);
+		char buffer[32];
+		sprintFloat(buffer,value,1);
+		lv_label_set_text(obj,buffer);
+	}else{
+		lv_label_set_text(obj,"--");
+	}
+}
+
+void uiUpdateGravityChange(){
+	if(ui_lbGravityChange) setGravityChangeValue(ui_lbGravityChange,24);
+	if(ui_lbGravityChange12H) setGravityChangeValue(ui_lbGravityChange12H,12);
+	if(ui_lbGravityChange6H) setGravityChangeValue(ui_lbGravityChange6H,6);
+}
+
 //#if	EanbleParasiteTempControl
 void	uiUpdateParasiteTempControl(){
 	if(ui_lbGlycolTemperature) setTemperatureValue(ui_lbGlycolTemperature,bplGetGlycolTemperature());
@@ -534,7 +552,7 @@ void onMainScreenLoadStart(lv_event_t * e)
 //#if	EanbleParasiteTempControl
 	uiUpdateParasiteTempControl();
 //#endif
-
+	uiUpdateGravityChange();
 #if EnableHumidityControlSupport
 	uiUpdateHumidityControl();
 #endif

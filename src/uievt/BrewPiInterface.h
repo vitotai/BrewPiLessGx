@@ -90,6 +90,10 @@ extern float bplGetGlycolSetTemp();
 extern uint8_t bplGetGlycolState();
 extern uint32_t bplGetGlycolElapsedTime();
 //#endif
+#define InvalidGravityDecreasedValue -10000.0
+#define IsGravityDecreasedValueValid(g) (g)>-10000.0
+
+extern float bplGetGravityDecreasedIn(int hour);
 
 #if EnableHumidityControlSupport
 extern uint8_t bplGetRoomHumidity();

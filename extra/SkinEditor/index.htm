@@ -177,6 +177,10 @@ input[type=number] {
 			<span id="ht" class="bpl lcd-text font-s">55%</span>
 			<span id="hs" class="bpl lcd-text font-s">Idle</span>
 
+			<span id="gc" class="bpl lcd-text font-s">2.9</span>
+			<span id="gch" class="bpl lcd-text font-s">1.4</span>
+			<span id="gc6" class="bpl lcd-text font-s">0.7</span>
+
 			<span id="statictext-1" class="lcd-text font-s static-text"></span>
 
 			<div id="rx-wgt" class="rssi-bars">
@@ -1118,6 +1122,8 @@ input[type=number] {
 			</td>
 		</tr>
 		<!--  Item  End-->
+
+
 		<!--  Item  Begin-->
 		<tr target="att" class="brewpi-item">
 			<td><input type="checkbox" target="show"></td>
@@ -1154,6 +1160,117 @@ input[type=number] {
 			</td>
 		</tr>
 		<!--  Item  End-->
+
+		<!--  Item  Begin-->
+		<tr target="gc" class="brewpi-item">
+			<td><input type="checkbox" target="show"></td>
+			<td>Gravity Change</td>
+			<td><input type="text" target="value"></td>
+			
+				<td><select name="align" target="align">
+					<option value="c">Center</option>
+					<option value="tl" selected>Top Left</option>
+					<option value="bl">Bottom Left</option>
+					<option value="lm">Left Middle</option>
+					<option value="tr">Top Right</option>
+					<option value="br">Bottom Right</option>
+					<option value="rm">Right Middle</option>
+				</select></td>
+		
+			<td><input type="number" target="posx"></td>
+			<td><input type="number" target="posy"></td>
+			<td><input type="text" target="width"></td>
+			<td><input type="text" target="height"></td>
+			<td><select name="font" target="font">
+				<option value="s">Small</option>
+				<option value="m">Medium</option>
+				<option value="l">Large</option>
+				<option value="x">X-Large</option>
+			</select></td>
+			<td><input type="text" target="color" size="8"></td>
+			<td>
+				<select name="text-align" target="text-align">
+					<option value="left">Left</option>
+					<option value="right">Right</option>
+					<option value="center">Center</option>
+				</select>	
+			</td>
+		</tr>
+		<!--  Item  End-->
+		<!--  Item  Begin-->
+		<tr target="gch" class="brewpi-item">
+			<td><input type="checkbox" target="show"></td>
+			<td>Gravity Change 12H</td>
+			<td><input type="text" target="value"></td>
+			
+				<td><select name="align" target="align">
+					<option value="c">Center</option>
+					<option value="tl" selected>Top Left</option>
+					<option value="bl">Bottom Left</option>
+					<option value="lm">Left Middle</option>
+					<option value="tr">Top Right</option>
+					<option value="br">Bottom Right</option>
+					<option value="rm">Right Middle</option>
+				</select></td>
+		
+			<td><input type="number" target="posx"></td>
+			<td><input type="number" target="posy"></td>
+			<td><input type="text" target="width"></td>
+			<td><input type="text" target="height"></td>
+			<td><select name="font" target="font">
+				<option value="s">Small</option>
+				<option value="m">Medium</option>
+				<option value="l">Large</option>
+				<option value="x">X-Large</option>
+			</select></td>
+			<td><input type="text" target="color" size="8"></td>
+			<td>
+				<select name="text-align" target="text-align">
+					<option value="left">Left</option>
+					<option value="right">Right</option>
+					<option value="center">Center</option>
+				</select>	
+			</td>
+		</tr>
+		<!--  Item  End-->
+		<!--  Item  Begin-->
+		<tr target="gc6" class="brewpi-item">
+			<td><input type="checkbox" target="show"></td>
+			<td>Gravity Change 6H</td>
+			<td><input type="text" target="value"></td>
+			
+				<td><select name="align" target="align">
+					<option value="c">Center</option>
+					<option value="tl" selected>Top Left</option>
+					<option value="bl">Bottom Left</option>
+					<option value="lm">Left Middle</option>
+					<option value="tr">Top Right</option>
+					<option value="br">Bottom Right</option>
+					<option value="rm">Right Middle</option>
+				</select></td>
+		
+			<td><input type="number" target="posx"></td>
+			<td><input type="number" target="posy"></td>
+			<td><input type="text" target="width"></td>
+			<td><input type="text" target="height"></td>
+			<td><select name="font" target="font">
+				<option value="s">Small</option>
+				<option value="m">Medium</option>
+				<option value="l">Large</option>
+				<option value="x">X-Large</option>
+			</select></td>
+			<td><input type="text" target="color" size="8"></td>
+			<td>
+				<select name="text-align" target="text-align">
+					<option value="left">Left</option>
+					<option value="right">Right</option>
+					<option value="center">Center</option>
+				</select>	
+			</td>
+		</tr>
+		<!--  Item  End-->
+
+
 		<!--  Item  Begin-->
 		<tr target="psi" class="brewpi-item">
 			<td><input type="checkbox" target="show"></td>

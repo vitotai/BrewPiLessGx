@@ -110,6 +110,9 @@ Note: keys are **case sensitive**.
 | Room Humidity* | **hr** | text(number), Room Humidity, % |
 | Target Humidity* | **ht** | text(number), Target chamber Humidity, % |
 | Humidity Control State* | **hs** |  enumeration(text or icons), state of humidity control. 0: Off, 1: Idle, 2: Dehumidifying, 3: Humidifying  |
+| Gravity Change | **gc** | Gravity change(decresing) in 24 hours. 1 represents 1 pont(0.001) for SG. |
+| Gravity Change 12H | **gch** | Gravity change(decresing) in a half day or 12 hours. 1 represents 1 pont(0.001) for SG. |
+| Gravity Change 6H | **gc6** | Gravity change(decresing) in 6 hours. 1 represents 1 pont(0.001) for SG. |
 
 - * Humidity related information is optional.
 

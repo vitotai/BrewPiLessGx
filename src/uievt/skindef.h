@@ -50,6 +50,9 @@ extern "C" {
 #define JsonKey_InputGravit "ig"
 #define JsonKey_InputOriginalGravity "iog"
 
+#define JsonKey_GravityChange "gc"
+#define JsonKey_GravityChange12H "gch"
+#define JsonKey_GravityChange6H "gc6"
 // properties
 #define POS_x "x"
 #define POS_y "y"
