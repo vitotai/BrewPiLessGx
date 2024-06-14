@@ -3,8 +3,14 @@
 BrewPiLessGx is [BrewPiLess](https://github.com/vitotai/BrewPiLess) running on ESP32_2432S032C, which is a ESP32 with a touch enabled TFT. Built on top of [lvgl](https://lvgl.io), flexbile display and touch based GUI are implemented.
 
 The main display is defined by [JSON format](doc/skin.md). There is a developing [tool](https://www.vito.tw/BrewPiLessGx/extra/SkinEditor) to help compiling the JSON file.
+# Known Issue:
+- BLE stops working. The controller might crash when scanning is triggered.
+    -  It's a fixed bug in newer framework, but [another bug]( https://github.com/espressif/arduino-esp32/issues/8976) stop me from upgrading.
 
 # Update Note
+- 2024/06/10
+    - Bluetooth/BLE themometer(BTHome, ATC1441, and PVVX) support. (Default disable because it rises the chance of a known bug.)
+    - Display gravity changes(decreasing) in 24H/12H/6H 
 - 2024/05/24
     - OTA support for 8M+ devices by using http://[ip or brewpiless.local]/update
     - Update Skin Editor
@@ -37,6 +43,15 @@ The main display is defined by [JSON format](doc/skin.md). There is a developing
 - Customized display. Display information you need.
     - Two built-in skin available. one for simple BrewPi information, and the other have all available information.
     - It can be configured to show only hydrometer information, thus used as a iSpindel, Pill ,or Tilt reapeater.
+
+## Bluetooth/BLE Themometer/humidity Sensor
+
+BTHome, ATC1441, and Pvvx Custom format are supported, whilt ATC1441 and Pvvx work better than BTHome.
+
+https://github.com/pvvx/ATC_MiThermometer
+
+Given the fact that the information is not broadcasted all the time, scanning might fail once or more times. If the BLE thermometer is
+to be used as chamber thermometer, ATC1441 and PVVX might be better choices. My Mi Thermometer set to broadcast in BTHome format broadcast battery status alternatively, which results in no reception of temperature reading over a minute. 
 
 # Screen
 The UI screens

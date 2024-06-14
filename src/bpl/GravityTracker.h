@@ -63,7 +63,7 @@ public:
             if(previous >= NumberOfSlots) previous -= NumberOfSlots;
         }
 
-        DBG_PRINTF("Gravidty duration %d, previous:%d @ %d, current:%d @%d\n",duration,_record[previous],previous,_record[current],current);
+        //DBG_PRINTF("Gravidty duration %d, previous:%d @ %d, current:%d @%d\n",duration,_record[previous],previous,_record[current],current);
 
         return _record[previous] - _record[current];
     }

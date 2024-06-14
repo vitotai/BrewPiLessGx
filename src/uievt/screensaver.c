@@ -106,6 +106,7 @@ void screenSaver_create(lv_obj_t *parent){
 void delay_sleep(void *timer){
 	(void) timer;
 	display_drv_sleep();
+    isTftSleeping=true;
 }
 
 void periodic_timer_handler(lv_timer_t *timer){
