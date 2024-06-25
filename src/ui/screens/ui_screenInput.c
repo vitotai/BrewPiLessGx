@@ -13,9 +13,9 @@ lv_obj_clear_flag( ui_screenInput, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
 ui_kbInput = lv_keyboard_create(ui_screenInput);
 lv_obj_set_height( ui_kbInput, 120);
 lv_obj_set_width( ui_kbInput, lv_pct(100));
-lv_obj_set_x( ui_kbInput, 0 );
-lv_obj_set_y( ui_kbInput, 50 );
-lv_obj_set_align( ui_kbInput, LV_ALIGN_CENTER );
+//lv_obj_set_x( ui_kbInput, 0 );
+//lv_obj_set_y( ui_kbInput, 0 );
+lv_obj_set_align( ui_kbInput, LV_ALIGN_BOTTOM_MID );
 
 ui_lbInputLabel = lv_label_create(ui_screenInput);
 lv_obj_set_width( ui_lbInputLabel, LV_SIZE_CONTENT);  /// 1

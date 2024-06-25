@@ -85,9 +85,9 @@ Note: keys are **case sensitive**.
 | Status time | **st** | text(time) |
 | Beer Temperature| **bt** | text(number) |
 | Beer Set|  **bs** | text(number) |
-|Fridge Temperature| **ft** | text(number) |
-|Fridge Set | **fs** | text(number) |
-|Room Tempperature | **rt** | text(number)|
+| Fridge Temperature| **ft** | text(number) |
+| Fridge Set | **fs** | text(number) |
+| Room Tempperature | **rt** | text(number)|
 | Temperature Unit | **tu** | text, &deg;C or &deg;F |
 | WiFi RSSI | **rx** | text or widget |
 | Hydrometer related items | |
@@ -102,6 +102,16 @@ Note: keys are **case sensitive**.
 | ATT | **att** | text(number),% appended |
 | Pressure | **psi** | text(number) |
 | Wireless Hydrometer name | **hn** | text. For Pill and Tilt, it will be "Pill" and "Tile". |
+| Glycol Temperature | **glt** | text. |
+| Glycol Temperature Set | **glts** | text. |
+| Glycol Cooler state | **gls** | enumeration(text or icons). 0: Off, 1:Idle, 2: Cooling |
+| Glycol status time | **gle** | The time since last state changed. |
+| Chamber Humidity* | **hc** | text(number), Chamber Humidity, % |
+| Room Humidity* | **hr** | text(number), Room Humidity, % |
+| Target Humidity* | **ht** | text(number), Target chamber Humidity, % |
+| Humidity Control State* | **hs** |  enumeration(text or icons), state of humidity control. 0: Off, 1: Idle, 2: Dehumidifying, 3: Humidifying  |
+
+- * Humidity related information is optional.
 
 ### B.1 Common style specifiers
 All the elements share the following common attributes, which defines the postion on screen. They are derived from CSS concept.

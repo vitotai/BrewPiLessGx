@@ -350,6 +350,78 @@ static lv_obj_t *constructRectangleBlock(const JsonObject& json){
     assignCommonStyles(lvobj,json);
     return lvobj;
 }
+typedef struct _LabelItem{
+    const char *key;
+    lv_obj_t **widget;
+}LabelItem;
+static const LabelItem labelItems[]={
+   {JsonKey_BeerTemp,&ui_lbBeer},
+   {JsonKey_BeerSet,&ui_lbBeerSet},
+   {JsonKey_FridgeTemp,&ui_lbFridge},
+   {JsonKey_FridgeSet,&ui_lbFridgeSet},
+   {JsonKey_RoomTemp,&ui_lbRoom},
+   {JsonKey_TemperatureUnit,&ui_lbDegree},
+   {JsonKey_GDTemperature,&ui_lbISpindelTemp},
+   {JsonKey_GDAngle,&ui_lbAngle},
+   {JsonKey_GDBattery,&ui_lbISpindelBat},
+   {JsonKey_OriginalGravity,&ui_lbOg},
+   {JsonKey_ABV,&ui_lbAbv},
+   {JsonKey_ATT,&ui_lbAtt},
+   {JsonKey_Gravity,&ui_lbGravity},
+   {JsonKey_Pressure,&ui_lbPressure},
+   {JsonKey_WirelessHydrometerName,&ui_lbWirelessHydrometer},
+   {JsonKey_GlycolTemperature,&ui_lbGlycolTemperature},
+   {JsonKey_GlycolTemperatureSet,&ui_lbGlycolTempSet}
+
+#if EnableHumidityControlSupport
+    ,
+    {JsonKey_ChamberHumidity,&ui_lbChamberHumidity},
+    {JsonKey_RoomHumidity,&ui_lbRoomHumidity},
+    {JsonKey_TargetHumidity,&ui_lbTargetHumidity}
+#endif
+
+};
+
+typedef struct _EnumItem{
+    const char *key;
+    lv_obj_t **labelWidget;
+    lv_obj_t **imageWidget;
+    char ***stringlist_p;
+    IconOffset **iconoff;
+    uint8_t    numberOfValue;
+}EnumItem;
+static const EnumItem enumItems[]={
+    {JsonKey_Mode,&ui_lbMode,&ui_imgMode,&modeString,&modeIconOffsets,5},
+    {JsonKey_State,&ui_lbState,&ui_imgState,&stateString,&stateIconOffsets,11},
+    {JsonKey_GlycolState,&ui_lbGlycolState,&ui_imgGlycolState,&glycolStateString,&glycolStateIconOffsets,3}
+#if EnableHumidityControlSupport
+    ,{JsonKey_HumidityControlState,&ui_lbHumidityControlState,&ui_imgHumidityControlState,&humidityControlStateString,&humidityControlStateIconOffsets,4}
+#endif
+};
+typedef struct _TimeItem{
+    const char *key;
+    lv_obj_t **labelWidget;
+    char **format;
+}TimeItem;
+
+static const TimeItem timeItems[]={
+{JsonKey_GDUpdate,&ui_lbUpdate,&gravityDeviceUpdateTimeFormat},
+{JsonKey_StatusTime,&ui_lbStatusTime,&statusTimeFormat},
+{JsonKey_GlycolElaspedTime,&ui_lbGlycolElapsedTime,&glycolTimeFormat}
+};
+
+typedef struct _ClickArea{
+    const char *key;
+    lv_obj_t **lvobj;
+    void (*evcb)(lv_event_t*);
+}ClickArea;
+
+static const ClickArea clickAreas[]={
+{JsonKey_TemperatureControl,&ui_btnControl,&ui_event_btnControl},
+{JsonKey_Settings,&ui_btnSetting,&ui_event_btnSetting},
+{JsonKey_InputGravit,&ui_btnGravity,&ui_event_btnGravity},
+{JsonKey_InputOriginalGravity,&ui_btnOriginalGravity,&ui_event_btnOriginalGravity}
+};
 
 static bool skinMainScreen(char* data){
 
@@ -384,13 +456,15 @@ static bool skinMainScreen(char* data){
             lv_obj_set_style_bg_img_src( ui_screenMain, img, LV_PART_MAIN | LV_STATE_DEFAULT );
         }else{
             //if image src is assigned to "file", the image would not be cached. 
-            lv_obj_t *img=lv_img_create(ui_screenMain);
-            lv_img_set_src(img,strdup(imgsrc));
+            lv_obj_t *nimg=lv_img_create(ui_screenMain);
+            lv_img_set_src(nimg,strdup(imgsrc));
             lv_obj_set_style_bg_img_src( ui_screenMain, img, LV_PART_MAIN | LV_STATE_DEFAULT );
         }
     }else{
         lv_obj_set_style_bg_color(ui_screenMain,lv_color_black(),0);
     }
+    
+    // control screen
     if(root.containsKey(JsonKey_ControlLabelImage)){
         const char *imgsrc=root[JsonKey_ControlLabelImage].as<const char*>();
         const lv_img_dsc_t *img=getEmbeddedImage(imgsrc);
@@ -401,6 +475,7 @@ static bool skinMainScreen(char* data){
         }
     }
 
+    // setting screen
     if(root.containsKey(JsonKey_SettingLabelImage)){
         const char *imgsrc=root[JsonKey_SettingLabelImage].as<const char*>();
         const lv_img_dsc_t *img=getEmbeddedImage(imgsrc);
@@ -461,51 +536,26 @@ static bool skinMainScreen(char* data){
     }
 
 
-
     //6. widgets, items
-    if(root.containsKey(JsonKey_BeerTemp)){
-        constructTextItem(&ui_lbBeer,root[JsonKey_BeerTemp]);
+    for(int idx=0;idx<sizeof(labelItems)/sizeof(LabelItem);idx++){
+        if(root.containsKey(labelItems[idx].key)){
+            constructTextItem(labelItems[idx].widget,root[labelItems[idx].key]);
+        }
     }
-    if(root.containsKey(JsonKey_BeerSet)){
-        constructTextItem(&ui_lbBeerSet,root[JsonKey_BeerSet]);
+    
+    for(int idx=0;idx<sizeof(enumItems)/sizeof(EnumItem);idx++){
+        if(root.containsKey(enumItems[idx].key)){
+            constructEnumTypeWidget(enumItems[idx].labelWidget,enumItems[idx].stringlist_p,enumItems[idx].imageWidget
+                ,enumItems[idx].iconoff,enumItems[idx].numberOfValue,root[enumItems[idx].key]);
+       }
     }
-    if(root.containsKey(JsonKey_FridgeTemp)){
-        constructTextItem(&ui_lbFridge,root[JsonKey_FridgeTemp]);
+    
+    for(int idx=0;idx<sizeof(timeItems)/sizeof(TimeItem);idx++){
+        if(root.containsKey(timeItems[idx].key)){
+            constructTimeWidget(timeItems[idx].labelWidget,timeItems[idx].format,root[timeItems[idx].key]);
+        }
     }
-    if(root.containsKey(JsonKey_FridgeSet)){
-        constructTextItem(&ui_lbFridgeSet,root[JsonKey_FridgeSet]);
-    }
-    if(root.containsKey(JsonKey_RoomTemp)){
-        constructTextItem(&ui_lbRoom,root[JsonKey_RoomTemp]);
-    }
-    if(root.containsKey(JsonKey_TemperatureUnit)){
-        constructTextItem(&ui_lbDegree,root[JsonKey_TemperatureUnit]);
-    }
-    if(root.containsKey(JsonKey_GDTemperature)){
-        constructTextItem(&ui_lbISpindelTemp,root[JsonKey_GDTemperature]);
-    }
-    if(root.containsKey(JsonKey_GDAngle)){
-        constructTextItem(&ui_lbAngle,root[JsonKey_GDAngle]);
-    }
-    if(root.containsKey(JsonKey_GDBattery)){
-        constructTextItem(&ui_lbISpindelBat,root[JsonKey_GDBattery]);
-    }
-    if(root.containsKey(JsonKey_OriginalGravity)){
-        constructTextItem(&ui_lbOg,root[JsonKey_OriginalGravity]);
-    }
-    if(root.containsKey(JsonKey_ABV)){
-        constructTextItem(&ui_lbAbv,root[JsonKey_ABV]);
-    }
-    if(root.containsKey(JsonKey_ATT)){
-        constructTextItem(&ui_lbAtt,root[JsonKey_ATT]);
-    }
-    if(root.containsKey(JsonKey_Gravity)){
-        constructTextItem(&ui_lbGravity,root[JsonKey_Gravity]);
-    }
-    if(root.containsKey(JsonKey_Pressure)){
-        constructTextItem(&ui_lbPressure,root[JsonKey_Pressure]);
 
-    }
     if(root.containsKey(JsonKey_GDRSSI)){
         constructRxLevel(&ui_lbRssi,&gdRxlevel_ptr,root[JsonKey_GDRSSI]);
     }
@@ -513,44 +563,18 @@ static bool skinMainScreen(char* data){
         constructRxLevel(&ui_lbWiFiRssi,&rxlevel_ptr,root[JsonKey_RSSI]);
 
     }
-    if(root.containsKey(JsonKey_GDUpdate)){
-        constructTimeWidget(&ui_lbUpdate,&gravityDeviceUpdateTimeFormat,root[JsonKey_GDUpdate]);
-    }
-    if(root.containsKey(JsonKey_WirelessHydrometerName)){
-        constructTextItem(&ui_lbWirelessHydrometer,root[JsonKey_WirelessHydrometerName]);
-    }    
-    if(root.containsKey(JsonKey_StatusTime)){
-        constructTimeWidget(&ui_lbStatusTime,&statusTimeFormat,root[JsonKey_StatusTime]);
-    }
-    if(root.containsKey(JsonKey_Mode)){
-        constructEnumTypeWidget(&ui_lbMode,&modeString,&ui_imgMode,&modeIconOffsets,5,root[JsonKey_Mode]);
-
-    }
-    if(root.containsKey(JsonKey_State)){
-        constructEnumTypeWidget(&ui_lbState,&stateString,&ui_imgState,&stateIconOffsets,11,root[JsonKey_State]);
-
-    }
-
     //7.touch area 
     // to "overlap" buttons on all other widgets, create transparent buttons last
     if(root.containsKey(JsonKey_ClickArea)){
         JsonObject click=root[JsonKey_ClickArea];
-        if(click.containsKey(JsonKey_TemperatureControl)){
-            constructTransparentButton(&ui_btnControl,&ui_event_btnControl,click[JsonKey_TemperatureControl]);
+        for(int idx=0;idx<sizeof(clickAreas)/sizeof(ClickArea);idx++){
+            if(click.containsKey(clickAreas[idx].key)){
+                constructTransparentButton(clickAreas[idx].lvobj,clickAreas[idx].evcb,click[clickAreas[idx].key]);
+            }
         }
-        if(click.containsKey(JsonKey_Settings)){
-            constructTransparentButton(&ui_btnSetting,&ui_event_btnSetting,click[JsonKey_Settings]);
-        }
-        if(click.containsKey(JsonKey_InputGravit)){
-            constructTransparentButton(&ui_btnGravity,&ui_event_btnGravity,click[JsonKey_InputGravit]);
-        }
-        if(click.containsKey(JsonKey_InputOriginalGravity)){
-            constructTransparentButton(&ui_btnOriginalGravity,&ui_event_btnOriginalGravity,click[JsonKey_InputOriginalGravity]);
-        }
-
     }
-    lv_obj_add_event_cb(ui_screenMain, ui_event_screenMain, LV_EVENT_ALL, NULL);
 
+    lv_obj_add_event_cb(ui_screenMain, ui_event_screenMain, LV_EVENT_ALL, NULL);
 
     DEBUGOUT("Skin successfully!!!!\n");
 

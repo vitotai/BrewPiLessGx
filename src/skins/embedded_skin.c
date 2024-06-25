@@ -6,26 +6,35 @@ typedef struct _SkinEntry{
     const char* name;
     const char* file;
 } SkinEntry;
-#if ESP32_17320S019N
-extern const uint8_t skin_brwpi_start[] asm("_binary_src_skins_skin_brewpi19_json_start");
-extern const uint8_t skin_brwpi_end[] asm("_binary_src_skins_skin_brewpi19_json_end");
-
-extern const uint8_t skin_hydrometer_start[] asm("_binary_src_skins_skin_hydro19_json_start");
+#if SKIN320170
+extern const uint8_t skin_brwpi_start[] asm("_binary_src_skins_skin_brewpi3217_json_start");
+extern const uint8_t skin_hydrometer_start[] asm("_binary_src_skins_skin_hydro3217_json_start");
 
 static SkinEntry embeddedSkins[]={
 {"BrwPi",skin_brwpi_start},
 {"Hydrometer",skin_hydrometer_start}
 };
-#else
-extern const uint8_t skin_brwpi_start[] asm("_binary_src_skins_skin_brewpi_json_start");
-extern const uint8_t skin_brwpi_end[] asm("_binary_src_skins_skin_brewpi_json_end");
-extern const uint8_t skin_info_start[] asm("_binary_src_skins_skin_info_json_start");
-extern const uint8_t skin_info_end[] asm("_binary_src_skins_skin_info_json_end");
+#endif
+
+#if SKIN320240
+extern const uint8_t skin_brwpi_start[] asm("_binary_src_skins_skin_brewpi3224_json_start");
+extern const uint8_t skin_info_start[] asm("_binary_src_skins_skin_info3224_json_start");
 
 static SkinEntry embeddedSkins[]={
 {"BrwPi",skin_brwpi_start},
 {"Infomation",skin_info_start}
 };
+#endif
+
+#if SKIN480320
+extern const uint8_t skin_brwpi_start[] asm("_binary_src_skins_skin_brewpi4832_json_start");
+extern const uint8_t skin_info_start[] asm("_binary_src_skins_skin_info4832_json_start");
+
+static SkinEntry embeddedSkins[]={
+{"BrwPi",skin_brwpi_start},
+{"Infomation",skin_info_start}
+};
+
 #endif
 
 const uint8_t NumberOfEmbeddedSkin=sizeof(embeddedSkins)/sizeof(SkinEntry);

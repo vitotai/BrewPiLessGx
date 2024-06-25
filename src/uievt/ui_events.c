@@ -37,6 +37,13 @@ const char* defaultStateString[]={
 "Heat left", //	HEATING_MIN_TIME,			// 9
 "Invalid"
 };
+
+const char* defaultGlycolStateString[]={
+"Off",
+"Idle",
+"Cooling"
+};
+
 // the following 
 rxlevel_widget *rxlevel_ptr;
 rxlevel_widget *gdRxlevel_ptr;
@@ -48,11 +55,12 @@ const char DefaultGravityDeviceUpdateTimeFormat[]="%M/%d %h:%m";
 
 char* statusTimeFormat=(char*)DefaultStatusTimeFormat;
 char* gravityDeviceUpdateTimeFormat=(char*)DefaultGravityDeviceUpdateTimeFormat;
+char* glycolTimeFormat=(char*)DefaultStatusTimeFormat;
 
 // text type for Mode/State
 char** stateString=(char**)defaultStateString;
 char** modeString=(char**)defaultModeString;
-
+char** glycolStateString=(char**)defaultGlycolStateString;
 // for icon type of mode and state
 lv_obj_t *ui_imgMode;
 lv_obj_t *ui_imgState;
@@ -60,6 +68,23 @@ lv_obj_t *ui_imgState;
 //char* stateIconPath;
 IconOffset* modeIconOffsets;
 IconOffset* stateIconOffsets;
+
+lv_obj_t *ui_imgGlycolState;
+IconOffset* glycolStateIconOffsets;
+
+#if EnableHumidityControlSupport
+const char* defaultHumidityControlStateString[]={
+"Off",
+"Idle",
+"Dehumidifying",
+"Humidifying"
+};
+
+
+lv_obj_t *ui_imgHumidityControlState;
+IconOffset* humidityControlStateIconOffsets;
+char** humidityControlStateString=(char**) defaultHumidityControlStateString;
+#endif
 
 #define RxLevelWidth 21
 #define RxLevelHeight 16
@@ -104,6 +129,15 @@ void uiUpdateWirelessHydrometerName();
 void uiUpdateGravityDevice();
 void uiUpdatePressure();
 
+//#if	EanbleParasiteTempControl
+void	uiUpdateParasiteTempControl();
+//#endif
+
+#if EnableHumidityControlSupport
+void	uiUpdateHumidityControl();
+#endif
+
+
 /* Control screen */
 void setArcValues(uint8_t mode);
 
@@ -138,6 +172,15 @@ void updateBrewPiInfo(void){
 	uiUpdateStatus();
 	// pressure
 	uiUpdatePressure();
+
+//#if	EanbleParasiteTempControl
+	uiUpdateParasiteTempControl();
+//#endif
+
+#if EnableHumidityControlSupport
+	uiUpdateHumidityControl();
+#endif
+
 }
 
 void updateGravityDevice(void){
@@ -391,6 +434,54 @@ void uiUpdatePressure(){
 	}
 }
 
+//#if	EanbleParasiteTempControl
+void	uiUpdateParasiteTempControl(){
+	if(ui_lbGlycolTemperature) setTemperatureValue(ui_lbGlycolTemperature,bplGetGlycolTemperature());
+	if(ui_lbGlycolTempSet) setTemperatureValue(ui_lbGlycolTempSet,bplGetGlycolSetTemp());
+	// mode
+	uint8_t state=bplGetGlycolState();
+
+	if(ui_lbGlycolState){
+		lv_label_set_text(ui_lbGlycolState,glycolStateString[state]);
+	}else if(ui_imgGlycolState && glycolStateIconOffsets){
+		lv_img_set_offset_x(ui_imgGlycolState,- glycolStateIconOffsets[state].x);
+		lv_img_set_offset_y(ui_imgGlycolState, -glycolStateIconOffsets[state].y);
+	}
+
+	// time
+	if(ui_lbGlycolElapsedTime){
+		if(state ==0){
+			lv_label_set_text(ui_lbGlycolElapsedTime,"");
+		}else{
+			uint32_t time  = bplGetGlycolElapsedTime();
+			char buffer[64];
+			formatTimePeriod(buffer,glycolTimeFormat,time);
+			lv_label_set_text(ui_lbGlycolElapsedTime,buffer);
+		}
+	}
+}
+//#endif
+
+#if EnableHumidityControlSupport
+static void setHumidityValue(lv_obj_t *widget,uint8_t value){
+	if(value>100) lv_label_set_text(widget,"--");
+	else lv_label_set_text_fmt(widget,"%d%%",value);
+} 
+void uiUpdateHumidityControl(){
+	if(ui_lbRoomHumidity) setHumidityValue(ui_lbRoomHumidity,bplGetRoomHumidity());
+	if(ui_lbChamberHumidity) setHumidityValue(ui_lbChamberHumidity,bplGetChamberHumidity());
+	if(ui_lbTargetHumidity) setHumidityValue(ui_lbTargetHumidity,bplGetTargetHumidity());
+	uint8_t state=bplGetHumidityControlState();
+
+	if(ui_lbHumidityControlState){
+		lv_label_set_text(ui_lbHumidityControlState,humidityControlStateString[state]);
+	}else if(ui_imgHumidityControlState && glycolStateIconOffsets){
+		lv_img_set_offset_x(ui_imgHumidityControlState,- humidityControlStateIconOffsets[state].x);
+		lv_img_set_offset_y(ui_imgHumidityControlState, -humidityControlStateIconOffsets[state].y);
+	}
+}
+#endif
+
 
 void userStopSaver(void){
 	startScreenSaverTimer();
@@ -439,6 +530,16 @@ void onMainScreenLoadStart(lv_event_t * e)
 	uiUpdatePressure();
 	// iSpindel info..
 	uiUpdateGravityDevice();
+
+//#if	EanbleParasiteTempControl
+	uiUpdateParasiteTempControl();
+//#endif
+
+#if EnableHumidityControlSupport
+	uiUpdateHumidityControl();
+#endif
+
+
 	// create screen saver
 	startScreenSaverTimer();
 }

@@ -34,6 +34,16 @@ extern "C" {
 #define JsonKey_StaticTextStyle "stxs"
 #define JsonKey_ColorBlocks "cbs"
 
+#define JsonKey_GlycolTemperature "glt"
+#define JsonKey_GlycolTemperatureSet "glts"
+#define JsonKey_GlycolState "gls"
+#define JsonKey_GlycolElaspedTime "gle"
+
+#define JsonKey_ChamberHumidity "hc"
+#define JsonKey_RoomHumidity "hr"
+#define JsonKey_TargetHumidity "ht"
+#define JsonKey_HumidityControlState "hs"
+
 #define JsonKey_ClickArea "click"
 #define JsonKey_TemperatureControl "tc"
 #define JsonKey_Settings "set"
@@ -111,15 +121,24 @@ extern rxlevel_widget *gdRxlevel_ptr;
 extern lv_obj_t *ui_lbWiFiRssi;
 extern char* statusTimeFormat;
 extern char* gravityDeviceUpdateTimeFormat;
+extern char* glycolTimeFormat;
 extern char** stateString;
 extern char** modeString;
+extern char** glycolStateString;
 extern lv_obj_t *ui_imgMode;
 extern lv_obj_t *ui_imgState;
 
+extern lv_obj_t *ui_imgGlycolState;
+#if EnableHumidityControlSupport
+extern lv_obj_t *ui_imgHumidityControlState;
+extern IconOffset* humidityControlStateIconOffsets;
+extern char** humidityControlStateString;
+#endif
 //extern char* modeIconPath;
 //extern char* stateIconPath;
 extern IconOffset* modeIconOffsets;
 extern IconOffset* stateIconOffsets;
+extern IconOffset* glycolStateIconOffsets;
 
 void createDefaultRxLevelWidget();
 

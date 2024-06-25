@@ -5,8 +5,14 @@
 #include <WiFi.h>
 #include <ESPmDNS.h>
 #endif
+#if EnableArduinoOTA
 #include <ArduinoOTA.h>
+#endif
 #include <FS.h>
+
+#if EnableOTASupport
+#include <AsyncElegantOTA.h>
+#endif
 
 #if defined(ESP32)
 #include <AsyncTCP.h>
@@ -66,7 +72,6 @@ extern "C" {
 
 #include "BPLSettings.h"
 
-#include "ESPUpdateServer.h"
 #include "WiFiSetup.h"
 
 #include "BrewPiProxy.h"
@@ -2055,6 +2060,9 @@ void setup(void){
 	});
     #endif
 
+#if EnableOTASupport
+	  AsyncElegantOTA.begin(webServer);
+#endif
 
 
 	// 404 NOT found.
@@ -2119,6 +2127,19 @@ void setup(void){
 	#if ESP8266 
 	wifi_set_sleep_type(NONE_SLEEP_T);
 	#endif
+#if EnableArduinoOTA
+	ArduinoOTA.onStart([]() {
+    	// Clean SPIFFS
+    	FileSystem.end();
+
+	    // Disable client connections    
+    	ws.enable(false);
+
+    	// Close them
+    	ws.closeAll();
+  });	
+	ArduinoOTA.begin();
+#endif
 }
 
 uint32_t _periodicReportTime;
@@ -2129,6 +2150,9 @@ uint32_t _periodicReportTime;
 void bpl_loop(void){
 #else
 void loop(void){
+#endif
+#if EnableArduinoOTA
+ArduinoOTA.handle();
 #endif
 //{brewpi
 #if BREWPI_SIMULATE

@@ -34,6 +34,19 @@ lv_obj_t *ui_lbUpdate;
 lv_obj_t *ui_lbRssi;
 lv_obj_t *ui_lbWirelessHydrometer;
 
+//#if	EanbleParasiteTempControl
+lv_obj_t *ui_lbGlycolTemperature;
+lv_obj_t *ui_lbGlycolTempSet;
+lv_obj_t *ui_lbGlycolState;
+lv_obj_t *ui_lbGlycolElapsedTime;
+//#endif
+#if EnableHumidityControlSupport
+lv_obj_t *ui_lbHumidityControlState;
+lv_obj_t *ui_lbRoomHumidity;
+lv_obj_t *ui_lbChamberHumidity;
+lv_obj_t *ui_lbTargetHumidity;
+#endif
+
 void ui_event_btnSetting( lv_event_t * e);
 lv_obj_t *ui_btnSetting;
 void ui_event_btnControl( lv_event_t * e);

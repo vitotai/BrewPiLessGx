@@ -57,9 +57,11 @@ WirelessTempSensor* WirelessTempSensor::theWirelessTempSensor=NULL;
 
 #if EnableDHTSensorSupport
 #include "HumidityControl.h"
+#include "TempSensorEnv.h"
+#endif
+#if EnableBME280Support
 #include "Bme280Sensor.h"
 #include "TempSensorEnv.h"
-
 #endif
 
 /*
@@ -341,8 +343,11 @@ void DeviceManager::uninstallDevice(DeviceConfig& config)
 		#if EnableDHTSensorSupport	 
 		case DEVICETYPE_ENVIRONMENT_SENSOR:
 			if (*ppv!=&nullEnvironmentSensor) {
+				#if EnableBME280Support
 				if( ((EnvironmentSensor*)*ppv)->sensorType() == SensorType_BME280)  delete (Bme280Sensor*)*ppv;
-				else delete (DHTSensor*)*ppv;
+				else 
+				#endif
+				delete (DHTSensor*)*ppv;
 				*ppv = &nullEnvironmentSensor;
 			}
 			break;
@@ -709,7 +714,8 @@ void DeviceManager::printDevice(device_slot_t slot, DeviceConfig& config, const 
 	appendAttrib(deviceString, DEVICE_ATTRIB_DEACTIVATED, config.hw.deactivate);
 	appendAttrib(deviceString, DEVICE_ATTRIB_PIN, config.hw.pinNr);
 #if EnableDHTSensorSupport
-	if(config.deviceFunction == DEVICE_CHAMBER_HUMIDITY_SENSOR) //VTODO: PIN device: DHT serious, DEVICE_HARDWARE_BME280
+	if(config.deviceFunction == DEVICE_CHAMBER_HUMIDITY_SENSOR
+			|| config.deviceFunction == DEVICE_CHAMBER_ROOM_HUMIDITY_SENSOR) //VTODO: PIN device: DHT serious, DEVICE_HARDWARE_BME280
 		appendAttrib(deviceString,DEVICE_ATTRIB_HUMIDITY_SENSOR_TYPE,config.hw.humiditySensorType);
 #endif
 	if (value && *value) {
@@ -737,7 +743,8 @@ void DeviceManager::printDevice(device_slot_t slot, DeviceConfig& config, const 
 #if EnableDHTSensorSupport
 
 		||  config.deviceFunction==DEVICE_CHAMBER_HUMIDITY_SENSOR //VTODO
-		||  config.deviceHardware==DEVICE_HARDWARE_ENVIRONMENT_TEMP
+		||  config.deviceFunction == DEVICE_CHAMBER_ROOM_HUMIDITY_SENSOR
+		||  config.deviceHardware == DEVICE_HARDWARE_ENVIRONMENT_TEMP
 #endif
 	) {
 		tempDiffToString(buf, temperature(config.hw.calibration)<<(TEMP_FIXED_POINT_BITS-CALIBRATION_OFFSET_PRECISION), 3, 8);
