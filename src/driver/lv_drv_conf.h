@@ -55,4 +55,14 @@
 
 #endif // ESP32_2432S032C
 
+#ifdef ESP32_2432S028R
+#define CONFIG_LVGL_DISPLAY_WIDTH 320
+#define CONFIG_LVGL_DISPLAY_HEIGHT 240
+// size of lv_color_t
+// should be greater than 1/10 whole screen.
+#define LV_DRAW_BUFFER_SIZE (CONFIG_LVGL_DISPLAY_WIDTH * 10)
+
+#endif // ESP32_2432S028R
+
+
 #endif
