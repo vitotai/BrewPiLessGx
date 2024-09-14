@@ -434,7 +434,7 @@ void uiUpdatePressure(){
 	}
 }
 
-static setGravityChangeValue(lv_obj_t* obj,int hour){
+static void setGravityChangeValue(lv_obj_t* obj,int hour){
 	float value = bplGetGravityDecreasedIn(hour);
 	if(IsGravityDecreasedValueValid(value)){
 		//lv_label_set_text_fmt(obj,"%.1f",value);
