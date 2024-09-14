@@ -65,11 +65,11 @@ char BrewPiGetUnit(){
     return brewPi.getUnit();
 }
 
-int BrewPiGetMinSetTemp(){
+float BrewPiGetMinSetTemp(){
     return brewPi.getMinSetTemp();
 }
 
-int BrewPiGetMaxSetTemp(){
+float BrewPiGetMaxSetTemp(){
     return brewPi.getMaxSetTemp();
 }
 

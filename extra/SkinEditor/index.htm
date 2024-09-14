@@ -101,6 +101,7 @@ input[type=number] {
 	z-index: 1;
 	position:absolute;
 }
+
 .lcd-background{
 	z-index: 0;
 	border:0;
@@ -127,7 +128,20 @@ input[type=number] {
 	top: 0;
 	z-index:1071;
 }
-
+.touch-area{
+	z-index: 0;
+	position:absolute;
+	border: none;
+	background-color: #777;
+	opacity: 60%;
+	padding: 10px;
+}
+.diagonal-text {
+    display: inline-block;
+    transform: rotate(-45deg); /* Rotate only the text */
+    font-size: 12px;
+    color: #FFAAAA;
+}
 </style>
 <body>
 <div class="container">
@@ -144,6 +158,10 @@ input[type=number] {
 	<div class="col-lg-10">
 		<div id="lcd" class="lcddisplay">
 			<div class="lcd-background"></div>
+				<div id="set"  class="touch-area"><span class="diagonal-text">Network</span></div>
+				<div id="ig"  class="touch-area"><span class="diagonal-text">Gravity</span></div>
+				<div id="iog"  class="touch-area"><span class="diagonal-text">OG</span></div>
+				<div id="tc"  class="touch-area"><span class="diagonal-text">Control</span></div>
 			<div id="rectangle-1" class="rectangle-blocks"></div>
 			<span id="mode" class="bpl lcd-text font-s">Off</span>
 			<span id="state" class="bpl lcd-text font-s" >Idle</span>
@@ -201,6 +219,7 @@ input[type=number] {
 		<div id="coordinates" class="bg-light text-center">(0,0)</div>
 	</div> <!-- COL-->
 </div><!-- ROW-->
+
 <div class="container-flex">
 <div class="row">
 	<div class="col-lg-2">
@@ -339,7 +358,111 @@ input[type=number] {
 				</td>
 			</tr>
 			<!--  Item  End-->
+
+			<tr>
+				<td colspan="11">Touch Area</td>
+			</tr>
+			<tr>
+			<th>Enable</th>
+			<th>Item</th>
+			<th></th>
+			<th>Alignment</th>
+			<th>X</th>
+			<th>Y</th>
+			<th>Width</th>
+			<th>Height</th>
+			<th></th>
+			<th></th>
+			<th></th>		
+			</tr>
+			<!--  Item  Begin-->
+		<tr target="set" class="touch-item">
+			<td><input type="checkbox" target="show"></td>
+			<td colspan="2">Network Setting</td>
+				<td><select name="align" target="align">
+					<option value="c">Center</option>
+					<option value="tl" selected>Top Left</option>
+					<option value="bl">Bottom Left</option>
+					<option value="lm">Left Middle</option>
+					<option value="tr">Top Right</option>
+					<option value="br">Bottom Right</option>
+					<option value="rm">Right Middle</option>
+				</select></td>
 		
+			<td><input type="number" target="posx"></td>
+			<td><input type="number" target="posy"></td>
+			<td><input type="text" target="width"></td>
+			<td><input type="text" target="height"></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+
+		<tr target="tc" class="touch-item">
+			<td><input type="checkbox" target="show"></td>
+			<td colspan="2">Temperature Control</td>
+				<td><select name="align" target="align">
+					<option value="c">Center</option>
+					<option value="tl" selected>Top Left</option>
+					<option value="bl">Bottom Left</option>
+					<option value="lm">Left Middle</option>
+					<option value="tr">Top Right</option>
+					<option value="br">Bottom Right</option>
+					<option value="rm">Right Middle</option>
+				</select></td>
+		
+			<td><input type="number" target="posx"></td>
+			<td><input type="number" target="posy"></td>
+			<td><input type="text" target="width"></td>
+			<td><input type="text" target="height"></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr target="ig" class="touch-item">
+			<td><input type="checkbox" target="show"></td>
+			<td colspan="2">Gravity Input</td>
+				<td><select name="align" target="align">
+					<option value="c">Center</option>
+					<option value="tl" selected>Top Left</option>
+					<option value="bl">Bottom Left</option>
+					<option value="lm">Left Middle</option>
+					<option value="tr">Top Right</option>
+					<option value="br">Bottom Right</option>
+					<option value="rm">Right Middle</option>
+				</select></td>
+		
+			<td><input type="number" target="posx"></td>
+			<td><input type="number" target="posy"></td>
+			<td><input type="text" target="width"></td>
+			<td><input type="text" target="height"></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr target="iog" class="touch-item">
+			<td><input type="checkbox" target="show"></td>
+			<td colspan="2">Original Gravity Input</td>
+				<td><select name="align" target="align">
+					<option value="c">Center</option>
+					<option value="tl" selected>Top Left</option>
+					<option value="bl">Bottom Left</option>
+					<option value="lm">Left Middle</option>
+					<option value="tr">Top Right</option>
+					<option value="br">Bottom Right</option>
+					<option value="rm">Right Middle</option>
+				</select></td>
+		
+			<td><input type="number" target="posx"></td>
+			<td><input type="number" target="posy"></td>
+			<td><input type="text" target="width"></td>
+			<td><input type="text" target="height"></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		
+
 			<tr id="brewpi-start">
 				<td colspan="11">BrewPi Items</td>
 			</tr>

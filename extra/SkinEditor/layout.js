@@ -363,6 +363,22 @@ function rssiBarFromJson(target, json){
     return wgt;
 }
 
+function dejsonClicks(clicks){
+    $.each(clicks, function(key, json) {
+        var tr = $('#input-table tr.touch-item[target="' + key +'"]');
+        if(typeof json["a"] !="undefined") $(tr).find('select[target="align"]').val(json.a);
+
+        if(typeof json["x"] !="undefined") $(tr).find('input[target="posx"]').val(json.x);    
+        if(typeof json["y"] !="undefined") $(tr).find('input[target="posy"]').val(json.y);
+    
+        if(typeof json["w"] !="undefined" && json.w != "c") $(tr).find('input[target="width"]').val(json.w);
+        if(typeof json["h"] !="undefined" && json.h != "c") $(tr).find('input[target="height"]').val(json.h);
+        $(tr).find('input[target="show"]').prop('checked',true);
+        // it's like a retangel item
+        calRectangle(key);
+    });
+}
+
 function processJson(json){
     $.each(json, function(key, value) {
         if(key =="bg"){
@@ -382,6 +398,7 @@ function processJson(json){
         }else if(key== "cbs"){
             dejsonRectangles(value);
         }else if(key== "click"){
+            dejsonClicks(value);
         }else if(key== "c1" || key== "c2" || key== "c3"){
             
         }else{
@@ -540,6 +557,26 @@ function generateJson(){
         if(td !="n") stxs.td = td;
         if(Object.keys(stxs)>0) json.stxs=stxs;
         json.stxt = stxt;
+    }
+    var clicks={};
+    $("#input-table tr.touch-item").each(function(i,tr){
+        if($(tr).find('input[target="show"]').prop('checked')){
+            var wv= getDimNumber($(tr).find('input[target="width"]').val());
+            var hv= getDimNumber($(tr).find('input[target="height"]').val());
+            if(wv!="" && hv!=""){
+                var rectangle={w:wv,h:hv};
+                var align = $(tr).find('select[name="align"]').val();
+                if(align !="tl") rectangle.a=align;
+                var x = parseInt($(tr).find('input[target="posx"]').val());
+                if(!isNaN(x) && x!=0 ) rectangle.x = x;
+                var y = parseInt($(tr).find('input[target="posy"]').val());
+                if(!isNaN(y) && y!=0 ) rectangle.y = y;    
+                clicks[$(tr).attr('target')]=rectangle;
+            }
+        }
+    });
+    if (Object.keys(clicks).length != 0) {
+        json.click=clicks;
     }
     //return JSON.stringify(json);
 
@@ -736,7 +773,7 @@ var stxt_tr;
 var recblock_tr;
 $(function(){
     // hide all brewpi items
-    $.each($("#input-table tr.brewpi-item"),function(i,tr){
+    $.each($("#input-table tr.brewpi-item,tr.touch-item"),function(i,tr){
         var i= $(tr).attr("target");
         $("#"+ i).hide();
         if(! $(tr).hasClass("rssi-widget")) $(tr).find('input[target="value"').val($("#"+ i).text());
@@ -847,6 +884,6 @@ $(function(){
         $("#lcd").width(parseInt($("#lcd-width").val()));
        $("#lcd").height(parseInt($("#lcd-height").val()));
     });
-    moveable($(".lcd-text, .rectangle-blocks, .rssi-bars"));
+    moveable($(".lcd-text, .rectangle-blocks, .rssi-bars, .touch-area"));
     initFileDrop();
 });

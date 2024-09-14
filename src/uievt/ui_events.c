@@ -618,6 +618,11 @@ void setArcValues(uint8_t mode){
 		}else{ //if(mode == FridgeConstMode){
 			value=(int)BrewPiGetFridgeSet();
 		}
+		int min =(int) BrewPiGetMinSetTemp();
+		int max =(int) BrewPiGetMaxSetTemp();
+		if( (value > max) || (value < min)){
+			value = (BrewPiGetUnit() == 'C')? 20:68;
+		}
 
 		lv_arc_set_value(ui_arcTemperatureSet,value);
 		lv_label_set_text_fmt(ui_lbTemperatureSet,"%d",value);
@@ -635,8 +640,8 @@ void onScreenTempControlLoadStart(lv_event_t * e)
 	if(mode >3) mode=0;
 	lv_slider_set_value(ui_sldMode,mode,LV_ANIM_OFF);
 	// min, max.
-	int min = BrewPiGetMinSetTemp();
-	int max = BrewPiGetMaxSetTemp();
+	int min =(int) BrewPiGetMinSetTemp();
+	int max =(int) BrewPiGetMaxSetTemp();
 	lv_label_set_text_fmt(ui_lbMinTempSet,"%d",min);
 	lv_label_set_text_fmt(ui_lbMaxTempSet,"%d",max);
 	lv_arc_set_range(ui_arcTemperatureSet,min,max);
