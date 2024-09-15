@@ -8,10 +8,10 @@ The main display is defined by [JSON format](doc/skin.md). There is a developing
     -  It's a fixed bug in newer framework, but [another bug]( https://github.com/espressif/arduino-esp32/issues/8976) stop me from upgrading.
 
 # Update Note
-- 2024/09/14
+- 2024/09/15
     - Include AsyncElegantOTA library.
     - Set temperature default value to 20C/68F.
-    - Skin Editor now has touch area settings. 
+    - Skin Editor now has touch area settings, and icon representation of stat can be used.
 - 2024/06/10
     - Bluetooth/BLE themometer(BTHome, ATC1441, and PVVX) support. (Default disable because it rises the chance of a known bug.)
     - Display gravity changes(decreasing) in 24H/12H/6H 

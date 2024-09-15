@@ -13,4 +13,4 @@ Changing the values of each items as you like. You can also move the text items 
 Click "Generate" button, and the JSON content will be generated in the input box.
 
 ## Image
-Try not to use images. They are resoure intensive. Currently, images are not supported. You must edit the JSON content manually to use image. Please check the [document](/doc/skin.md) for detail.
+Try not to use images. They are resoure intensive. Currently, user-supplied images are not supported. You must edit the JSON content manually to use image. Please check the [document](/doc/skin.md) for detail. The embedded state icon is supported, though.
