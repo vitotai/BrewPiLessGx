@@ -14,6 +14,11 @@
 #include "LGFX_custom/conf_WT32SCO1-Plus.h"
 #endif
 
+
+#ifdef ESP32_2432S028R
+#include "LGFX_custom/LGFX_ESP32_2432S028R.h"
+#endif // ESP32_2432S028R
+
 LGFX gfx;
 
 
