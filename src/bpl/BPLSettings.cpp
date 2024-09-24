@@ -146,6 +146,7 @@ bool BPLSettings::autoCapSettingsSanity(void){ return true;}
 #define  KeyGateway   "gw"
 #define  KeyNetmask    "mask"
 #define  KeyDNS "dns"
+#define  KeySecuredAP "eap"
 
 #define KeyFlashChipId "fid"
 #define KeyFlashRealSize "frsize"
@@ -205,7 +206,8 @@ void BPLSettings::defaultSystemConfiguration(void){
     syscfg->netmask = (uint32_t) IPAddress(0,0,0,0);
     syscfg->dns = (uint32_t) IPAddress(0,0,0,0);
 
-	syscfg->screenSaverTime = 180;
+    syscfg->securedAp = false;	
+syscfg->screenSaverTime = 180;
 	syscfg->sleepTimeout = 30;
 	syscfg->skin = 0;
 	syscfg->glycolChilling = 0;
@@ -240,6 +242,8 @@ bool BPLSettings::dejsonSystemConfiguration(String json){
         syscfg->port = root[KeyPort];
         syscfg->passwordLcd = root[KeyProtect];
         syscfg->wifiMode = root[KeyWifi];
+        syscfg->securedAp = root[KeySecuredAP];
+
         syscfg->screenSaverTime = root[KeyScreenSaverTime];
 		syscfg->sleepTimeout = root[KeySleepTime];
 		syscfg->skin = root[KeySkin];
@@ -277,6 +281,7 @@ String BPLSettings::jsonSystemConfiguration(void){
 
 	root[KeySkin] = syscfg->skin;
 	root[KeyGlycol] = syscfg->glycolChilling;
+        root[KeySecuredAP] = syscfg->securedAp;
 
 	JsonArray skins = root.createNestedArray(KeyEmbeddedSkins);
 	for(int i=0;i<NumberOfEmbeddedSkin;i++){

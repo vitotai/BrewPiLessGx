@@ -21,6 +21,7 @@ typedef struct _SystemConfiguration{
     uint8_t wifiMode;
     uint8_t skin;
     uint8_t glycolChilling;
+    uint8_t securedAp;
 }SystemConfiguration;
 
 //*****************************************************
