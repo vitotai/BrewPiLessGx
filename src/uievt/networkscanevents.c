@@ -34,10 +34,13 @@ static void event_network_selected_handler(lv_event_t * e){
     strcpy(ssid,nwlist[index].ssid);
 
     if(nwlist[index].enc){
-        openInputScreen(LV_SCR_LOAD_ANIM_MOVE_LEFT,PASSPHRASE_TITLE,&passphraseInput,&voidCancel,InputTypeText,"");
+        openInputScreen(LV_SCR_LOAD_ANIM_MOVE_LEFT,PASSPHRASE_TITLE,&passphraseInput,&voidCancel,InputTypeText,"",true);
+        cui_screenNetworkList=NULL;
     }else{
         nwpass[0]='\0';
-        openAutoIPConfirmDialog();
+        //openAutoIPConfirmDialog();
+        _ui_screen_change( &cui_screenQueryAutoIP, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, &cui_screenQueryAutoIP_init,true);
+        cui_screenNetworkList=NULL;
     }
     // "free" nwlist?
 }
@@ -64,10 +67,11 @@ void netScanResultCb(WiFiListEntry* list,uint16_t count){
     if(count >0){
         nwcount=count;
         nwlist=list;    
-        _ui_screen_change( &cui_screenNetworkList, LV_SCR_LOAD_ANIM_NONE, 100, 0, &cui_screenNetworkList_screen_init);
+        _ui_screen_change( &cui_screenNetworkList, LV_SCR_LOAD_ANIM_NONE, 100, 0, &cui_screenNetworkList_screen_init,true);
     }else{
-        _ui_screen_change( &ui_screenSetting, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, &ui_screenSetting_screen_init);
+        _ui_screen_change( &ui_screenSetting, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, &ui_screenSetting_screen_init,true);
     }
+    cui_screenNetworkScan = NULL;
 }
 void onScreenNetworkListUnloadStart(lv_event_t * e){
    if(nwlist){
@@ -93,25 +97,29 @@ void voidCancel(void){
 }
 
 void openAutoIPConfirmDialog(void){
-    _ui_screen_change( &cui_screenQueryAutoIP, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, &cui_screenQueryAutoIP_init);
+    _ui_screen_change( &cui_screenQueryAutoIP, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, &cui_screenQueryAutoIP_init,false);
 }
 
 void onAutoIPYes( lv_event_t * e){
     fixedIp=netmask=gateway=nameserver=0;
     connectNetwork();
-    _ui_screen_change( &ui_screenSetting, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, &ui_screenSetting_screen_init);
+    _ui_screen_change( &ui_screenSetting, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, &ui_screenSetting_screen_init,true);
+    cui_screenQueryAutoIP = NULL;
 }
 
 void onAutoIPNo( lv_event_t * e){
     // fixed IP.
     // request to input IP, 
-    openInputScreen(LV_SCR_LOAD_ANIM_MOVE_LEFT,IPADDRESS_TITLE,&fixedIPInput,&voidCancel,InputTypeNumber,IPADDRESS_DEFAULT);
+    openInputScreen(LV_SCR_LOAD_ANIM_MOVE_LEFT,IPADDRESS_TITLE,&fixedIPInput,&voidCancel,InputTypeNumber,IPADDRESS_DEFAULT,true);
+    cui_screenQueryAutoIP = NULL;
 }
 
 void passphraseInput(const char* text){
     strcpy(nwpass,text);
     // save passphrase, and got to 
-    openAutoIPConfirmDialog();
+    // openAutoIPConfirmDialog();
+    _ui_screen_change( &cui_screenQueryAutoIP, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, &cui_screenQueryAutoIP_init,true);
+    ui_screenInput = NULL;
 }
 
 void fixedIPInput(const char* text){
@@ -143,5 +151,6 @@ void dnsIPInput(const char* text){
     nameserver = convertIp(text);
 
     connectNetwork();
-    _ui_screen_change( &ui_screenSetting, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, &ui_screenSetting_screen_init);
+    _ui_screen_change( &ui_screenSetting, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, &ui_screenSetting_screen_init,true);
+    ui_screenInput = NULL;
 }

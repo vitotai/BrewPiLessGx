@@ -18,10 +18,10 @@ void onScreenNetworkListUnloadStart(lv_event_t * e);
  lv_obj_t *cui_screenNetworkList;
  lv_obj_t *cui_listNetworks;
  lv_obj_t *cui_btnNetworkScanBack;
-void  cui_event_btnNetworkScanBack( lv_event_t * e);
+void  cui_event_btnNetworkListBack( lv_event_t * e);
 
 void cui_screenNetworkScan_screen_scandone(void);
-void cui_event_btnNetworkScanBack( lv_event_t * e);
+void cui_event_btnNetworkListBack( lv_event_t * e);
 
 
 void cui_screenNetworkScan_screen_init(void)
@@ -68,7 +68,7 @@ lv_obj_set_height( cui_btnNetworkScanBack, 36);
 lv_obj_set_x( cui_btnNetworkScanBack, 0 );
 lv_obj_set_y( cui_btnNetworkScanBack, 0 );
 lv_obj_set_align( cui_btnNetworkScanBack, LV_ALIGN_TOP_LEFT );
-lv_obj_add_event_cb(cui_btnNetworkScanBack,cui_event_btnNetworkScanBack , LV_EVENT_ALL, NULL);
+lv_obj_add_event_cb(cui_btnNetworkScanBack,cui_event_btnNetworkListBack , LV_EVENT_ALL, NULL);
 /* network list*/
      cui_listNetworks = lv_list_create(cui_screenNetworkList);
 
@@ -93,9 +93,10 @@ if ( event_code == LV_EVENT_SCREEN_LOAD_START) {
 
 
 
-void cui_event_btnNetworkScanBack( lv_event_t * e) {
+void cui_event_btnNetworkListBack( lv_event_t * e) {
     lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
 if ( event_code == LV_EVENT_CLICKED) {
-      _ui_screen_change( &ui_screenSetting, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, &ui_screenSetting_screen_init);
+      _ui_screen_change( &ui_screenSetting, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, &ui_screenSetting_screen_init,true);
+    cui_screenNetworkList = NULL;      
 }
 }

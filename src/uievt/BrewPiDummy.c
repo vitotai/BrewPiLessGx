@@ -311,4 +311,11 @@ uint32_t bplGetGlycolElapsedTime(){
     return 59+3*60+60*60*3;
 }
 
+
+float bplGetGravityDecreasedIn(int hour){
+    if(hour == 24) return InvalidGravityDecreasedValue;
+    else if(hour == 12) return 2.1;
+    return 0.7;
+}
+
 #endif

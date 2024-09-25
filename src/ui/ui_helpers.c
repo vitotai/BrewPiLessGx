@@ -46,11 +46,11 @@ void _ui_slider_set_property( lv_obj_t *target, int id, int val)
    if (id == _UI_SLIDER_PROPERTY_VALUE) lv_slider_set_value(target, val, LV_ANIM_OFF);
 }
 
-void _ui_screen_change( lv_obj_t ** target, lv_scr_load_anim_t fademode, int spd, int delay, void (*target_init)(void)) 
+void _ui_screen_change( lv_obj_t ** target, lv_scr_load_anim_t fademode, int spd, int delay, void (*target_init)(void),bool auto_del) 
 {
    if(*target == NULL)
       target_init();
-   lv_scr_load_anim(*target, fademode, spd, delay, false);
+   lv_scr_load_anim(*target, fademode, spd, delay, auto_del);
 }
 
 void _ui_screen_delete( lv_obj_t ** target ) 

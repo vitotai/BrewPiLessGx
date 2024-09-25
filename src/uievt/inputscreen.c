@@ -14,7 +14,9 @@ void setInputApplyCallback(void (*input_applied)(const char*));
 void (*_input_applied_cb)(const char*);
 void (*_input_cancel_cb)(void);
 
-void openInputScreen(lv_scr_load_anim_t anitype,const char* title,void (*input_applied)(const char*),void (*input_cancel)(void),InputType type,const char *text){
+void openInputScreen(lv_scr_load_anim_t anitype,const char* title,void (*input_applied)(const char*),void (*input_cancel)(void),InputType type,const char *text,bool auto_del){
+
+    if(ui_screenInput == NULL) ui_screenInput_screen_init();
 
     _input_applied_cb = input_applied;
     _input_cancel_cb = input_cancel;
@@ -28,7 +30,7 @@ void openInputScreen(lv_scr_load_anim_t anitype,const char* title,void (*input_a
     }
     lv_textarea_set_text(ui_taInput,text);
     
-    _ui_screen_change( &ui_screenInput, anitype, 300, 0, &ui_screenInput_screen_init);
+    _ui_screen_change( &ui_screenInput, anitype, 300, 0, &ui_screenInput_screen_init,auto_del);
 }
 
 void finishedInput(void){

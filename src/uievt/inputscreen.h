@@ -12,7 +12,7 @@ typedef enum _InputType{
     InputTypeText
 }InputType;
 
-void openInputScreen(lv_scr_load_anim_t anitype,const char* title,void (*input_applied)(const char*),void (*input_cancel)(void),InputType type,const char *text);
+void openInputScreen(lv_scr_load_anim_t anitype,const char* title,void (*input_applied)(const char*),void (*input_cancel)(void),InputType type,const char *text,bool auto_del);
 void finishedInput(void);
 void cancelInput(void);
 

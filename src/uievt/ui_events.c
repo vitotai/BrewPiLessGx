@@ -576,8 +576,9 @@ void onMainScreenHidden(lv_event_t * e){
 /* Gravity Editing*/
 /* ****************************************************************** */
 
-void fromEditor2Main(){
-    _ui_screen_change(&ui_screenMain, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 300, 0, &ui_screenMain_screen_init);
+static void fromEditor2Main(){
+    _ui_screen_change(&ui_screenMain, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 300, 0, &ui_screenMain_screen_init,true);
+	ui_screenInput = NULL;
 }
 
 void originalGravityInput(const char* text){
@@ -594,13 +595,13 @@ void currentGravityInput(const char* text){
 void openEditGravity(lv_event_t * e)
 {
 	// Your code here
-	openInputScreen(LV_SCR_LOAD_ANIM_MOVE_TOP, GRAVITY_TITLE,& currentGravityInput,&fromEditor2Main,InputTypeNumber,"");
+	openInputScreen(LV_SCR_LOAD_ANIM_MOVE_TOP, GRAVITY_TITLE,& currentGravityInput,&fromEditor2Main,InputTypeNumber,"",false);
 }
 
 void openEditOriginalGravity(lv_event_t * e)
 {
 	// Your code here
-	openInputScreen(LV_SCR_LOAD_ANIM_MOVE_TOP,ORIGINAL_GRAVITY_TITLE,& originalGravityInput,&fromEditor2Main,InputTypeNumber,"");
+	openInputScreen(LV_SCR_LOAD_ANIM_MOVE_TOP,ORIGINAL_GRAVITY_TITLE,& originalGravityInput,&fromEditor2Main,InputTypeNumber,"",false);
 }
 
 /* ****************************************************************** */
@@ -740,7 +741,7 @@ void onSearchNetworkClicked(lv_event_t * e)
 {
 	// transit to scan network
 
-	 _ui_screen_change( &cui_screenNetworkScan, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, &cui_screenNetworkScan_screen_init);
+	 _ui_screen_change( &cui_screenNetworkScan, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, &cui_screenNetworkScan_screen_init,false);
 }
 
 /* ****************************************************************** */

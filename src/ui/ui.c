@@ -139,13 +139,13 @@ if ( event_code == LV_EVENT_SCREEN_UNLOAD_START) {
 void ui_event_btnSetting( lv_event_t * e) {
     lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
 if ( event_code == LV_EVENT_CLICKED) {
-      _ui_screen_change( &ui_screenSetting, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, &ui_screenSetting_screen_init);
+      _ui_screen_change( &ui_screenSetting, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, &ui_screenSetting_screen_init,false);
 }
 }
 void ui_event_btnControl( lv_event_t * e) {
     lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
 if ( event_code == LV_EVENT_CLICKED) {
-      _ui_screen_change( &ui_screenTempControl, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, &ui_screenTempControl_screen_init);
+      _ui_screen_change( &ui_screenTempControl, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, &ui_screenTempControl_screen_init,false);
 }
 }
 void ui_event_btnGravity( lv_event_t * e) {
@@ -169,7 +169,8 @@ if ( event_code == LV_EVENT_SCREEN_LOAD_START) {
 void ui_event_btnTempControlBack( lv_event_t * e) {
     lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
 if ( event_code == LV_EVENT_CLICKED) {
-      _ui_screen_change( &ui_screenMain, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, &ui_screenMain_screen_init);
+      _ui_screen_change( &ui_screenMain, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, &ui_screenMain_screen_init,true);
+      ui_screenTempControl = NULL;
 }
 }
 void ui_event_sldMode( lv_event_t * e) {
@@ -196,7 +197,8 @@ if ( event_code == LV_EVENT_SCREEN_LOAD_START) {
 void ui_event_btnSettingBack( lv_event_t * e) {
     lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
 if ( event_code == LV_EVENT_CLICKED) {
-      _ui_screen_change( &ui_screenMain, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, &ui_screenMain_screen_init);
+      _ui_screen_change( &ui_screenMain, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, &ui_screenMain_screen_init,true);
+      ui_screenSetting = NULL;
 }
 }
 void ui_event_swWiFi( lv_event_t * e) {
@@ -238,9 +240,9 @@ lv_disp_t *dispp = lv_disp_get_default();
 lv_theme_t *theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED), true, LV_FONT_DEFAULT);
 lv_disp_set_theme(dispp, theme);
 ui_screenMain_screen_init();
-ui_screenTempControl_screen_init();
-ui_screenSetting_screen_init();
-ui_screenInput_screen_init();
+//ui_screenTempControl_screen_init();
+//ui_screenSetting_screen_init();
+//ui_screenInput_screen_init();
 ui____initial_actions0 = lv_obj_create(NULL);
 lv_disp_load_scr( ui_screenMain);
 }
