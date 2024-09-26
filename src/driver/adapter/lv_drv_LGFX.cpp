@@ -16,14 +16,8 @@
 
 LGFX gfx;
 
-
 #ifdef __cplusplus
 extern "C" {
-#endif
-void display_drv_sleep(void);
-void display_drv_wakeup(void);
-#ifdef __cplusplus
-}
 #endif
 
 void display_drv_sleep(void){
@@ -31,6 +25,11 @@ void display_drv_sleep(void){
 }
 void display_drv_wakeup(void){
    gfx.wakeup();
+}
+
+void display_drv_set_brightness(uint8_t brightness){
+    if(brightness< MinimumBrightness) brightness= MinimumBrightness;
+    gfx.setBrightness(brightness);
 }
 
 /* Display flushing */
@@ -73,5 +72,9 @@ void display_drv_init()
 #endif
 }
 void touch_drv_init(){}
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //#ifdef LGFX_DRIVER

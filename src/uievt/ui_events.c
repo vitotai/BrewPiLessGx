@@ -521,6 +521,10 @@ void updateScreenSaverTime(void){
 	// if screen saver is running, just wait until it returns?
 }
 
+void updateDisplayBrightness(uint8_t brightness){
+	display_drv_set_brightness(brightness);
+}
+
 void startScreenSaverTimer(void){
 	uint32_t saver=getScreenSaverTime();
 	uint32_t sleep= getSleepTimeout();

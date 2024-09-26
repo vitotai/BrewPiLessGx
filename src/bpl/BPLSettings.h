@@ -22,6 +22,8 @@ typedef struct _SystemConfiguration{
     uint8_t skin;
     uint8_t glycolChilling;
     uint8_t securedAp;
+    uint8_t brightness;
+    uint8_t _padding[2+16];
 }SystemConfiguration;
 
 //*****************************************************

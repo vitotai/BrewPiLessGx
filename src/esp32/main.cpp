@@ -5,7 +5,7 @@
 #include "wakebutton.h"
 #include "lv_drv_conf.h"
 #include "driver_if.h"
-
+#include "BPLSettings.h"
 extern void bpl_setup(void);
 extern void bpl_loop(void);
 
@@ -15,6 +15,7 @@ void setup(){
 
     // LVGL display driver stup
     display_drv_init();
+    display_drv_set_brightness(theSettings.systemConfiguration()->brightness);
     static lv_disp_draw_buf_t draw_buf;
 
     static lv_color_t *disp_draw_buf = (lv_color_t *)heap_caps_malloc(sizeof(lv_color_t) * LV_DRAW_BUFFER_SIZE, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);

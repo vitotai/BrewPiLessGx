@@ -147,6 +147,7 @@ bool BPLSettings::autoCapSettingsSanity(void){ return true;}
 #define  KeyNetmask    "mask"
 #define  KeyDNS "dns"
 #define  KeySecuredAP "eap"
+#define  KeyBrightness "bright"
 
 #define KeyFlashChipId "fid"
 #define KeyFlashRealSize "frsize"
@@ -207,10 +208,11 @@ void BPLSettings::defaultSystemConfiguration(void){
     syscfg->dns = (uint32_t) IPAddress(0,0,0,0);
 
     syscfg->securedAp = false;	
-syscfg->screenSaverTime = 180;
+	syscfg->screenSaverTime = 180;
 	syscfg->sleepTimeout = 30;
 	syscfg->skin = 0;
 	syscfg->glycolChilling = 0;
+	syscfg->brightness = 255;
 }
 
 bool BPLSettings::dejsonSystemConfiguration(String json){
@@ -248,6 +250,7 @@ bool BPLSettings::dejsonSystemConfiguration(String json){
 		syscfg->sleepTimeout = root[KeySleepTime];
 		syscfg->skin = root[KeySkin];
 		syscfg->glycolChilling=root[KeyGlycol];
+		syscfg->brightness = root[KeyBrightness];
 		return true;
     }
 	return false;
@@ -281,8 +284,9 @@ String BPLSettings::jsonSystemConfiguration(void){
 
 	root[KeySkin] = syscfg->skin;
 	root[KeyGlycol] = syscfg->glycolChilling;
-        root[KeySecuredAP] = syscfg->securedAp;
-
+    root[KeySecuredAP] = syscfg->securedAp;
+	root[KeyBrightness] = syscfg->brightness;
+	
 	JsonArray skins = root.createNestedArray(KeyEmbeddedSkins);
 	for(int i=0;i<NumberOfEmbeddedSkin;i++){
 		skins.add(getEmbeddedSkinName(i));

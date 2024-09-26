@@ -202,6 +202,7 @@ String ApplicationJsonType="Application/JSON";
 
 extern "C"{
 void updateScreenSaverTime(void);
+void updateDisplayBrightness(uint8_t brightness);
 }
 //*******************************************
 
@@ -547,6 +548,7 @@ public:
 					request->send(200,ApplicationJsonType,"{}");
 					//display.setAutoOffPeriod(theSettings.systemConfiguration()->backlite);
 					updateScreenSaverTime();
+					updateDisplayBrightness(theSettings.systemConfiguration()->brightness);
 
 					#if TWOFACED_LCD
 					sharedDisplayManager.setDisplayMode(theSettings.systemConfiguration()->displayMode);
