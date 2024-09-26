@@ -8,6 +8,12 @@ The main display is defined by [JSON format](doc/skin.md). There is a developing
     -  It's a fixed bug in newer framework, but [another bug]( https://github.com/espressif/arduino-esp32/issues/8976) stop me from upgrading.
 
 # Update Note
+-
+    - create screens when needed and release when leaving.
+    - Default no password for AP mode, workaround for [this issue]( https://github.com/espressif/arduino-esp32/issues/8976)
+    - Add back temperature correction option for gravity device. Pill without correction works better for me.
+    - Add LCD backlight adjustment. Valid range: 100-255. 
+
 - 2024/09/15
     - Include AsyncElegantOTA library.
     - Set temperature default value to 20C/68F.

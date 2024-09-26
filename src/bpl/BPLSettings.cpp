@@ -286,7 +286,7 @@ String BPLSettings::jsonSystemConfiguration(void){
 	root[KeyGlycol] = syscfg->glycolChilling;
     root[KeySecuredAP] = syscfg->securedAp;
 	root[KeyBrightness] = syscfg->brightness;
-	
+
 	JsonArray skins = root.createNestedArray(KeyEmbeddedSkins);
 	for(int i=0;i<NumberOfEmbeddedSkin;i++){
 		skins.add(getEmbeddedSkinName(i));
@@ -346,7 +346,7 @@ String BPLSettings::jsonSystemConfiguration(void){
 #define KeyCalibrationPoints "calpts"
 
 #define KeyPillMacAddress "mac"
-
+#define KeyTemperatureCorrection "tc"
 
 bool BPLSettings::gravityConfigSantiy(){
 	GravityDeviceConfiguration *gdc = &_data.gdc;
@@ -385,7 +385,7 @@ bool BPLSettings::dejsonGravityConfig(char* json)
 
 		gdc->calbybpl = root[KeyCalibrateFormula];
 		gdc->offset = root[KeyGravityOffset];
-
+		gdc->tempCorrection = root[KeyTemperatureCorrection];
 		if(gdc->gravityDeviceType == GravityDeviceIspindel){
 		}
 
@@ -452,7 +452,8 @@ String BPLSettings::jsonGravityConfig(void){
 		
 		root[KeyNumberCalPoints] = gdc->numCalPoints;
 		root[KeyGravityOffset] = gdc->offset;		
-
+		root[KeyTemperatureCorrection] = gdc->tempCorrection;
+		
 		if(gdc->numCalPoints > 0){
 			JsonArray points = root.createNestedArray(KeyCalibrationPoints);
 			for(int i=0;i< gdc->numCalPoints;i++){

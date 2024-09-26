@@ -238,10 +238,12 @@ float ExternalData::_calculateGravity(float raw){
 
 	// temp. correction
 	float temp= (brewPi.getUnit() == 'C')? C2F(_auxTemp):_auxTemp;
-	if(_cfg->usePlato){
-		sg =SG2Brix(temperatureCorrection(Brix2SG(sg),temp,68));
-	}else{
-	    sg = temperatureCorrection(sg,temp,68);
+	if(_cfg->tempCorrection){
+		if(_cfg->usePlato){
+			sg =SG2Brix(temperatureCorrection(Brix2SG(sg),temp,68));
+		}else{
+	    	sg = temperatureCorrection(sg,temp,68);
+		}
 	}
 
 	return sg;

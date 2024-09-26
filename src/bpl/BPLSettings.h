@@ -74,7 +74,7 @@ typedef struct _GravityDeviceConfiguration{
 	uint8_t  usePlato;
     uint8_t  _padding[6];
     CalibrationPoint calPoints[MaxNumberCalibrationPoints];
-    uint8_t  _unused2;
+    uint8_t  tempCorrection;
 }GravityDeviceConfiguration;
 
 

@@ -8,6 +8,11 @@
 Touch_GT911 ts = Touch_GT911(TOUCH_GT911_SDA, TOUCH_GT911_SCL, TOUCH_GT911_INT, TOUCH_GT911_RST, TOUCH_MAP_MAX_X,  TOUCH_MAP_MAX_Y);
 int touch_last_x = 0, touch_last_y = 0;
 #define GT911_I2C_SLAVE_ADDR 0x5D
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 void touch_drv_init()
 {
     Wire.begin(TOUCH_GT911_SDA, TOUCH_GT911_SCL);
@@ -63,4 +68,7 @@ void touch_drv_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
   
 }
 
+#ifdef __cplusplus
+}
+#endif
 #endif //#ifdef TOUCH_GT911

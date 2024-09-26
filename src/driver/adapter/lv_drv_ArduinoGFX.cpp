@@ -29,11 +29,6 @@ Arduino_GFX *gfx = new Arduino_ILI9341(bus, GFX_NOT_DEFINED /* RST */, 1 /* rota
 #ifdef __cplusplus
 extern "C" {
 #endif
-void display_drv_sleep(void);
-void display_drv_wakeup(void);
-#ifdef __cplusplus
-}
-#endif
 
 /*******************************************************************************
  * End of Arduino_GFX setting
@@ -83,4 +78,9 @@ void display_drv_set_brightness(uint8_t brightness){
    ledcWrite(TFT_PWM_CHANNEL_BL, brightness); /* Screen brightness can be modified by adjusting this parameter. (0-255) */
 #endif
 }
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif
