@@ -56,7 +56,7 @@ void cui_screenNetworkList_screen_init(void){
 // create screen
 cui_screenNetworkList = lv_obj_create(NULL);
 lv_obj_clear_flag( cui_screenNetworkList, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
-lv_obj_set_style_bg_color(cui_screenNetworkList, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT );
+lv_obj_set_style_bg_color(cui_screenNetworkList, lv_color_hex(0x000000), LV_PART_ITEMS | LV_STATE_DEFAULT );
 lv_obj_set_style_bg_opa(cui_screenNetworkList, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
 
 
