@@ -9,6 +9,7 @@ void ui_screenInput_screen_init(void)
 {
 ui_screenInput = lv_obj_create(NULL);
 lv_obj_clear_flag( ui_screenInput, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+lv_obj_set_style_bg_color(ui_screenInput,lv_color_black(), LV_PART_MAIN| LV_STATE_DEFAULT);
 
 ui_kbInput = lv_keyboard_create(ui_screenInput);
 lv_obj_set_height( ui_kbInput, 120);
@@ -16,6 +17,7 @@ lv_obj_set_width( ui_kbInput, lv_pct(100));
 //lv_obj_set_x( ui_kbInput, 0 );
 //lv_obj_set_y( ui_kbInput, 0 );
 lv_obj_set_align( ui_kbInput, LV_ALIGN_BOTTOM_MID );
+lv_obj_set_style_bg_color(ui_kbInput,lv_color_black(),LV_PART_ITEMS|LV_STATE_DEFAULT);
 
 ui_lbInputLabel = lv_label_create(ui_screenInput);
 lv_obj_set_width( ui_lbInputLabel, LV_SIZE_CONTENT);  /// 1
@@ -31,7 +33,8 @@ lv_obj_set_height( ui_taInput, 36);
 lv_obj_set_x( ui_taInput, 0 );
 lv_obj_set_y( ui_taInput, -42 );
 lv_obj_set_align( ui_taInput, LV_ALIGN_CENTER );
-lv_textarea_set_placeholder_text(ui_taInput,"Placeholder...");
+//lv_textarea_set_placeholder_text(ui_taInput,"Placeholder...");
+lv_obj_set_style_bg_color(ui_taInput, lv_color_lighten(lv_color_black(),5), LV_PART_MAIN| LV_STATE_DEFAULT);
 
 
 
