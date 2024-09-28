@@ -101,6 +101,7 @@ input[type=number] {
 	z-index: 1;
 	position:absolute;
 }
+
 .lcd-background{
 	z-index: 0;
 	border:0;
@@ -127,7 +128,33 @@ input[type=number] {
 	top: 0;
 	z-index:1071;
 }
-
+.touch-area{
+	z-index: 0;
+	position:absolute;
+	border: none;
+	background-color: #777;
+	opacity: 60%;
+	padding: 10px;
+}
+.diagonal-text {
+    display: inline-block;
+    transform: rotate(-45deg); /* Rotate only the text */
+    font-size: 12px;
+    color: #FFAAAA;
+}
+#coordinates{
+	width: 100px;
+	margin: auto;
+	color:blue;
+	background-color: #ccc;
+}
+#state-icon{
+	background-image: url(state_icons.png);
+	display:block;
+	width:24px;
+	height:24px;
+	z-index:10;
+}
 </style>
 <body>
 <div class="container">
@@ -144,9 +171,14 @@ input[type=number] {
 	<div class="col-lg-10">
 		<div id="lcd" class="lcddisplay">
 			<div class="lcd-background"></div>
+				<div id="set"  class="touch-area"><span class="diagonal-text">Network</span></div>
+				<div id="ig"  class="touch-area"><span class="diagonal-text">Gravity</span></div>
+				<div id="iog"  class="touch-area"><span class="diagonal-text">OG</span></div>
+				<div id="tc"  class="touch-area"><span class="diagonal-text">Control</span></div>
 			<div id="rectangle-1" class="rectangle-blocks"></div>
 			<span id="mode" class="bpl lcd-text font-s">Off</span>
 			<span id="state" class="bpl lcd-text font-s" >Idle</span>
+			<span id="state-icon" class="bpl icon"></span>
 			<span id="st" class="bpl lcd-text font-s" >01H23m23</span>
 			<span id="bt" class="bpl lcd-text font-s" >19.9</span>
 			<span id="bs" class="bpl lcd-text font-s" >20.0</span>
@@ -198,9 +230,10 @@ input[type=number] {
 			</div>
 
 		</div> <!-- LCD -->
-		<div id="coordinates" class="bg-light text-center">(0,0)</div>
+		<div><div  id="coordinates" class="text-center">(0,0)</div></div>
 	</div> <!-- COL-->
 </div><!-- ROW-->
+
 <div class="container-flex">
 <div class="row">
 	<div class="col-lg-2">
@@ -339,7 +372,111 @@ input[type=number] {
 				</td>
 			</tr>
 			<!--  Item  End-->
+
+			<tr>
+				<td colspan="11">Touch Area</td>
+			</tr>
+			<tr>
+			<th>Enable</th>
+			<th>Item</th>
+			<th></th>
+			<th>Alignment</th>
+			<th>X</th>
+			<th>Y</th>
+			<th>Width</th>
+			<th>Height</th>
+			<th></th>
+			<th></th>
+			<th></th>		
+			</tr>
+			<!--  Item  Begin-->
+		<tr target="set" class="touch-item">
+			<td><input type="checkbox" target="show"></td>
+			<td colspan="2">Network Setting</td>
+				<td><select name="align" target="align">
+					<option value="c">Center</option>
+					<option value="tl" selected>Top Left</option>
+					<option value="bl">Bottom Left</option>
+					<option value="lm">Left Middle</option>
+					<option value="tr">Top Right</option>
+					<option value="br">Bottom Right</option>
+					<option value="rm">Right Middle</option>
+				</select></td>
 		
+			<td><input type="number" target="posx"></td>
+			<td><input type="number" target="posy"></td>
+			<td><input type="text" target="width"></td>
+			<td><input type="text" target="height"></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+
+		<tr target="tc" class="touch-item">
+			<td><input type="checkbox" target="show"></td>
+			<td colspan="2">Temperature Control</td>
+				<td><select name="align" target="align">
+					<option value="c">Center</option>
+					<option value="tl" selected>Top Left</option>
+					<option value="bl">Bottom Left</option>
+					<option value="lm">Left Middle</option>
+					<option value="tr">Top Right</option>
+					<option value="br">Bottom Right</option>
+					<option value="rm">Right Middle</option>
+				</select></td>
+		
+			<td><input type="number" target="posx"></td>
+			<td><input type="number" target="posy"></td>
+			<td><input type="text" target="width"></td>
+			<td><input type="text" target="height"></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr target="ig" class="touch-item">
+			<td><input type="checkbox" target="show"></td>
+			<td colspan="2">Gravity Input</td>
+				<td><select name="align" target="align">
+					<option value="c">Center</option>
+					<option value="tl" selected>Top Left</option>
+					<option value="bl">Bottom Left</option>
+					<option value="lm">Left Middle</option>
+					<option value="tr">Top Right</option>
+					<option value="br">Bottom Right</option>
+					<option value="rm">Right Middle</option>
+				</select></td>
+		
+			<td><input type="number" target="posx"></td>
+			<td><input type="number" target="posy"></td>
+			<td><input type="text" target="width"></td>
+			<td><input type="text" target="height"></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr target="iog" class="touch-item">
+			<td><input type="checkbox" target="show"></td>
+			<td colspan="2">Original Gravity Input</td>
+				<td><select name="align" target="align">
+					<option value="c">Center</option>
+					<option value="tl" selected>Top Left</option>
+					<option value="bl">Bottom Left</option>
+					<option value="lm">Left Middle</option>
+					<option value="tr">Top Right</option>
+					<option value="br">Bottom Right</option>
+					<option value="rm">Right Middle</option>
+				</select></td>
+		
+			<td><input type="number" target="posx"></td>
+			<td><input type="number" target="posy"></td>
+			<td><input type="text" target="width"></td>
+			<td><input type="text" target="height"></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		
+
 			<tr id="brewpi-start">
 				<td colspan="11">BrewPi Items</td>
 			</tr>
@@ -393,7 +530,7 @@ input[type=number] {
 		</tr>
 		<!--  Item  End-->
 		<!--  Item  Begin-->
-		<tr target="state" class="brewpi-item">
+		<tr target="state" class="brewpi-item"  exclusive="state-icon">
 			<td><input type="checkbox" target="show"></td>
 			<td>State</td>
 			<td><input type="text" target="value"></td>
@@ -428,6 +565,39 @@ input[type=number] {
 			</td>
 		</tr>
 		<!--  Item  End-->
+
+				<!--  Item  Begin-->
+				<tr target="state-icon" class="brewpi-item icon-item"  exclusive="state">
+					<td><input type="checkbox" target="show"></td>
+					<td>State Icon</td>
+					<td>
+						<select name="state-value">
+							<option value="0">Idle</option>
+							<option value="1">Off</option>
+							<option value="2">Door Open</option>
+							<option value="3">Heating</option>
+							<option value="4">Cooling</option>
+							<option value="5">Wait to Cool</option>
+							<option value="6">Wait to Heat</option>
+							<option value="7">Wait for Peak</option>
+							<option value="8">Cool min time</option>
+							<option value="9">Heat min time</option>
+						</select>
+					</td>
+					
+					<td><input type="checkbox" disabled checked name="builtin"> Built-in</td>
+				
+					<td><input type="number" target="posx"></td>
+					<td><input type="number" target="posy"></td>
+					<td><input type="text" target="width" value="24" disabled></td>
+					<td><input type="text" target="height" value="24" disabled></td>
+					<td colspan="3"><input name="offset" id="state-offset" style="width:100%" type="text" target="offset" value="0,0,24,0,48,0,72,0,96,0,120,0,144,0,168,0,192,0,216,0" disabled></td>
+					<!--<td></td>
+					<td></td> -->
+				</tr>
+				<!--  Item  End-->
+		
+
 		<!--  Item  Begin-->
 		<tr target="st" class="brewpi-item">
 			<td><input type="checkbox" target="show"></td>

@@ -170,8 +170,10 @@ function resetInput(){
     $('#input-table select[target="align"]').val("tl");
     $('#input-table input[target="posx"]').val('');
     $('#input-table input[target="posy"]').val('');
-    $('#input-table input[target="width"]').val('');
-    $('#input-table input[target="height"]').val('');
+
+    $('#input-table input[target="width"]:not(:disabled)').val('');
+    $('#input-table input[target="height"]:not(:disabled)').val('');
+
     $('#input-table input[target="color"]').val('');
     $('#input-table select[target="font"]').val("default");
     // clear static texts
@@ -189,7 +191,7 @@ function resetInput(){
     }
     $("#rectangle-1").width(0).height(0);
     $("#input-table tr.static-text").find('input[target="value"]').val('');
-    $("#statictext-1").text('');
+    $("#statictext-1").text('');    
 }
 var satticTextStyles={};
 
@@ -315,6 +317,7 @@ function dejsonRectangles(blocks){
         if(typeof json["y"] !="undefined") tr.find('input[target="posy"]').val(json.y);    
         if(typeof json["w"] !="undefined") tr.find('input[target="width"]').val(json.w);
         if(typeof json["h"] !="undefined") tr.find('input[target="height"]').val(json.h);
+        if(typeof json["a"] !="undefined") tr.find('select[target="align"]').val(json.a);
 
         if(typeof json["fc"] !="undefined"){
             tr.find('input[target="fill"]').val(json.fc);
@@ -352,6 +355,26 @@ function djsonWgtStyle(tr,json){
     $(tr).find('input[target="show"]').prop('checked',true);
 }
 
+function djsonIconStyle(tr,json){
+    $(tr).find('input[target="show"]').prop('checked',true);
+    if(typeof json["x"] !="undefined") $(tr).find('input[target="posx"]').val(json.x);    
+    if(typeof json["y"] !="undefined") $(tr).find('input[target="posy"]').val(json.y);
+
+    if(typeof json["w"] !="undefined" && json.w != "c") $(tr).find('input[target="width"]').val(json.w);
+    if(typeof json["h"] !="undefined" && json.h != "c") $(tr).find('input[target="height"]').val(json.h);
+
+    if(typeof json["icons"] == "undefined" && json["icons"] !="I:istate"){
+        alert("Only embedded default state icons supported currently.");
+    }
+    if(typeof json["off"] !="undefined"){
+        var offsets="";
+        $.each(json["off"],function(i,v){
+            offsets += ((offsets=="")? "":",") + v; 
+        });
+        $(tr).find('input[name="offset"]').val(offsets);
+    }
+}
+
 function rssiBarFromJson(target, json){
     var prop={};    
     if(typeof json["fc"] !="undefined") prop["color"] = json.fc;
@@ -361,6 +384,22 @@ function rssiBarFromJson(target, json){
     RssiWidgets[target]=wgt;
 
     return wgt;
+}
+
+function dejsonClicks(clicks){
+    $.each(clicks, function(key, json) {
+        var tr = $('#input-table tr.touch-item[target="' + key +'"]');
+        if(typeof json["a"] !="undefined") $(tr).find('select[target="align"]').val(json.a);
+
+        if(typeof json["x"] !="undefined") $(tr).find('input[target="posx"]').val(json.x);    
+        if(typeof json["y"] !="undefined") $(tr).find('input[target="posy"]').val(json.y);
+    
+        if(typeof json["w"] !="undefined" && json.w != "c") $(tr).find('input[target="width"]').val(json.w);
+        if(typeof json["h"] !="undefined" && json.h != "c") $(tr).find('input[target="height"]').val(json.h);
+        $(tr).find('input[target="show"]').prop('checked',true);
+        // it's like a retangel item
+        calRectangle(key);
+    });
 }
 
 function processJson(json){
@@ -382,6 +421,7 @@ function processJson(json){
         }else if(key== "cbs"){
             dejsonRectangles(value);
         }else if(key== "click"){
+            dejsonClicks(value);
         }else if(key== "c1" || key== "c2" || key== "c3"){
             
         }else{
@@ -399,6 +439,20 @@ function processJson(json){
                 positionRssiBarWidget(wgttarget,wtr);
                 if(typeof value["bc"] != "undefined") $("#" + wgttarget).css("background-color","#"+value.bc);
                 wgt.setRssi($(wtr).find('input[target="value"]').val());
+            }else if(typeof value['rep'] != "undefined" && value.rep =="ico"){
+
+                var icotarget = $(tr).attr("exclusive");
+                var tr_ico=$('#input-table tr.brewpi-item[target="'+ icotarget +'"]');
+                djsonIconStyle(tr_ico,value);
+ 
+                $('#'+icotarget).show();
+                var iw = parseInt($(tr_ico).find('input[target="width"]').val());
+                var ih = parseInt($(tr_ico).find('input[target="height"]').val());
+                $("#" + icotarget).width(isNaN(iw)? 24:iw);
+                $("#" + icotarget).height(isNaN(ih)? 24:ih);
+                var x =  $(tr_ico).find('input[target="posx"]').val();
+                var y = $(tr_ico).find('input[target="posy"]').val();
+                $("#" + icotarget).css("top",y).css("left",x);
             }else{                
                 if(tr.length==0) alert("unknown item:"+key);
                 djsonTextStyle(tr,value);
@@ -438,9 +492,11 @@ function moveable(obj){
 }
 function getCommonProp(tr){
     var json={};
+    if($(tr).find('select[name="align"]').length >0){
+        var align = $(tr).find('select[name="align"]').val();
+        if(align !="tl") json.a=align;
+    }
 
-    var align = $(tr).find('select[name="align"]').val();
-    if(align !="tl") json.a=align;
     var x = parseInt($(tr).find('input[target="posx"]').val());
     if(!isNaN(x) && x!=0 ) json.x = x;
     var y = parseInt($(tr).find('input[target="posy"]').val());
@@ -478,6 +534,19 @@ function getRssiJson(tr){
     var sc= $(tr).find('input[target="shadow-color"]').val();
     if(sc != "") json.sc = sc;
 
+    return json;
+}
+
+function getStateIconJson(tr){
+    var json=getCommonProp(tr);
+    json.rep="ico";
+    if($(tr).find('input[name="builtin"]').is(':checked')){
+        json.icons="I:istate";
+    }
+    var offsets=$("#state-offset").val().split(",");
+    var off=[];
+    $.each(offsets,function(i,v){ off.push(parseInt(v))});
+    json.off=off;
     return json;
 }
 
@@ -522,6 +591,8 @@ function generateJson(){
            if($(tr).find('input[target="show"]').prop('checked')){
                 if($(tr).hasClass("rssi-widget")){
                     json[$(tr).attr('exclusive')] = getRssiJson(tr);
+                }else  if($(tr).hasClass("icon-item")){
+                    json[$(tr).attr('exclusive')] = getStateIconJson(tr);
                 }else json[$(tr).attr('target')] = getTextJson(tr);
            }
         }
@@ -540,6 +611,26 @@ function generateJson(){
         if(td !="n") stxs.td = td;
         if(Object.keys(stxs)>0) json.stxs=stxs;
         json.stxt = stxt;
+    }
+    var clicks={};
+    $("#input-table tr.touch-item").each(function(i,tr){
+        if($(tr).find('input[target="show"]').prop('checked')){
+            var wv= getDimNumber($(tr).find('input[target="width"]').val());
+            var hv= getDimNumber($(tr).find('input[target="height"]').val());
+            if(wv!="" && hv!=""){
+                var rectangle={w:wv,h:hv};
+                var align = $(tr).find('select[name="align"]').val();
+                if(align !="tl") rectangle.a=align;
+                var x = parseInt($(tr).find('input[target="posx"]').val());
+                if(!isNaN(x) && x!=0 ) rectangle.x = x;
+                var y = parseInt($(tr).find('input[target="posy"]').val());
+                if(!isNaN(y) && y!=0 ) rectangle.y = y;    
+                clicks[$(tr).attr('target')]=rectangle;
+            }
+        }
+    });
+    if (Object.keys(clicks).length != 0) {
+        json.click=clicks;
     }
     //return JSON.stringify(json);
 
@@ -736,7 +827,7 @@ var stxt_tr;
 var recblock_tr;
 $(function(){
     // hide all brewpi items
-    $.each($("#input-table tr.brewpi-item"),function(i,tr){
+    $.each($("#input-table tr.brewpi-item,tr.touch-item"),function(i,tr){
         var i= $(tr).attr("target");
         $("#"+ i).hide();
         if(! $(tr).hasClass("rssi-widget")) $(tr).find('input[target="value"').val($("#"+ i).text());
@@ -830,6 +921,14 @@ $(function(){
     $("#generate-json").click(function(){
        $("#json-input").val(generateJson());
     });
+    // state icons
+    $('select[name="state-value"]').change(function(){
+        var index=$('select[name="state-value"]').val();
+        var offsets=$("#state-offset").val().split(",");
+        var xoff = offsets[index *2];
+        var yoff = offsets[index * 2 +1];
+        $("#state-icon").css("background-position","-"+xoff +"px -"+yoff +"px");
+    });
 
     // clone a tr for static text
     stxt_tr = $("#input-table tr.static-text").clone(true);
@@ -847,6 +946,6 @@ $(function(){
         $("#lcd").width(parseInt($("#lcd-width").val()));
        $("#lcd").height(parseInt($("#lcd-height").val()));
     });
-    moveable($(".lcd-text, .rectangle-blocks, .rssi-bars"));
+    moveable($(".lcd-text, .rectangle-blocks, .rssi-bars, .touch-area, .icon"));
     initFileDrop();
 });
