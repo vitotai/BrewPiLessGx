@@ -317,6 +317,7 @@ function dejsonRectangles(blocks){
         if(typeof json["y"] !="undefined") tr.find('input[target="posy"]').val(json.y);    
         if(typeof json["w"] !="undefined") tr.find('input[target="width"]').val(json.w);
         if(typeof json["h"] !="undefined") tr.find('input[target="height"]').val(json.h);
+        if(typeof json["a"] !="undefined") tr.find('select[target="align"]').val(json.a);
 
         if(typeof json["fc"] !="undefined"){
             tr.find('input[target="fill"]').val(json.fc);
