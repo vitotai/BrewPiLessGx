@@ -8,6 +8,9 @@ The main display is defined by [JSON format](doc/skin.md). There is a developing
     -  It's a fixed bug in newer framework, but [another bug]( https://github.com/espressif/arduino-esp32/issues/8976) stop me from upgrading.
 
 # Update Note
+- 2024/10/01
+    - Automatic go back to main screen when staying idle for 30 seconds in Temperature control screen.
+    - update Interface editor.
 - 2024/09/28
     - create screens when needed and release when leaving.
     - Default no password for AP mode, workaround for [this issue]( https://github.com/espressif/arduino-esp32/issues/8976)
