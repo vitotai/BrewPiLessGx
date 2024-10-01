@@ -96,4 +96,6 @@ lv_obj_add_event_cb(ui_sldMode, ui_event_sldMode, LV_EVENT_ALL, NULL);
 lv_obj_add_event_cb(ui_arcTemperatureSet, ui_event_arcTemperatureSet, LV_EVENT_ALL, NULL);
 lv_obj_add_event_cb(ui_screenTempControl, ui_event_screenTempControl, LV_EVENT_ALL, NULL);
 
+lv_obj_add_flag(ui_sldMode, LV_OBJ_FLAG_EVENT_BUBBLE);
+lv_obj_add_flag(ui_arcTemperatureSet, LV_OBJ_FLAG_EVENT_BUBBLE);
 }

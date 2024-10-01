@@ -25,6 +25,7 @@ void onKeyboardReadyPressed(lv_event_t * e);
 void onKeyboardCancel(lv_event_t * e);
 void onInputEnter(lv_event_t * e);
 
+void onTempControlScreenClicked(lv_event_t * e);
 #ifdef __cplusplus
 } /*extern "C"*/
 #endif

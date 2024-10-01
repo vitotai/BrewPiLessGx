@@ -12,6 +12,7 @@
 #include "screensaver.h"
 #include "timeformat.h"
 #include "skindef.h"
+#include "driver_if.h"
 
 #define GRAVITY_TITLE "Gravity"
 #define ORIGINAL_GRAVITY_TITLE "Original Gravity"
@@ -611,6 +612,29 @@ void openEditOriginalGravity(lv_event_t * e)
 /* ****************************************************************** */
 /* control screen*/
 /* ****************************************************************** */
+
+static void controlBackToMain(void){
+    _ui_screen_change( &ui_screenMain, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, &ui_screenMain_screen_init,true);
+    ui_screenTempControl = NULL;
+	// double check if temperature is set correctly
+	uint8_t mode = BrewPiGetMode();
+	
+	if(mode == BeerConstMode){
+		int value =(int) lv_arc_get_value(ui_arcTemperatureSet);
+
+		if(value != (int)BrewPiGetBeerSet()){
+			BrewPiSetBeer(value);
+		}
+	}else if(mode == FridgeConstMode){
+		int value =(int) lv_arc_get_value(ui_arcTemperatureSet);
+
+		if(value != (int)BrewPiGetFridgeSet()){
+			BrewPiSetFridge(value);
+		}
+	}
+
+}
+
 void setArcValues(uint8_t mode){
 
 	if(mode != BeerConstMode && mode !=FridgeConstMode){
@@ -626,7 +650,7 @@ void setArcValues(uint8_t mode){
 		int min =(int) BrewPiGetMinSetTemp();
 		int max =(int) BrewPiGetMaxSetTemp();
 		if( (value > max) || (value < min)){
-			value = (BrewPiGetUnit() == 'C')? 20:68;
+			value = min; // to force changing the value
 		}
 
 		lv_arc_set_value(ui_arcTemperatureSet,value);
@@ -634,6 +658,36 @@ void setArcValues(uint8_t mode){
 		lv_obj_clear_state(ui_arcTemperatureSet,LV_STATE_DISABLED);
 	}
 
+}
+static lv_timer_t *autoBackTimer=NULL;
+
+static void autoBackTimeout(lv_timer_t *timer){
+	(void) timer;
+	autoBackTimer = NULL;
+	controlBackToMain();
+}
+
+static void reStartAutoBackTimer(void){
+	if(! autoBackTimer){
+	    autoBackTimer=lv_timer_create(autoBackTimeout,AUTO_BACK_TIMER,NULL);
+		lv_timer_set_repeat_count(autoBackTimer,1);
+	}else{
+		lv_timer_reset(autoBackTimer);
+	}
+}
+
+static void stopAutoBackTimer(void){
+	lv_timer_del(autoBackTimer);
+	autoBackTimer = NULL;
+}
+
+void ui_event_btnTempControlBack( lv_event_t * e) {
+    lv_event_code_t event_code = lv_event_get_code(e);
+	//lv_obj_t * target = lv_event_get_target(e);
+	if ( event_code == LV_EVENT_CLICKED) {
+		stopAutoBackTimer();
+		controlBackToMain();
+	}
 }
 
 void onScreenTempControlLoadStart(lv_event_t * e)
@@ -652,6 +706,7 @@ void onScreenTempControlLoadStart(lv_event_t * e)
 	lv_arc_set_range(ui_arcTemperatureSet,min,max);
 
 	setArcValues(mode);
+	reStartAutoBackTimer();
 }
 
 void onModeChanged(lv_event_t * e)
@@ -671,6 +726,11 @@ void onTemperatureSetDone(lv_event_t * e)
 		BrewPiSetFridge(value);
 	}
 }
+
+void onTempControlScreenClicked(lv_event_t * e){
+	reStartAutoBackTimer();
+}
+
 /* ****************************************************************** */
 /* Setting screen*/
 /* ****************************************************************** */

@@ -164,13 +164,8 @@ void ui_event_screenTempControl( lv_event_t * e) {
     lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
 if ( event_code == LV_EVENT_SCREEN_LOAD_START) {
       onScreenTempControlLoadStart( e );
-}
-}
-void ui_event_btnTempControlBack( lv_event_t * e) {
-    lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
-if ( event_code == LV_EVENT_CLICKED) {
-      _ui_screen_change( &ui_screenMain, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, &ui_screenMain_screen_init,true);
-      ui_screenTempControl = NULL;
+}else if ( event_code == LV_EVENT_CLICKED){
+      onTempControlScreenClicked(e);      
 }
 }
 void ui_event_sldMode( lv_event_t * e) {

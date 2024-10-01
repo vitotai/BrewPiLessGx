@@ -131,6 +131,7 @@ void ui_init(void);
 extern const void* control_screen_label_image;
 extern const void* setting_screen_label_image;
 
+#define AUTO_BACK_TIMER 30000
 #ifdef __cplusplus
 } /*extern "C"*/
 #endif
