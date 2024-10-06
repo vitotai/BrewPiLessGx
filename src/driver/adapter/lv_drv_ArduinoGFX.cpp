@@ -75,7 +75,8 @@ void display_drv_init()
 }
 void display_drv_set_brightness(uint8_t brightness){
 #ifdef GFX_BL
-   ledcWrite(TFT_PWM_CHANNEL_BL, brightness); /* Screen brightness can be modified by adjusting this parameter. (0-255) */
+   if(brightness< MinimumBrightness) brightness= MinimumBrightness;
+      ledcWrite(TFT_PWM_CHANNEL_BL, brightness); /* Screen brightness can be modified by adjusting this parameter. (0-255) */
 #endif
 }
 
