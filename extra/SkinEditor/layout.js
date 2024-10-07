@@ -111,7 +111,7 @@ function position(obj,align,x,y,wv,hv){
     var pH=$("#lcd").height();
     var w = dimNumber(obj,wv,pW,"width",getStringWidth(obj.text(),getFontOfElement(obj)));
     var h = dimNumber(obj,hv,pH,"height",$(obj).height());
-    if(align == "tl"){
+    if((typeof align == "undefined") || (align == "tl")){
         // top left
         obj.css("top",y).css("left",x);
     }else if(align == "c"){
