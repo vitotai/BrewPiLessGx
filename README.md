@@ -8,6 +8,8 @@ The main display is defined by [JSON format](doc/skin.md). There is a developing
     -  It's a fixed bug in newer framework, but [another bug]( https://github.com/espressif/arduino-esp32/issues/8976) stop me from upgrading.
 
 # Update Note
+- 2024/10/11
+    - Using lv_obj_t to draw circles instead of canvas drawing. Canvas drawing is too CPU intensive.
 - 2024/10/01
     - Automatic go back to main screen when staying idle for 30 seconds in Temperature control screen.
     - update Interface editor.
