@@ -65,10 +65,7 @@ lv_color_t SRMColor[] = {
 bool isScreenSleeping(void){
     return isTftSleeping;
 }
-
-void screenSaver_create(lv_obj_t *parent){
-    // create button    
-    
+static void create_wakeup_button(lv_obj_t *parent){
     cui_btnScreen = lv_btn_create(parent);
     lv_obj_set_size(cui_btnScreen,lv_pct(100),lv_pct(100));
     lv_obj_clear_flag( cui_btnScreen, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
@@ -77,8 +74,11 @@ void screenSaver_create(lv_obj_t *parent){
     
     lv_obj_set_style_shadow_width(cui_btnScreen, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
     lv_obj_set_style_shadow_spread(cui_btnScreen, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
+    // click event handling
+    lv_obj_add_event_cb(cui_btnScreen,onScreenSaverClicked,LV_EVENT_CLICKED,NULL);
+} 
 
-    
+static void create_canvas(lv_obj_t *parent){
     cui_saverBackground = lv_obj_create(parent);
 
     lv_obj_set_size(cui_saverBackground,lv_pct(100),lv_pct(100));
@@ -112,9 +112,12 @@ void screenSaver_create(lv_obj_t *parent){
     updateTimer=lv_timer_create(periodic_timer_handler,UPDATE_TIMER,NULL);
     lv_timer_set_repeat_count(updateTimer,-1);
     lv_timer_pause(updateTimer);
+}
 
-    // click event handling
-    lv_obj_add_event_cb(cui_btnScreen,onScreenSaverClicked,LV_EVENT_CLICKED,NULL);
+void screenSaver_create(lv_obj_t *parent){
+    create_canvas(parent);
+    // create a invisible button on top
+    create_wakeup_button(parent);
 }
 
 void delay_sleep(void *timer){
