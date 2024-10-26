@@ -1920,8 +1920,9 @@ void scanI2C(void) //VTODO
 
 #endif
 //HomeKit
+#if HOMEKIT_ENABLED
 extern void homekit_setup(void);
-
+#endif
 
 #if ESP32Graphics
 void bpl_setup(void){
@@ -2150,7 +2151,9 @@ void setup(void){
 	ArduinoOTA.begin();
 #endif
 	//Homekit
+#if HOMEKIT_ENABLED	
 	homekit_setup();
+#endif
 }
 
 uint32_t _periodicReportTime;
