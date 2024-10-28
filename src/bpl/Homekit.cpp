@@ -16,6 +16,7 @@
 #include "HumidityControl.h"
 #endif
 extern BrewPiProxy brewPi;
+#include "Homekit.h"
 
 /*
 	This example provides a basic connection to HomeKit.
@@ -125,7 +126,22 @@ static int gravity_read(hap_char_t *hc, hap_status_t *status_code, void *serv_pr
 
     if (!strcmp(char_uuid, HAP_CHAR_UUID_CURRENT_AMBIENT_LIGHT_LEVEL)) {
         hap_val_t new_val;
-		new_val.f = 1012;
+		new_val.f = 15.2;
+        hap_char_update_val(hc, &new_val);
+    	*status_code = HAP_STATUS_SUCCESS;
+	    return HAP_SUCCESS;
+    } else {
+        *status_code = HAP_STATUS_RES_ABSENT;	
+    }
+    return HAP_FAIL;
+}
+static int gravitychange_read(hap_char_t *hc, hap_status_t *status_code, void *serv_priv, void *read_priv)
+{
+	const char* char_uuid=hap_char_get_type_uuid(hc);
+
+    if (!strcmp(char_uuid, HAP_CHAR_UUID_CURRENT_TEMPERATURE)) {
+        hap_val_t new_val;
+		new_val.f = 0.2;
         hap_char_update_val(hc, &new_val);
     	*status_code = HAP_STATUS_SUCCESS;
 	    return HAP_SUCCESS;
@@ -133,6 +149,71 @@ static int gravity_read(hap_char_t *hc, hap_status_t *status_code, void *serv_pr
         *status_code = HAP_STATUS_RES_ABSENT;
     }
     return HAP_FAIL;
+}
+
+static HomekitStatusType homekitStatus;
+
+static void hap_event_handler(hap_event_t event, void *data){
+	switch(event){
+		/** A new controller was paired/added/modified.
+		 * Associated data is a NULL terminated controller identifier string.
+		 */
+		case HAP_EVENT_CTRL_PAIRED:
+		/** A controller was removed
+		 * Associated data is a NULL terminated controller identifier string.
+		 */
+		case HAP_EVENT_CTRL_UNPAIRED:
+			break; // not handled for now
+
+		/** A paired controller connected to the accessory (extablished a pair verified session).
+		 * Associated data is a NULL terminated controller identifier string.
+		 */
+		case HAP_EVENT_CTRL_CONNECTED:
+			homekitStatus.connected = true;
+			homekitStatus.pairing = false;
+			break;
+
+		/** A controller disconnected from the accessory. This event is reported before the
+		 * actual disconnection, because for cases like pair-remove, the controller information
+		 * gets erased before the disconnection, and so the controller id is not available
+		 * after disconnection.
+		 * Associated data is a NULL terminated controller identifier string.
+		 */
+		case HAP_EVENT_CTRL_DISCONNECTED:
+			homekitStatus.connected = false;
+			break;
+
+		/** A Pair Setup attempt has started. Waiting for Setup Code */
+		case HAP_EVENT_PAIRING_STARTED:
+			homekitStatus.pairing = true;
+			break;
+
+		/** Pair Setup was aborted because of inactivity or a wrong setup code */
+		case HAP_EVENT_PAIRING_ABORTED:
+			homekitStatus.pairing = false;
+			break;
+
+		/** A GET on /accessories was successfully completed */
+		case HAP_EVENT_GET_ACC_COMPLETED:
+		/** A GET on /characteristics was successfully completed */
+		case HAP_EVENT_GET_CHAR_COMPLETED:
+		/** A PUT (Set value) on /characteristics was successfully completed.
+		 * This event can also mean that notifications were enabled for some
+		 * characteristics as the same is also done in PUT /characteristics */
+		case HAP_EVENT_SET_CHAR_COMPLETED:
+		/* Accessory is about to reboot. Will be triggered for operations like hap_reset_to_factory(),
+		* hap_reboot_accessory(), hap_reset_network(), hap_reset_pairings() and hap_reset_homekit_data()
+		* just before rebooting. Associated data is a pointer to a string indicating the reboot reason.
+		* Reefer the HAP_REBOOT_REASON_* macros for possible values.
+		*/
+		case HAP_EVENT_ACC_REBOOTING:
+		/* Accessory is no more available for pairing. This will be triggered if an accessory is in
+		* an unpaired state for more than the time specified in HAP Spec R16.
+		*/
+		case HAP_EVENT_PAIRING_MODE_TIMED_OUT:
+			homekitStatus.pairing = false;
+			break;
+	}
 }
 
 void homekit_setup(void)
@@ -191,10 +272,16 @@ void homekit_setup(void)
     /* Add the Sensor Service to the Accessory Object */
     hap_acc_add_serv(accessory, service);
 
-	// gravity,
+	// gravity
 	service = hap_serv_light_sensor_create(0.0001);
     hap_serv_add_char(service, hap_char_name_create("Gravity"));
     hap_serv_set_read_cb(service, gravity_read);
+    hap_acc_add_serv(accessory, service);
+
+	// gravity change 12H or 24H?
+	service = hap_serv_temperature_sensor_create(0);
+    hap_serv_add_char(service, hap_char_name_create("Gravity Change"));
+    hap_serv_set_read_cb(service, gravitychange_read);
     hap_acc_add_serv(accessory, service);
 
     /* Add the Accessory to the HomeKit Database */
@@ -208,6 +295,25 @@ void homekit_setup(void)
     /* Enable Hardware MFi authentication (applicable only for MFi variant of SDK) */
     hap_enable_mfi_auth(HAP_MFI_AUTH_HW);
 
+	hap_register_event_handler(hap_event_handler);
     /* After all the initializations are done, start the HAP core */
     hap_start();
+}
+
+void homekit_reboot(void){
+	hap_reboot_accessory();
+}
+
+
+bool homekit_reset_pairing(void){
+	return  HAP_SUCCESS==hap_reset_pairings();
+}
+
+void homekit_restart_pairing(void){
+	hap_pair_setup_re_enable();
+}
+
+HomekitStatusType* homekit_status(void){
+	homekitStatus.number_of_controller = hap_get_paired_controller_count();
+	return &homekitStatus;
 }

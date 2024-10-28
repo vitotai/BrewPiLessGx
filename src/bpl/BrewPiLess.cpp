@@ -112,6 +112,11 @@ extern "C" {
 #include "HumidityControl.h"
 #endif
 
+ //HomeKit
+#if HOMEKIT_ENABLED
+#include "Homekit.h"
+#endif
+
 //WebSocket seems to be unstable, at least on iPhone.
 //Go back to ServerSide Event.
 #define ResponseAppleCNA true
@@ -188,6 +193,12 @@ extern "C" {
 #endif
 
 #define HUMIDITY_CONTROL_PATH "/rh"
+
+#if HOMEKIT_ENABLED
+#define HOMEKIT_RESTART_PAIRING_PATH "/homekit_pair"
+#define HOMEKIT_RESET_PAIRING_PATH "/homekit_reset"
+#define HOMEKIT_STATUS_PATH "/homekit_info"
+#endif
 
 const char *public_list[]={
 "/bwf.js",
@@ -1647,6 +1658,57 @@ public:
 
 NetworkConfig networkConfig;
 
+#if HOMEKIT_ENABLED
+class HomekitHandler:public AsyncWebHandler
+{
+public:
+	HomekitHandler(){}
+
+	void handleRequest(AsyncWebServerRequest *request){
+		SystemConfiguration *syscfg=theSettings.systemConfiguration();
+	 	if(!request->authenticate(syscfg->username, syscfg->password))return request->requestAuthentication();
+
+		if(request->url() == HOMEKIT_RESET_PAIRING_PATH) handleResetPairing(request);
+		else if(request->url() == HOMEKIT_RESTART_PAIRING_PATH) handleRestartPairing(request);
+		else if(request->url() == HOMEKIT_STATUS_PATH) handleStatus(request);
+	}
+
+	void handleResetPairing(AsyncWebServerRequest *request){
+		if(homekit_reset_pairing()){
+			request->send(200,"text/html","Pairing reset!. Wait for reboot...");
+		}else{ 
+			request->send(500,"Failed to reset pairing!");
+		}
+	}
+	void handleRestartPairing(AsyncWebServerRequest *request){
+		// should we check paired or not?
+		homekit_restart_pairing();
+		request->send(200,"text/html","Pairing Enabled.");
+	}
+
+	void handleStatus(AsyncWebServerRequest *request){
+		HomekitStatusType *status = homekit_status();
+		request->send(200,"text/html",
+		String("controller:") + String(status->number_of_controller) +
+		String(",conected:") + (status->connected? String(1):String(0)) + 
+		String(",pairing:") + (status->pairing? String(1):String(0)) );
+	}
+
+	bool canHandle(AsyncWebServerRequest *request){
+		if(request->url() == HOMEKIT_RESET_PAIRING_PATH) return true; 
+		else if(request->url() == HOMEKIT_RESTART_PAIRING_PATH) return true;
+		else if(request->url() == HOMEKIT_STATUS_PATH) return true;
+	 	return false;
+	}
+
+	#if !LegacyEspAsyncLibraries
+	virtual bool isRequestHandlerTrivial() override final {return false;}
+	#endif
+};
+HomekitHandler homekitHandler;
+#endif
+
+
 void wiFiEvent(const char* msg){
 	char *buff=(char*)malloc(strlen(msg) +3);
 	sprintf(buff,"W:%s",msg);
@@ -1701,13 +1763,12 @@ WiFiClient serverClient;
 #endif
 void handleReset()
 {
-#if defined(ESP8266) || defined(ESP32)
+#if HOMEKIT_ENABLED
+	// let homekit library do its job, as well as rebooting.
+	homekit_reboot(); 
+#else
 	// The asm volatile method doesn't work on ESP8266. Instead, use ESP.restart
 	ESP.restart();
-#else
-	// resetting using the watchdog timer (which is a full reset of all registers)
-	// might not be compatible with old Arduino bootloaders. jumping to 0 is safer.
-	asm volatile ("  jmp 0");
 #endif
 }
 
@@ -1919,10 +1980,6 @@ void scanI2C(void) //VTODO
 }
 
 #endif
-//HomeKit
-#if HOMEKIT_ENABLED
-extern void homekit_setup(void);
-#endif
 
 #if ESP32Graphics
 void bpl_setup(void){
@@ -2042,6 +2099,9 @@ void setup(void){
 
 	webServer->addHandler(new FileManager(FileSystem,FILE_MANAGEMENT_PATH ,theSettings.systemConfiguration()->username,theSettings.systemConfiguration()->password));
 
+#if HOMEKIT_ENABLED
+	webServer->addHandler(&homekitHandler);
+#endif
 
 #if defined(ESP32)
 	webServer->on("/fs",[](AsyncWebServerRequest *request){
