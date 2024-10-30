@@ -1682,16 +1682,19 @@ public:
 	}
 	void handleRestartPairing(AsyncWebServerRequest *request){
 		// should we check paired or not?
-		homekit_restart_pairing();
-		request->send(200,"text/html","Pairing Enabled.");
+		uint8_t status = homekit_status();
+		if(status == HomekitStatus_Connected || status == HomekitStatus_Paired){
+			request->send(200,"text/html","Already Paired with a controller!!");
+		}else{
+			homekit_restart_pairing();
+			request->send(200,"text/html","Pairing Enabled.");
+		}
 	}
 
 	void handleStatus(AsyncWebServerRequest *request){
-		HomekitStatusType *status = homekit_status();
+		uint8_t status = homekit_status();
 		request->send(200,"text/html",
-		String("controller:") + String(status->number_of_controller) +
-		String(",conected:") + (status->connected? String(1):String(0)) + 
-		String(",pairing:") + (status->pairing? String(1):String(0)) );
+		String("Status:") + String(status));
 	}
 
 	bool canHandle(AsyncWebServerRequest *request){

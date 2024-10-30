@@ -15,8 +15,14 @@
 #if EnableHumidityControlSupport
 #include "HumidityControl.h"
 #endif
+#include "GravityTracker.h"
+#include "ExternalData.h"
+
 extern BrewPiProxy brewPi;
 #include "Homekit.h"
+
+#define ValidGravity(v) ((v) > 0.5 && (v)<1.5)
+#define ValidPlato(v) ((v) > 0 && (v) > 100)
 
 /*
 	This example provides a basic connection to HomeKit.
@@ -125,11 +131,25 @@ static int gravity_read(hap_char_t *hc, hap_status_t *status_code, void *serv_pr
 	const char* char_uuid=hap_char_get_type_uuid(hc);
 
     if (!strcmp(char_uuid, HAP_CHAR_UUID_CURRENT_AMBIENT_LIGHT_LEVEL)) {
-        hap_val_t new_val;
-		new_val.f = 15.2;
-        hap_char_update_val(hc, &new_val);
-    	*status_code = HAP_STATUS_SUCCESS;
-	    return HAP_SUCCESS;
+		bool valid=true;
+		float value;
+		if(theSettings.GravityConfig()->usePlato){
+			value =  externalData.plato();
+			if(!ValidPlato(value)) valid = false;
+		}else{
+			value = externalData.gravity();
+			if(!ValidGravity(value)) valid = false;
+			else value = value * 1000;
+		}
+		if(valid){
+			hap_val_t new_val;
+			new_val.f = value;
+			hap_char_update_val(hc, &new_val);
+			*status_code = HAP_STATUS_SUCCESS;
+			return HAP_SUCCESS;
+		}else{
+			*status_code = HAP_STATUS_VAL_INVALID;
+		}
     } else {
         *status_code = HAP_STATUS_RES_ABSENT;	
     }
@@ -139,19 +159,35 @@ static int gravitychange_read(hap_char_t *hc, hap_status_t *status_code, void *s
 {
 	const char* char_uuid=hap_char_get_type_uuid(hc);
 
-    if (!strcmp(char_uuid, HAP_CHAR_UUID_CURRENT_TEMPERATURE)) {
-        hap_val_t new_val;
-		new_val.f = 0.2;
-        hap_char_update_val(hc, &new_val);
-    	*status_code = HAP_STATUS_SUCCESS;
-	    return HAP_SUCCESS;
+    if (!strcmp(char_uuid, HAP_CHAR_UUID_CARBON_DIOXIDE_LEVEL)) {
+	    int value=gravityTracker.gravityDecreasedIn(6); // 6hours
+    	if( value == InvalidGravityChangeValue){
+			*status_code = HAP_STATUS_VAL_INVALID;
+		}else{
+
+			hap_val_t new_val;
+			new_val.f =(float) value;
+			hap_char_update_val(hc, &new_val);
+			*status_code = HAP_STATUS_SUCCESS;
+		    return HAP_SUCCESS;
+		}
+	}else if (!strcmp(char_uuid, HAP_CHAR_UUID_CARBON_DIOXIDE_PEAK_LEVEL)) {
+	    int value=gravityTracker.gravityDecreasedIn(24); // 6hours
+    	if( value == InvalidGravityChangeValue){
+			*status_code = HAP_STATUS_VAL_INVALID;
+		}else{
+	        hap_val_t new_val;
+			new_val.f = (float) value;
+        	hap_char_update_val(hc, &new_val);
+    		*status_code = HAP_STATUS_SUCCESS;
+		}
     } else {
         *status_code = HAP_STATUS_RES_ABSENT;
     }
     return HAP_FAIL;
 }
 
-static HomekitStatusType homekitStatus;
+static uint8_t _homekitStatus=HomekitStatus_Inactive;
 
 static void hap_event_handler(hap_event_t event, void *data){
 	switch(event){
@@ -169,8 +205,7 @@ static void hap_event_handler(hap_event_t event, void *data){
 		 * Associated data is a NULL terminated controller identifier string.
 		 */
 		case HAP_EVENT_CTRL_CONNECTED:
-			homekitStatus.connected = true;
-			homekitStatus.pairing = false;
+			_homekitStatus = HomekitStatus_Connected;
 			break;
 
 		/** A controller disconnected from the accessory. This event is reported before the
@@ -180,17 +215,17 @@ static void hap_event_handler(hap_event_t event, void *data){
 		 * Associated data is a NULL terminated controller identifier string.
 		 */
 		case HAP_EVENT_CTRL_DISCONNECTED:
-			homekitStatus.connected = false;
+			_homekitStatus = (hap_get_paired_controller_count()>0)? HomekitStatus_Paired:HomekitStatus_Inactive;
 			break;
 
 		/** A Pair Setup attempt has started. Waiting for Setup Code */
 		case HAP_EVENT_PAIRING_STARTED:
-			homekitStatus.pairing = true;
+			_homekitStatus = HomekitStatus_Pairing;
 			break;
 
 		/** Pair Setup was aborted because of inactivity or a wrong setup code */
 		case HAP_EVENT_PAIRING_ABORTED:
-			homekitStatus.pairing = false;
+			_homekitStatus = HomekitStatus_Inactive;
 			break;
 
 		/** A GET on /accessories was successfully completed */
@@ -211,7 +246,7 @@ static void hap_event_handler(hap_event_t event, void *data){
 		* an unpaired state for more than the time specified in HAP Spec R16.
 		*/
 		case HAP_EVENT_PAIRING_MODE_TIMED_OUT:
-			homekitStatus.pairing = false;
+			_homekitStatus = HomekitStatus_Inactive;
 			break;
 	}
 }
@@ -279,8 +314,10 @@ void homekit_setup(void)
     hap_acc_add_serv(accessory, service);
 
 	// gravity change 12H or 24H?
-	service = hap_serv_temperature_sensor_create(0);
+	service = hap_serv_carbon_dioxide_sensor_create(1);
     hap_serv_add_char(service, hap_char_name_create("Gravity Change"));
+	hap_serv_add_char(service, hap_char_carbon_dioxide_level_create(32));
+	hap_serv_add_char(service, hap_char_carbon_dioxide_peak_level_create(1056));
     hap_serv_set_read_cb(service, gravitychange_read);
     hap_acc_add_serv(accessory, service);
 
@@ -313,7 +350,12 @@ void homekit_restart_pairing(void){
 	hap_pair_setup_re_enable();
 }
 
-HomekitStatusType* homekit_status(void){
-	homekitStatus.number_of_controller = hap_get_paired_controller_count();
-	return &homekitStatus;
+uint8_t homekit_status(void){
+	
+	if( _homekitStatus == HomekitStatus_Inactive	
+	 	&& hap_get_paired_controller_count() > 0){
+			_homekitStatus = HomekitStatus_Paired;
+		}
+
+	return _homekitStatus;
 }
