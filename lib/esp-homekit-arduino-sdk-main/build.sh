@@ -36,7 +36,7 @@ cd $BUILD_DIRECTORY_NAME || { echo "Couldn't enter the build $BUILD_DIRECTORY_NA
 printf "\n** Cloning espressif/esp-homekit-sdk.git **\n"
 git clone --quiet https://github.com/espressif/esp-homekit-sdk.git &> /dev/null;
 cd esp-homekit-sdk || { echo "Couldn't enter the esp-homekit-sdk repo folder; git clone probably failed."; exit 1; }
-git checkout --quiet $ESP_HOMEKIT_SDK_COMMIT_HASH &> /dev/null;
+#git checkout --quiet $ESP_HOMEKIT_SDK_COMMIT_HASH &> /dev/null;
 git submodule update --quiet --init --recursive &> /dev/null;
 
 # Copy esp-homekit-sdk source files
