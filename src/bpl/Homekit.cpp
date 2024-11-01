@@ -83,6 +83,14 @@ static int beertemp_read(hap_char_t *hc, hap_status_t *status_code, void *serv_p
         hap_char_update_val(hc, &new_val);
     	*status_code = HAP_STATUS_SUCCESS;
 	    return HAP_SUCCESS;
+    }else if (!strcmp(char_uuid, HAP_CHAR_UUID_TEMPERATURE_DISPLAY_UNITS)) {
+        hap_val_t new_val;
+		// 0: Celsius
+		// 1, Fahrenheit
+		new_val.i = (brewPi.getUnit() == 'C')? 0:1;
+        hap_char_update_val(hc, &new_val);
+    	*status_code = HAP_STATUS_SUCCESS;
+	    return HAP_SUCCESS;
     }else {
         *status_code = HAP_STATUS_RES_ABSENT;
     }
@@ -119,6 +127,15 @@ static int beertemp_write(hap_write_data_t write_data[], int count,
 			}
             hap_char_update_val(write->hc, &new_val);
             *(write->status) = HAP_STATUS_SUCCESS;
+		}else if (!strcmp(hap_char_get_type_uuid(write->hc), HAP_CHAR_UUID_TEMPERATURE_DISPLAY_UNITS)) {
+			// suprisingly, it is writable.
+			//
+	        hap_val_t new_val;
+			// 0: Celsius
+			// 1, Fahrenheit
+			new_val.i = (brewPi.getUnit() == 'C')? 0:1;
+			hap_char_update_val(write->hc, &new_val);
+			*(write->status) = HAP_STATUS_SUCCESS;
         } else {
             *(write->status) = HAP_STATUS_RES_ABSENT;
         }
@@ -158,8 +175,13 @@ static int gravity_read(hap_char_t *hc, hap_status_t *status_code, void *serv_pr
 static int gravitychange_read(hap_char_t *hc, hap_status_t *status_code, void *serv_priv, void *read_priv)
 {
 	const char* char_uuid=hap_char_get_type_uuid(hc);
-
-    if (!strcmp(char_uuid, HAP_CHAR_UUID_CARBON_DIOXIDE_LEVEL)) {
+    if (!strcmp(char_uuid, HAP_CHAR_UUID_CARBON_DIOXIDE_DETECTED)) {
+		int value=gravityTracker.gravityDecreasedIn(6); // 6hours
+	   	hap_val_t new_val;
+		new_val.i = ( value == InvalidGravityChangeValue)? 0:1;
+		hap_char_update_val(hc, &new_val);
+		*status_code = HAP_STATUS_SUCCESS;
+    }else if (!strcmp(char_uuid, HAP_CHAR_UUID_CARBON_DIOXIDE_LEVEL)) {
 	    int value=gravityTracker.gravityDecreasedIn(6); // 6hours
     	if( value == InvalidGravityChangeValue){
 			*status_code = HAP_STATUS_VAL_INVALID;
