@@ -165,7 +165,12 @@ static int gravity_read(hap_char_t *hc, hap_status_t *status_code, void *serv_pr
 			*status_code = HAP_STATUS_SUCCESS;
 			return HAP_SUCCESS;
 		}else{
-			*status_code = HAP_STATUS_VAL_INVALID;
+			//*status_code = HAP_STATUS_VAL_INVALID;
+			hap_val_t new_val;
+			new_val.f = 0;
+			hap_char_update_val(hc, &new_val);
+			*status_code = HAP_STATUS_SUCCESS;
+			return HAP_SUCCESS;
 		}
     } else {
         *status_code = HAP_STATUS_RES_ABSENT;	
@@ -184,25 +189,26 @@ static int gravitychange_read(hap_char_t *hc, hap_status_t *status_code, void *s
     }else if (!strcmp(char_uuid, HAP_CHAR_UUID_CARBON_DIOXIDE_LEVEL)) {
 	    int value=gravityTracker.gravityDecreasedIn(6); // 6hours
     	if( value == InvalidGravityChangeValue){
-			*status_code = HAP_STATUS_VAL_INVALID;
-		}else{
-
+//			*status_code = HAP_STATUS_VAL_INVALID;
+			value =0;
+		}//else{
 			hap_val_t new_val;
 			new_val.f =(float) value;
 			hap_char_update_val(hc, &new_val);
 			*status_code = HAP_STATUS_SUCCESS;
 		    return HAP_SUCCESS;
-		}
+//		}
 	}else if (!strcmp(char_uuid, HAP_CHAR_UUID_CARBON_DIOXIDE_PEAK_LEVEL)) {
 	    int value=gravityTracker.gravityDecreasedIn(24); // 6hours
     	if( value == InvalidGravityChangeValue){
-			*status_code = HAP_STATUS_VAL_INVALID;
-		}else{
+//			*status_code = HAP_STATUS_VAL_INVALID;
+			value =0;
+		}//else{
 	        hap_val_t new_val;
 			new_val.f = (float) value;
         	hap_char_update_val(hc, &new_val);
     		*status_code = HAP_STATUS_SUCCESS;
-		}
+		//}
     } else {
         *status_code = HAP_STATUS_RES_ABSENT;
     }
