@@ -12,4 +12,5 @@ extern void homekit_reboot(void);
 extern bool homekit_reset_pairing(void);
 extern void homekit_restart_pairing(void);
 extern uint8_t homekit_status(void);
+extern void homekit_loop(void);
 #endif

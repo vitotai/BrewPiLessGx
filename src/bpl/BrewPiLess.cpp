@@ -2308,6 +2308,10 @@ ArduinoOTA.handle();
 	sayHello();
 	#endif
 
+	#if HOMEKIT_ENABLED
+	homekit_loop();
+	#endif
+
 	if(!IS_RESTARTING){
 		WiFiSetup.stayConnected();
 	}

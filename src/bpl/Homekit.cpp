@@ -24,10 +24,35 @@ extern BrewPiProxy brewPi;
 #define ValidGravity(v) ((v) > 0.5 && (v)<1.5)
 #define ValidPlato(v) ((v) > 0 && (v) > 100)
 
-/*
-	This example provides a basic connection to HomeKit.
-	You can't read/write values at the moment but it's coming I promise.
-*/
+#define TEMPERATURE_REPORT_PERIOD 60000
+#define GRAVITY_REPORT_MAX_COUNT 10
+
+#define GRAVITY_CHANGE_PERIOD_1 6
+#define GRAVITY_CHANGE_PERIOD_2 24
+
+static uint8_t _gravity_report_count;
+static uint8_t _homekitStatus=HomekitStatus_Inactive;
+static uint32_t _last_temp_update;
+static hap_char_t* _current_temperature_char;
+static hap_char_t* _gravity_char;
+static hap_char_t* _gravitychange_detected_char;
+
+static hap_char_t* _target_temperature_char;
+
+
+static float getGravityReading(void){
+	float value;
+	if(theSettings.GravityConfig()->usePlato){
+		value =  externalData.plato();
+		if(!ValidPlato(value)) return 0;
+		value = value *10;
+	}else{
+		value = externalData.gravity();
+		if(!ValidGravity(value)) return 0;
+		value = value * 1000;
+	}
+	return value;
+}
 
 static int sensor_identify(hap_acc_t *ha)
 {
@@ -148,30 +173,11 @@ static int gravity_read(hap_char_t *hc, hap_status_t *status_code, void *serv_pr
 	const char* char_uuid=hap_char_get_type_uuid(hc);
 
     if (!strcmp(char_uuid, HAP_CHAR_UUID_CURRENT_AMBIENT_LIGHT_LEVEL)) {
-		bool valid=true;
-		float value;
-		if(theSettings.GravityConfig()->usePlato){
-			value =  externalData.plato();
-			if(!ValidPlato(value)) valid = false;
-		}else{
-			value = externalData.gravity();
-			if(!ValidGravity(value)) valid = false;
-			else value = value * 1000;
-		}
-		if(valid){
 			hap_val_t new_val;
-			new_val.f = value;
+			new_val.f = getGravityReading();
 			hap_char_update_val(hc, &new_val);
 			*status_code = HAP_STATUS_SUCCESS;
 			return HAP_SUCCESS;
-		}else{
-			//*status_code = HAP_STATUS_VAL_INVALID;
-			hap_val_t new_val;
-			new_val.f = 0;
-			hap_char_update_val(hc, &new_val);
-			*status_code = HAP_STATUS_SUCCESS;
-			return HAP_SUCCESS;
-		}
     } else {
         *status_code = HAP_STATUS_RES_ABSENT;	
     }
@@ -181,13 +187,13 @@ static int gravitychange_read(hap_char_t *hc, hap_status_t *status_code, void *s
 {
 	const char* char_uuid=hap_char_get_type_uuid(hc);
     if (!strcmp(char_uuid, HAP_CHAR_UUID_CARBON_DIOXIDE_DETECTED)) {
-		int value=gravityTracker.gravityDecreasedIn(6); // 6hours
+		int value=gravityTracker.gravityDecreasedIn(GRAVITY_CHANGE_PERIOD_1); // 6hours
 	   	hap_val_t new_val;
 		new_val.i = ( value == InvalidGravityChangeValue)? 0:1;
 		hap_char_update_val(hc, &new_val);
 		*status_code = HAP_STATUS_SUCCESS;
     }else if (!strcmp(char_uuid, HAP_CHAR_UUID_CARBON_DIOXIDE_LEVEL)) {
-	    int value=gravityTracker.gravityDecreasedIn(6); // 6hours
+	    int value=gravityTracker.gravityDecreasedIn(GRAVITY_CHANGE_PERIOD_1); // 6hours
     	if( value == InvalidGravityChangeValue){
 //			*status_code = HAP_STATUS_VAL_INVALID;
 			value =0;
@@ -199,7 +205,7 @@ static int gravitychange_read(hap_char_t *hc, hap_status_t *status_code, void *s
 		    return HAP_SUCCESS;
 //		}
 	}else if (!strcmp(char_uuid, HAP_CHAR_UUID_CARBON_DIOXIDE_PEAK_LEVEL)) {
-	    int value=gravityTracker.gravityDecreasedIn(24); // 6hours
+	    int value=gravityTracker.gravityDecreasedIn(GRAVITY_CHANGE_PERIOD_2); // 24hours
     	if( value == InvalidGravityChangeValue){
 //			*status_code = HAP_STATUS_VAL_INVALID;
 			value =0;
@@ -214,8 +220,6 @@ static int gravitychange_read(hap_char_t *hc, hap_status_t *status_code, void *s
     }
     return HAP_FAIL;
 }
-
-static uint8_t _homekitStatus=HomekitStatus_Inactive;
 
 static void hap_event_handler(hap_event_t event, void *data){
 	switch(event){
@@ -322,9 +326,11 @@ void homekit_setup(void)
     /* Create the Sensor Service. Include the "name" since this is a user visible service  */
 	service= hap_serv_thermostat_create(0,3,20,20,(brewPi.getUnit()=='C')? 0:1);
 
-	hap_char_t *target=hap_serv_get_char_by_uuid(service,HAP_CHAR_UUID_TARGET_TEMPERATURE);
+	_current_temperature_char=hap_serv_get_char_by_uuid(service, HAP_CHAR_UUID_CURRENT_TEMPERATURE);
+	
+	_target_temperature_char=hap_serv_get_char_by_uuid(service,HAP_CHAR_UUID_TARGET_TEMPERATURE);
 	// over write the limit
-	hap_char_float_set_constraints(target, brewPi.getMinSetTemp(),brewPi.getMaxSetTemp(), 0.1);
+	hap_char_float_set_constraints(_target_temperature_char, brewPi.getMinSetTemp(),brewPi.getMaxSetTemp(), 0.1);
 
     hap_serv_add_char(service, hap_char_name_create("Beer Temperature"));
 
@@ -338,12 +344,15 @@ void homekit_setup(void)
 	// gravity
 	service = hap_serv_light_sensor_create(0.0001);
     hap_serv_add_char(service, hap_char_name_create("Gravity"));
+	_gravity_char = hap_serv_get_char_by_uuid(service,HAP_CHAR_UUID_CURRENT_AMBIENT_LIGHT_LEVEL);
+
     hap_serv_set_read_cb(service, gravity_read);
     hap_acc_add_serv(accessory, service);
-
 	// gravity change 12H or 24H?
 	service = hap_serv_carbon_dioxide_sensor_create(1);
     hap_serv_add_char(service, hap_char_name_create("Gravity Change"));
+	_gravitychange_detected_char = hap_serv_get_char_by_uuid(service,HAP_CHAR_UUID_CARBON_DIOXIDE_DETECTED);
+
 	hap_serv_add_char(service, hap_char_carbon_dioxide_level_create(32));
 	hap_serv_add_char(service, hap_char_carbon_dioxide_peak_level_create(1056));
     hap_serv_set_read_cb(service, gravitychange_read);
@@ -386,4 +395,42 @@ uint8_t homekit_status(void){
 		}
 
 	return _homekitStatus;
+}
+
+
+void homekit_loop(void){
+	uint32_t now=millis();
+	// periodically update Current temperature
+	if( (now - _last_temp_update) > TEMPERATURE_REPORT_PERIOD){
+		_last_temp_update = now;
+
+        hap_val_t new_val;
+        new_val.f = brewPi.getBeerTemp();
+		if(IS_FLOAT_TEMP_VALID(new_val.f)){
+        	hap_char_update_val(_current_temperature_char, &new_val);
+		}
+		
+		// report Gravity and Gravity Change
+
+		_gravity_report_count ++;
+		if(_gravity_report_count >=GRAVITY_REPORT_MAX_COUNT){
+			_gravity_report_count =0;
+			new_val.f = getGravityReading();
+			hap_char_update_val(_gravity_char, &new_val);
+			// Gravity Change
+			// it seems to be updated automatically.
+			int value=gravityTracker.gravityDecreasedIn(GRAVITY_CHANGE_PERIOD_1); // 6hours
+			new_val.i = ( value == InvalidGravityChangeValue)? 0:1;
+			hap_char_update_val(_gravitychange_detected_char, &new_val);
+		}
+	}
+/*	updating target temperature seems making no difference. 
+	even without notification, the Home app gets latest value
+	const hap_val_t* target=hap_char_get_val(_target_temperature_char);
+	if(target->f != brewPi.getBeerSet()){
+        hap_val_t new_val;
+        new_val.f = brewPi.getBeerSet();
+		hap_char_update_val(_target_temperature_char, &new_val);
+	} */
+	// TODO: report Control Mode change
 }
