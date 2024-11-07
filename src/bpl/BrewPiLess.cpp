@@ -117,6 +117,9 @@ extern "C" {
 #include "Homekit.h"
 #endif
 
+#if COREDUMP_SUPPORT
+#include <esp_partition.h>
+#endif
 //WebSocket seems to be unstable, at least on iPhone.
 //Go back to ServerSide Event.
 #define ResponseAppleCNA true
@@ -1711,6 +1714,44 @@ public:
 HomekitHandler homekitHandler;
 #endif
 
+// Coredump
+#if COREDUMP_SUPPORT
+#define COREDUMP_PATH "/coredump"
+class CoredumpHandler:public AsyncWebHandler
+{
+public:
+	CoredumpHandler(){}
+
+	void handleRequest(AsyncWebServerRequest *request){
+
+		const esp_partition_t *pt = esp_partition_find_first(ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_DATA_COREDUMP, "coredump");
+		if (pt == NULL){
+			request->send(200,"text/html","No coredump partition.");
+			return;
+		}
+
+		
+		AsyncWebServerResponse *response = request->beginResponse("application/octet-stream",
+  			pt->size,
+  			[=](uint8_t *buffer, size_t maxLen, size_t alreadySent) -> size_t {
+	      		esp_partition_read(pt, alreadySent, buffer,maxLen);
+    	  		return maxLen;
+ 	 	});
+		request->send(response);		
+	}
+
+	bool canHandle(AsyncWebServerRequest *request){
+		if(request->url() == COREDUMP_PATH) return true; 
+	 	return false;
+	}
+
+	#if !LegacyEspAsyncLibraries
+	virtual bool isRequestHandlerTrivial() override final {return false;}
+	#endif
+};
+CoredumpHandler coredumpHandler;
+#endif
+
 
 void wiFiEvent(const char* msg){
 	char *buff=(char*)malloc(strlen(msg) +3);
@@ -2104,6 +2145,10 @@ void setup(void){
 
 #if HOMEKIT_ENABLED
 	webServer->addHandler(&homekitHandler);
+#endif
+
+#if COREDUMP_SUPPORT
+	webServer->addHandler(&coredumpHandler);
 #endif
 
 #if defined(ESP32)
