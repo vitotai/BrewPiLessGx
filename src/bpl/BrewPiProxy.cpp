@@ -20,8 +20,10 @@
 #include "Buzzer.h"
 #include "Display.h"
 
-QueueBuffer brewPiRxBuffer(2048);
-QueueBuffer brewPiTxBuffer(2048);
+//QueueBuffer brewPiRxBuffer(2048);
+//QueueBuffer brewPiTxBuffer(2048);
+QueueBuffer brewPiRxBuffer(512);
+QueueBuffer brewPiTxBuffer(1024);
 
 static temperature float2InternalTemp(float ftemp){
 	// internal temperature is a 7-9 fixed poiont.
@@ -61,10 +63,11 @@ void BrewPiProxy::loop(void)
 	while(brewPiTxBuffer.available()){
 		char ch=brewPiTxBuffer.read();
 		 if(ch == '\n'){
-			_lastLineBuff[_readPtr]='\0';
-			memcpy(_lastLineBuff,_buff,_readPtr);
+//			_lastLineBuff[_readPtr]='\0';
+//			memcpy(_lastLineBuff,_buff,_readPtr);
+			_buff[_readPtr]='\0';
+			(*_readString)(_buff);
 			_readPtr=0;
-			(*_readString)(_lastLineBuff);
 		}
 		else
 		if(ch == 0xB0){

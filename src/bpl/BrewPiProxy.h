@@ -11,7 +11,7 @@
 
 class BrewPiProxy{
 public:
-	BrewPiProxy(void):_unit('C'),_lastLineLength(0),_readPtr(0){_lastLineBuff[0]='\0';}
+	BrewPiProxy(void):_unit('C')/*,_lastLineLength(0)*/,_readPtr(0){/*_lastLineBuff[0]='\0';*/}
 	void begin(void (*readString)(const char*));
 
 	void loop(void);
@@ -19,7 +19,7 @@ public:
 
 	void putLine(const char* str);
 
-	char* getLastLine(void){return _lastLineBuff;}
+//	char* getLastLine(void){return _lastLineBuff;}
 	float getBeerTemp(void);
 	float getBeerSet(void);
 	float getFridgeTemp(void);
@@ -39,8 +39,8 @@ public:
 	void setFridgetSet(float temp);
 protected:
 	char _unit;
-	char _lastLineBuff[BUFF_SIZE];
-	int  _lastLineLength;
+//	char _lastLineBuff[BUFF_SIZE];
+//	int  _lastLineLength;
 	char _buff[BUFF_SIZE];
 	int   _readPtr;
 
