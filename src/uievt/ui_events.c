@@ -408,7 +408,7 @@ void uiUpdateGravityDevice(){
 			att = (og - sg)/og * 100.0;
 			abv= (og - sg) / (2.0665 - (0.010665 * og));
 		}else{
-			att=(og-sg)/(og - 1.0)/100.0;
+			att=(og-sg)/(og - 1.0)*100.0;
 			abv = (og-sg) * 131.25;
 		}
 		if(ui_lbAbv){

@@ -8,6 +8,10 @@ The main display is defined by [JSON format](doc/skin.md). There is a developing
     -  It's a fixed bug in newer framework, but [another bug]( https://github.com/espressif/arduino-esp32/issues/8976) stop me from upgrading.
 
 # Update Note
+- 2024/11/20
+   - fixed wrong calculation of Attunation for SG.
+   - Reduce memory usage by tunning NimBLE configuration.
+   - integration of ESP-HOMEKIT-SDK. (ESP32S3 might work, but ESP32 might not, because of memory usage.)
 - 2024/10/11
     - Using lv_obj_t to draw circles instead of canvas drawing. Canvas drawing is too CPU intensive.
 - 2024/10/01
