@@ -4,4 +4,3 @@
 build/
 .pio/
 .vscode
-src/esp-homekit-sdk
