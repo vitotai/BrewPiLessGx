@@ -414,7 +414,7 @@ BrewLogger::BrewLogger(void){
 		// exceptional case.
 		if(index == MAX_LOG_FILE_NUMBER){
 			rmLog(0);
-			index = -1;
+			index = MAX_LOG_FILE_NUMBER-1;
 		}
 		strcpy(_pFileInfo->files[index].name,_pFileInfo->logname);
 		_pFileInfo->files[index].time = _pFileInfo->starttime;

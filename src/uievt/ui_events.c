@@ -282,7 +282,7 @@ void uiUpdateStatus(){
 }
 
 static uint8_t getRssiLevel(int db){
-    int strength[] ={-100,-80,-70,-67};
+    int strength[] ={-10000,-100,-80,-70,-67};
 	int bar = 4;
     for (; bar > 0; bar--) {
         if (strength[bar] < db) break;
