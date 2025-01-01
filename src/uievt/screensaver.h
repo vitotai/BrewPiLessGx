@@ -7,6 +7,11 @@ extern "C" {
 
 #include "lvgl.h"
 
+
+#ifndef DisableScreenSaver
+#define DisableScreenSaver false
+#endif
+
 void screenSaver_create(lv_obj_t* parent);
 
 void screenSaver_start(lv_obj_t* parent);

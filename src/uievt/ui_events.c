@@ -527,10 +527,16 @@ void updateDisplayBrightness(uint8_t brightness){
 }
 
 void startScreenSaverTimer(void){
+#if ! DisableScreenSaver
 	uint32_t saver=getScreenSaverTime();
 	uint32_t sleep= getSleepTimeout();
 	if(saver || sleep){
 		uint32_t timeout= (saver==0)? sleep:saver; 
+#else
+	uint32_t sleep= getSleepTimeout();
+	if(sleep){
+		uint32_t timeout= sleep; 
+#endif
 		if(screen_saver_timer == NULL) screen_saver_timer= lv_timer_create(screenSaverTimeout,timeout,NULL);
 		lv_timer_reset(screen_saver_timer);
 		lv_timer_resume(screen_saver_timer);

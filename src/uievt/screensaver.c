@@ -16,27 +16,30 @@
 #define COLOR_INDEX_BACKGROUND 0
 #define COLOR_INDEX_BUBBLE 1
 
-void screenSaver_create(lv_obj_t *parent);
-lv_obj_t *cui_saverBackground;
-lv_obj_t *cui_btnScreen;
-lv_timer_t *updateTimer;
-lv_style_t bubbleStyle;
-lv_obj_t* bubbleObject[BubbleCount];
-
 typedef enum _ScreenSavingState{
 ScreenSavingBubbling,
 ScreenSavingInformation,
 ScreenSavingSleep
 }ScreenSavingState;
 
-static uint32_t timerCount;
-static uint32_t sleepCounter;
-
+lv_obj_t *cui_btnScreen;
 static ScreenSavingState _screenState;
 static bool isTftSleeping=false;
 
+void delay_sleep(void *timer);
 void screenSaver_start(lv_obj_t* parent);
 void onScreenSaverClicked(lv_event_t * e);
+void screenWakeup(void);
+
+#if ! DisableScreenSaver
+void screenSaver_create(lv_obj_t *parent);
+lv_obj_t *cui_saverBackground;
+lv_timer_t *updateTimer;
+lv_style_t bubbleStyle;
+lv_obj_t* bubbleObject[BubbleCount];
+static uint32_t timerCount;
+static uint32_t sleepCounter;
+
 void screenSaver_hide(void);
 void screenSaver_show(void);
 
@@ -44,7 +47,6 @@ void periodic_timer_handler(lv_timer_t *timer);
 void screenSaverInitDraw(void);
 void screenSaverUpdate(void);
 
-void delay_sleep(void *timer);
 
 lv_color_t SRMColor[] = {
     LV_COLOR_MAKE(0xFD,0xFE,0x47), // SRM 2, Pale Straw
@@ -62,9 +64,21 @@ lv_color_t SRMColor[] = {
     LV_COLOR_MAKE(0x32,0x31,0x2C) // 40, Black
     };
 
+#endif
+void delay_sleep(void *timer){
+	(void) timer;
+	display_drv_sleep();
+    isTftSleeping=true;
+}
+
 bool isScreenSleeping(void){
     return isTftSleeping;
 }
+
+void onScreenSaverClicked(lv_event_t * e){
+    screenWakeup();
+}
+
 static void create_wakeup_button(lv_obj_t *parent){
     cui_btnScreen = lv_btn_create(parent);
     lv_obj_set_size(cui_btnScreen,lv_pct(100),lv_pct(100));
@@ -78,6 +92,7 @@ static void create_wakeup_button(lv_obj_t *parent){
     lv_obj_add_event_cb(cui_btnScreen,onScreenSaverClicked,LV_EVENT_CLICKED,NULL);
 } 
 
+#if ! DisableScreenSaver
 static void create_canvas(lv_obj_t *parent){
     cui_saverBackground = lv_obj_create(parent);
 
@@ -120,11 +135,6 @@ void screenSaver_create(lv_obj_t *parent){
     create_wakeup_button(parent);
 }
 
-void delay_sleep(void *timer){
-	(void) timer;
-	display_drv_sleep();
-    isTftSleeping=true;
-}
 
 void periodic_timer_handler(lv_timer_t *timer){
     sleepCounter++;
@@ -159,7 +169,6 @@ void periodic_timer_handler(lv_timer_t *timer){
         screenSaverUpdate();
     }
 }
-
 void screenSaver_start(lv_obj_t* parent){
 
     if(!cui_saverBackground){
@@ -182,21 +191,6 @@ void screenSaver_start(lv_obj_t* parent){
     timerCount=BubbleTime;
 }
 
-void onScreenSaverClicked(lv_event_t * e){
-    screenWakeup();
-}
-
-void screenWakeup(void){
-    if(_screenState == ScreenSavingSleep){
-        display_drv_wakeup();
-//        delay(10);
-        isTftSleeping=false;
-    }else{
-        lv_timer_pause(updateTimer);
-    }
-    screenSaver_hide();
-    userStopSaver();
-}
 
 void screenSaver_hide(void){
     lv_timer_pause(updateTimer);
@@ -256,3 +250,37 @@ void screenSaverUpdate(void){
     lv_obj_invalidate(cui_saverBackground);
 }
 
+
+void screenWakeup(void){
+    if(_screenState == ScreenSavingSleep){
+        display_drv_wakeup();
+//        delay(10);
+        isTftSleeping=false;
+    }else{
+        lv_timer_pause(updateTimer);
+    }
+    screenSaver_hide();
+    userStopSaver();
+}
+
+#else
+void screenSaver_start(lv_obj_t* parent){
+
+    if(!cui_btnScreen){
+        create_wakeup_button(parent);
+    }
+    // sleep   
+    lv_obj_clear_flag(cui_btnScreen,LV_OBJ_FLAG_HIDDEN);
+    _screenState = ScreenSavingSleep;
+    lv_async_call(delay_sleep,NULL);
+}
+
+void screenWakeup(void){
+        display_drv_wakeup();
+//        delay(10);
+        isTftSleeping=false;
+    lv_obj_add_flag(cui_btnScreen,LV_OBJ_FLAG_HIDDEN);
+    userStopSaver();
+}
+
+#endif

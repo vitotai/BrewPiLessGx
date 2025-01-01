@@ -17,6 +17,8 @@
 #endif
 #include "GravityTracker.h"
 #include "ExternalData.h"
+#include "BrewKeeper.h"
+
 
 extern BrewPiProxy brewPi;
 #include "Homekit.h"
@@ -74,11 +76,11 @@ static int beertemp_read(hap_char_t *hc, hap_status_t *status_code, void *serv_p
 		}
     }else if (!strcmp(char_uuid, HAP_CHAR_UUID_TARGET_TEMPERATURE)) {
         hap_val_t new_val;
-        new_val.f = brewPi.getBeerSet();
+		new_val.f = brewPi.getBeerSet();
 		if(IS_FLOAT_TEMP_VALID(new_val.f)){
-        	hap_char_update_val(hc, &new_val);
-    	    *status_code = HAP_STATUS_SUCCESS;
-	        return HAP_SUCCESS;
+			hap_char_update_val(hc, &new_val);
+			*status_code = HAP_STATUS_SUCCESS;
+			return HAP_SUCCESS;
 		}else{
 			*status_code = HAP_STATUS_VAL_INVALID;	
 		}
@@ -104,7 +106,14 @@ static int beertemp_read(hap_char_t *hc, hap_status_t *status_code, void *serv_p
 		// 1, heat, 
 		// 2, cool
 		// 3. auot. we will allow only OFF or Auto
-		new_val.i = (brewPi.getMode() == 'o')? 0:3;
+		if(brewPi.getMode() == BrewPiModeOff){
+			new_val.i = 0;
+		}else if(brewPi.getMode() == BrewPiModeBeerProfile){
+			new_val.i = 3;
+		}else{
+			const hap_val_t* old_val=hap_char_get_val(hc);
+			new_val.i = old_val->i;
+		}
         hap_char_update_val(hc, &new_val);
     	*status_code = HAP_STATUS_SUCCESS;
 	    return HAP_SUCCESS;
@@ -128,28 +137,37 @@ static int beertemp_write(hap_write_data_t write_data[], int count,
     for (i = 0; i < count; i++) {
         write = &write_data[i];
 		if (!strcmp(hap_char_get_type_uuid(write->hc), HAP_CHAR_UUID_TARGET_TEMPERATURE)) {
+			DBG_PRINTF("Homekit:setTemp:%d\n",(int)write->val.f);
             if ( write->val.f > brewPi.getMaxSetTemp() || write->val.f < brewPi.getMinSetTemp()) {
                 *(write->status) = HAP_STATUS_VAL_INVALID;
                 ret = HAP_FAIL;
             } else {
-				brewPi.setBeerSet(write->val.f);
-                hap_char_update_val(write->hc, &(write->val));
-                *(write->status) = HAP_STATUS_SUCCESS;
+				DBG_PRINTF("Homekit:setTemp in mode %c\n",brewPi.getMode());
+
+				if(brewPi.getMode() == BrewPiModeBeerConstant){
+					brewPi.setBeerSet(write->val.f);
+    	            hap_char_update_val(write->hc, &(write->val));
+        	        *(write->status) = HAP_STATUS_SUCCESS;
+				}
             }
 		}else if (!strcmp(hap_char_get_type_uuid(write->hc), HAP_CHAR_UUID_TARGET_HEATING_COOLING_STATE)) {
-			// 0: off
-			// 1, heat, 
-			// 2, cool
-			// 3. auot. we will allow only OFF or Auto
+			// 0: off   off
+			// 1, heat, beer constant
+			// 2, cool, beer constant
+			// 3. auot. beer profile 
 			// will accept off or ON only, everything other than off will considered as Beer Constant.
 			hap_val_t new_val;
 			if(write->val.i == 0){
-				brewPi.setMode('o');
-				new_val.i =0;
+				brewPi.setMode(BrewPiModeOff);
+			}else if(write->val.i == 3){
+				if(brewPi.getMode() != BrewPiModeBeerProfile){
+					brewKeeper.setModeFromRemote(BrewPiModeBeerProfile);
+				}
 			}else{
-				brewPi.setMode('b');
-				new_val.i = 3;
+				brewPi.setMode(BrewPiModeBeerConstant);
 			}
+			DBG_PRINTF("Homekit:setMode to %c, req:%d\n",brewPi.getMode(),write->val.i);
+			new_val.i = write->val.i;
             hap_char_update_val(write->hc, &new_val);
             *(write->status) = HAP_STATUS_SUCCESS;
 		}else if (!strcmp(hap_char_get_type_uuid(write->hc), HAP_CHAR_UUID_TEMPERATURE_DISPLAY_UNITS)) {

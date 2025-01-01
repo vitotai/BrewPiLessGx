@@ -6,6 +6,28 @@
 #include "lv_drv_conf.h"
 #include "driver_if.h"
 #include "BPLSettings.h"
+#ifdef STACK_SIZE_MONITOR
+#include <MycilaTaskMonitor.h>
+#include <ArduinoJson.h>
+
+void start_monitor(){
+  Mycila::TaskMonitor.begin(4);
+  Mycila::TaskMonitor.addTask("loopTask");
+  Mycila::TaskMonitor.addTask("async_tcp");
+  Mycila::TaskMonitor.addTask("nimble_host");
+  Mycila::TaskMonitor.addTask("httpd");
+}
+  static uint32_t stack_log_period;
+
+void monitor_log(){
+  if(millis() - stack_log_period > 60000){
+      stack_log_period = millis();
+
+      Mycila::TaskMonitor.log();
+  }
+}
+#endif
+
 extern void bpl_setup(void);
 extern void bpl_loop(void);
 
@@ -52,10 +74,17 @@ void setup(){
     #if WAKEUP_BUTTON_ENABLED
     wakebutton_init();
     #endif
+
+#ifdef STACK_SIZE_MONITOR
+  start_monitor();
+#endif
 }
 
 void loop()
 {
+#ifdef STACK_SIZE_MONITOR
+  monitor_log();
+#endif
 
     lv_timer_handler(); /* let the GUI do its work */
     bpl_loop();
