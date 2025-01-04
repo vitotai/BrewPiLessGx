@@ -41,6 +41,14 @@ static hap_char_t* _gravitychange_detected_char;
 
 static hap_char_t* _target_temperature_char;
 
+void (*homekit_statuscb)(uint8_t);
+
+void homekit_setup_status_cb(void (*statuscb)(uint8_t)){
+	homekit_statuscb = statuscb;
+}
+const char* homekit_get_pair_code(void){
+	return HOMEKIT_SETUP_CODE;
+}
 
 static float getGravityReading(void){
 	float value;
@@ -239,6 +247,16 @@ static int gravitychange_read(hap_char_t *hc, hap_status_t *status_code, void *s
     return HAP_FAIL;
 }
 
+static void homekit_status_changed(uint8_t status){
+	if(_homekitStatus != status){
+		_homekitStatus = status;
+		if(homekit_statuscb){
+			homekit_statuscb(_homekitStatus);
+		}
+	}
+}
+
+
 static void hap_event_handler(hap_event_t event, void *data){
 	switch(event){
 		/** A new controller was paired/added/modified.
@@ -255,7 +273,7 @@ static void hap_event_handler(hap_event_t event, void *data){
 		 * Associated data is a NULL terminated controller identifier string.
 		 */
 		case HAP_EVENT_CTRL_CONNECTED:
-			_homekitStatus = HomekitStatus_Connected;
+			homekit_status_changed(HomekitStatus_Connected);
 			break;
 
 		/** A controller disconnected from the accessory. This event is reported before the
@@ -265,17 +283,17 @@ static void hap_event_handler(hap_event_t event, void *data){
 		 * Associated data is a NULL terminated controller identifier string.
 		 */
 		case HAP_EVENT_CTRL_DISCONNECTED:
-			_homekitStatus = (hap_get_paired_controller_count()>0)? HomekitStatus_Paired:HomekitStatus_Inactive;
+			homekit_status_changed((hap_get_paired_controller_count()>0)? HomekitStatus_Paired:HomekitStatus_Inactive);
 			break;
 
 		/** A Pair Setup attempt has started. Waiting for Setup Code */
 		case HAP_EVENT_PAIRING_STARTED:
-			_homekitStatus = HomekitStatus_Pairing;
+			homekit_status_changed(HomekitStatus_Pairing);
 			break;
 
 		/** Pair Setup was aborted because of inactivity or a wrong setup code */
 		case HAP_EVENT_PAIRING_ABORTED:
-			_homekitStatus = HomekitStatus_Inactive;
+			homekit_status_changed(HomekitStatus_Inactive);
 			break;
 
 		/** A GET on /accessories was successfully completed */
@@ -296,10 +314,12 @@ static void hap_event_handler(hap_event_t event, void *data){
 		* an unpaired state for more than the time specified in HAP Spec R16.
 		*/
 		case HAP_EVENT_PAIRING_MODE_TIMED_OUT:
-			_homekitStatus = HomekitStatus_Inactive;
+			homekit_status_changed(HomekitStatus_Inactive);
 			break;
 	}
 }
+
+#define HEXCODE(a)  (((a)>9)? (((a)-10) +'A'):((a)+'0'))
 
 void homekit_setup(void)
 {
@@ -320,11 +340,20 @@ void homekit_setup(void)
     /* Initialise the mandatory parameters for Accessory which will be added as
      * the mandatory services internally
      */
+	uint8_t mac[6];
+	WiFi.macAddress(mac);
+	// gnerate a serial number by converting macaddress
+	char serial[13];
+	for(int i=0;i<6;i++){
+		serial[i*2]=HEXCODE(mac[i] & 0xF);
+		serial[i*2 +1]=HEXCODE(mac[i] >> 4);
+	}
+	serial[12]='\0';
     hap_acc_cfg_t cfg = {
         .name = "BPL",
         .model = "BrewPilessGx",
         .manufacturer = "HomeDiy",
-        .serial_num = "001122334455",
+        .serial_num =  serial, //"001122334455",
         .fw_rev = "0.9.0",
         .hw_rev = NULL,
         .pv = "1.1.0",
@@ -380,9 +409,9 @@ void homekit_setup(void)
     hap_add_accessory(accessory);
 
     /* Unique Setup code of the format xxx-xx-xxx. Default: 111-22-333 */
-    hap_set_setup_code("111-22-333");
+    hap_set_setup_code(HOMEKIT_SETUP_CODE);
     /* Unique four character Setup Id. Default: ES32 */
-    hap_set_setup_id("ES32");
+    hap_set_setup_id(HOMEKIT_SETUP_ID);
 
     /* Enable Hardware MFi authentication (applicable only for MFi variant of SDK) */
     hap_enable_mfi_auth(HAP_MFI_AUTH_HW);
@@ -451,4 +480,79 @@ void homekit_loop(void){
 		hap_char_update_val(_target_temperature_char, &new_val);
 	} */
 	// TODO: report Control Mode change
+}
+
+
+
+
+/*
+https://github.com/HomeSpan/HomeSpan/blob/master/docs/QRCodes.md
+The Setup Payload for a HomeKit device always begins with "X-HM://", followed by nine base-36 digits that encode all the device's pairing parameters, and ending with the Setup ID for the device in plain text.
+
+Base-36 digits use the characters 0-9 and A-Z (capitals only!) to represent the numbers 0-35 in the same fashion that the hexidecimal digits 0-9 and A-F represent the numbers 0-15. For example, the decimal number 91 would be represented as 2S in base-36 (91 = 2 * 36 + 19)
+The nine base-36 digits should encode a 45-bit word formed from the following data elements (listed from most- to least-significant bit):
+
+Bits 45-43 - The "Version" field (0-7). Always set to 0
+Bits 42-39 - The "Reserved" field (0-15). Always set to 0
+Bits 38-31 - The device's Accessory Category (0-255)
+Bit 30 - Always set to 0
+Bit 29 - Set to 1 if the device supports BLTE pairing, else set to 0
+Bit 28 - Set to 1 if the device supports IP pairing, else set to 0
+Bit 27 - Set to 1 if the device supports NFC pairing, else set to 0
+Bits 26-0 - The device's 8-digit Setup Code (from 0-99999999)
+The result must be 9 digits. If less, pad with leading zeros.
+*/
+const unsigned char version=0;
+const unsigned char reserved=0;
+
+#define base36(value) (value < 10)? ('0' + (value)):('A' + ((value)-10))
+
+long long con_setup_code(const char* code){
+    long long ret=0;
+    const char* ptr=code;
+    while(*ptr){
+        if(*ptr != '-'){
+            ret = ret * 10 + ( *ptr - '0');
+        }
+        ptr ++;
+    }
+    return ret;
+}
+
+void homekit_setup_uri(char ret[],unsigned int category,const char* setup_code,const char* setup_id,int ble_pair, int ip_pair,int nfc_pair){
+    
+    long long payload = 0;
+    //version
+    payload |= (version & 0x7);
+    // Reserved
+    payload <<= 4;
+    payload |=(reserved & 0xf);
+    // category
+    payload <<= 8;
+    payload |= (category & 0xff);
+
+    payload <<= 4;
+    unsigned char flags= (ble_pair? (1<<2):0) | (ip_pair? (1<<1):0) |(nfc_pair? 1:0);
+    payload |= (flags & 0xf);
+
+    payload <<= 27;
+    payload |= con_setup_code(setup_code);
+
+    //X-HM://[9 chars payload][4 char ])
+    const char* method="X-HM://";
+    int off=strlen(method);
+    memcpy(ret,method,off);
+
+    for(int i=0;i<9;i++){
+        ret[off + 8 - i] = base36(payload % 36);
+        payload = payload / 36;
+    }
+    off += 9;
+    memcpy(ret + off,setup_id,4);
+    off += 4;
+    ret[off]='\0';
+}
+
+void homekit_get_setup_uri(char ret[]){
+	homekit_setup_uri(ret,HAP_CID_THERMOSTAT,HOMEKIT_SETUP_CODE,HOMEKIT_SETUP_ID,0,1,0);
 }

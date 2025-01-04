@@ -1661,7 +1661,7 @@ public:
 
 NetworkConfig networkConfig;
 
-#if HOMEKIT_ENABLED
+#if HOMEKIT_WEB
 class HomekitHandler:public AsyncWebHandler
 {
 public:
@@ -2143,7 +2143,7 @@ void setup(void){
 
 	webServer->addHandler(new FileManager(FileSystem,FILE_MANAGEMENT_PATH ,theSettings.systemConfiguration()->username,theSettings.systemConfiguration()->password));
 
-#if HOMEKIT_ENABLED
+#if HOMEKIT_WEB
 	webServer->addHandler(&homekitHandler);
 #endif
 

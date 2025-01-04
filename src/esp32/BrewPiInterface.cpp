@@ -13,8 +13,13 @@
 #include "TimeKeeper.h"
 #include "ParasiteTempController.h"
 #include "GravityTracker.h"
+
 #if EnableHumidityControlSupport
 #include "HumidityControl.h"
+#endif
+
+#if  HOMEKIT_UI
+#include "Homekit.h"
 #endif
 
 #if SerialDebug == true
@@ -283,6 +288,7 @@ uint8_t bplGetChamberHumidity(){
 uint8_t bplGetTargetHumidity(){
     return humidityControl.targetRH();
 }
+#endif
 
 uint8_t bplGetHumidityControlState(){
     /*
@@ -297,6 +303,32 @@ uint8_t bplGetHumidityControlState(){
    if(state == HC_Humidifying) return 3;
    if(state == HC_Idle) return 1;
    return 0;
+}
+
+#if  HOMEKIT_UI
+
+uint8_t bplHomekitGetStatus(void){
+    return homekit_status();
+}
+
+void bplHomekitSetStatusCB(HomekitStatusIndicationCB cb){
+    homekit_setup_status_cb(cb);
+}
+
+bool bplHomekitClearPairing(void){
+    return homekit_reset_pairing();
+}
+
+bool bplHomekitStartPairing(void){
+    homekit_restart_pairing();
+    return true;
+}
+
+void bplHomekitGetSetupUri(char ret[]){
+    homekit_get_setup_uri(ret);
+}
+const char* bplHomekitGetPairCode(void){
+    return homekit_get_pair_code();
 }
 
 #endif

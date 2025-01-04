@@ -13,4 +13,12 @@ extern bool homekit_reset_pairing(void);
 extern void homekit_restart_pairing(void);
 extern uint8_t homekit_status(void);
 extern void homekit_loop(void);
+
+extern void homekit_get_setup_uri(char ret[]);
+extern void homekit_setup_status_cb(void (*statuscb)(uint8_t));
+extern const char* homekit_get_pair_code(void);
+
+#define HOMEKIT_SETUP_CODE "111-22-333"
+#define HOMEKIT_SETUP_ID   "BPLG"
+
 #endif

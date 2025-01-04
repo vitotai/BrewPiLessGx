@@ -97,7 +97,10 @@ lv_obj_t *ui_lbPasswd;
 void ui_event_btnSearchNetwork( lv_event_t * e);
 lv_obj_t *ui_btnSearchNetwork;
 lv_obj_t *ui_Image2;
-
+lv_obj_t *ui_btnHomekit;
+lv_obj_t *ui_btnHomekitLabel;
+lv_obj_t *ui_lbHomekitStatus;
+void ui_event_btnHomekit(lv_event_t * e);
 
 // SCREEN: ui_screenInput
 void ui_screenInput_screen_init(void);
@@ -187,6 +190,9 @@ void ui_event_screenSetting( lv_event_t * e) {
     lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
 if ( event_code == LV_EVENT_SCREEN_LOAD_START) {
       onScreenSettingLoadStart( e );
+}
+if( event_code == LV_EVENT_SCREEN_UNLOAD_START){
+      onScreenSettingUnloadStart(e);
 }
 }
 void ui_event_btnSettingBack( lv_event_t * e) {

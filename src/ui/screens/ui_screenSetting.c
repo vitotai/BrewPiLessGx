@@ -4,6 +4,130 @@
 // Project name: S320240
 
 #include "../ui.h"
+#if HOMEKIT_UI
+void ui_screenSetting_screen_init(void)
+{
+ui_screenSetting = lv_obj_create(NULL);
+lv_obj_clear_flag( ui_screenSetting, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+lv_obj_set_style_bg_color(ui_screenSetting,lv_color_black(), LV_PART_MAIN| LV_STATE_DEFAULT);
+ui_Image2 = lv_img_create(ui_screenSetting);
+
+if(setting_screen_label_image)  lv_img_set_src(ui_Image2, setting_screen_label_image);
+else lv_img_set_src(ui_Image2, &ui_img_setting_320240_left_png);
+uint32_t scrwidthhalf = lv_obj_get_width(ui_screenSetting)/2;
+lv_obj_set_width( ui_Image2, LV_SIZE_CONTENT);  /// 1
+lv_obj_set_height( ui_Image2, LV_SIZE_CONTENT);   /// 1
+lv_obj_set_x( ui_Image2, 0 - scrwidthhalf);
+lv_obj_set_y( ui_Image2, 0 );
+lv_obj_set_align( ui_Image2, LV_ALIGN_RIGHT_MID);
+lv_obj_add_flag( ui_Image2, LV_OBJ_FLAG_ADV_HITTEST );   /// Flags
+lv_obj_clear_flag( ui_Image2, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+
+ui_btnSettingBack = lv_imgbtn_create(ui_screenSetting);
+lv_imgbtn_set_src(ui_btnSettingBack, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_backbutton_png, NULL);
+lv_obj_set_width( ui_btnSettingBack, 20);
+lv_obj_set_height( ui_btnSettingBack, 36);
+
+ui_swWiFi = lv_switch_create(ui_screenSetting);
+lv_obj_set_width( ui_swWiFi, 50);
+lv_obj_set_height( ui_swWiFi, 25);
+lv_obj_set_x( ui_swWiFi, 36 );
+lv_obj_set_y( ui_swWiFi, -77 );
+lv_obj_set_align( ui_swWiFi, LV_ALIGN_CENTER );
+
+uint32_t lbleft = scrwidthhalf + 8;
+ui_lbNetwork = lv_label_create(ui_screenSetting);
+lv_obj_set_width( ui_lbNetwork, LV_SIZE_CONTENT);  /// 1
+lv_obj_set_height( ui_lbNetwork, LV_SIZE_CONTENT);   /// 1
+lv_obj_set_x( ui_lbNetwork, lbleft );
+lv_obj_set_y( ui_lbNetwork, -49 );
+lv_obj_set_align( ui_lbNetwork, LV_ALIGN_LEFT_MID );
+//lv_label_set_text(ui_lbNetwork,"Network");
+lv_obj_set_style_text_align(ui_lbNetwork, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN| LV_STATE_DEFAULT);
+
+ui_lbAddress = lv_label_create(ui_screenSetting);
+lv_obj_set_width( ui_lbAddress, LV_SIZE_CONTENT);  /// 1
+lv_obj_set_height( ui_lbAddress, LV_SIZE_CONTENT);   /// 1
+lv_obj_set_x( ui_lbAddress, lbleft );
+lv_obj_set_y( ui_lbAddress, -28 );
+lv_obj_set_align( ui_lbAddress, LV_ALIGN_LEFT_MID );
+//lv_label_set_text(ui_lbAddress,"0.0.0.0");
+lv_obj_set_style_text_align(ui_lbAddress, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN| LV_STATE_DEFAULT);
+
+ui_swApMode = lv_switch_create(ui_screenSetting);
+lv_obj_set_width( ui_swApMode, 50);
+lv_obj_set_height( ui_swApMode, 25);
+lv_obj_set_x( ui_swApMode, 36 );
+lv_obj_set_y( ui_swApMode, 0 );
+lv_obj_set_align( ui_swApMode, LV_ALIGN_CENTER );
+
+
+ui_lbHostname = lv_label_create(ui_screenSetting);
+lv_obj_set_width( ui_lbHostname, LV_SIZE_CONTENT);  /// 1
+lv_obj_set_height( ui_lbHostname, LV_SIZE_CONTENT);   /// 1
+lv_obj_set_x( ui_lbHostname, lbleft );
+lv_obj_set_y( ui_lbHostname, 28 );
+lv_obj_set_align( ui_lbHostname, LV_ALIGN_LEFT_MID );
+//lv_label_set_text(ui_lbHostname,"brewpiless");
+lv_obj_set_style_text_align(ui_lbHostname, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN| LV_STATE_DEFAULT);
+
+ui_lbUsername = lv_label_create(ui_screenSetting);
+lv_obj_set_width( ui_lbUsername, LV_SIZE_CONTENT);  /// 1
+lv_obj_set_height( ui_lbUsername, LV_SIZE_CONTENT);   /// 1
+lv_obj_set_x( ui_lbUsername, lbleft );
+lv_obj_set_y( ui_lbUsername, 52 );
+lv_obj_set_align( ui_lbUsername, LV_ALIGN_LEFT_MID );
+//lv_label_set_text(ui_lbUsername,"username");
+lv_obj_set_style_text_align(ui_lbUsername, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN| LV_STATE_DEFAULT);
+
+ui_lbPasswd = lv_label_create(ui_screenSetting);
+lv_obj_set_width( ui_lbPasswd, LV_SIZE_CONTENT);  /// 1
+lv_obj_set_height( ui_lbPasswd, LV_SIZE_CONTENT);   /// 1
+lv_obj_set_x( ui_lbPasswd, lbleft );
+lv_obj_set_y( ui_lbPasswd, 76 );
+lv_obj_set_align( ui_lbPasswd, LV_ALIGN_LEFT_MID );
+//lv_label_set_text(ui_lbPasswd,"password");
+lv_obj_set_style_text_align(ui_lbPasswd, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN| LV_STATE_DEFAULT);
+
+ui_lbHomekitStatus = lv_label_create(ui_screenSetting);
+lv_label_set_text(ui_lbHomekitStatus, "Unpaired");
+lv_obj_set_align( ui_lbHomekitStatus, LV_ALIGN_LEFT_MID );
+lv_obj_set_x( ui_lbHomekitStatus, lbleft );
+lv_obj_set_y( ui_lbHomekitStatus, 100 );
+
+ui_btnHomekit = lv_btn_create(ui_screenSetting);
+lv_obj_set_width( ui_btnHomekit, LV_SIZE_CONTENT);  /// 1
+lv_obj_set_height( ui_btnHomekit, 24);   /// 1
+lv_obj_set_x( ui_btnHomekit, lbleft +80);
+lv_obj_set_y( ui_btnHomekit, 100 );
+lv_obj_set_align( ui_btnHomekit, LV_ALIGN_LEFT_MID );
+lv_obj_set_style_bg_color(ui_btnHomekit,lv_color_white(),LV_PART_MAIN);
+
+ui_btnHomekitLabel = lv_label_create(ui_btnHomekit);
+lv_label_set_text(ui_btnHomekitLabel, "PAIR");
+lv_obj_set_style_text_color(ui_btnHomekitLabel,lv_color_black(),LV_PART_MAIN);
+lv_obj_center(ui_btnHomekitLabel);
+
+ui_btnSearchNetwork = lv_imgbtn_create(ui_screenSetting);
+lv_imgbtn_set_src(ui_btnSearchNetwork, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_203665058, NULL);
+lv_obj_set_width( ui_btnSearchNetwork, 32);
+lv_obj_set_height( ui_btnSearchNetwork, 32);
+lv_obj_set_x( ui_btnSearchNetwork, 134 );
+lv_obj_set_y( ui_btnSearchNetwork, -43 );
+lv_obj_set_align( ui_btnSearchNetwork, LV_ALIGN_CENTER );
+
+
+lv_obj_add_event_cb(ui_btnSettingBack, ui_event_btnSettingBack, LV_EVENT_ALL, NULL);
+lv_obj_add_event_cb(ui_swWiFi, ui_event_swWiFi, LV_EVENT_ALL, NULL);
+lv_obj_add_event_cb(ui_swApMode, ui_event_swApMode, LV_EVENT_ALL, NULL);
+lv_obj_add_event_cb(ui_btnSearchNetwork, ui_event_btnSearchNetwork, LV_EVENT_ALL, NULL);
+lv_obj_add_event_cb(ui_screenSetting, ui_event_screenSetting, LV_EVENT_ALL, NULL);
+
+lv_obj_add_event_cb(ui_btnHomekit,ui_event_btnHomekit,LV_EVENT_ALL,NULL);
+}
+
+
+#else
 
 void ui_screenSetting_screen_init(void)
 {
@@ -105,3 +229,4 @@ lv_obj_add_event_cb(ui_btnSearchNetwork, ui_event_btnSearchNetwork, LV_EVENT_ALL
 lv_obj_add_event_cb(ui_screenSetting, ui_event_screenSetting, LV_EVENT_ALL, NULL);
 
 }
+#endif

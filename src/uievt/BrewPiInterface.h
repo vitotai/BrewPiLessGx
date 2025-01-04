@@ -101,6 +101,15 @@ extern uint8_t bplGetChamberHumidity();
 extern uint8_t bplGetTargetHumidity();
 extern uint8_t bplGetHumidityControlState();
 #endif
+
+typedef void (*HomekitStatusIndicationCB)(uint8_t);
+
+extern uint8_t bplHomekitGetStatus(void);
+extern void bplHomekitSetStatusCB(HomekitStatusIndicationCB cb);
+bool bplHomekitClearPairing(void);
+bool bplHomekitStartPairing(void);
+void bplHomekitGetSetupUri(char ret[]);
+const char* bplHomekitGetPairCode(void);
 #if 0 //SIMULATOR 
 struct tm {
 int tm_sec; 

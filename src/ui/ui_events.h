@@ -18,6 +18,7 @@ void onScreenTempControlLoadStart(lv_event_t * e);
 void onModeChanged(lv_event_t * e);
 void onTemperatureSetDone(lv_event_t * e);
 void onScreenSettingLoadStart(lv_event_t * e);
+void onScreenSettingUnloadStart(lv_event_t * e);
 void onWiFiStaModeChange(lv_event_t * e);
 void onWiFiApModeChange(lv_event_t * e);
 void onSearchNetworkClicked(lv_event_t * e);

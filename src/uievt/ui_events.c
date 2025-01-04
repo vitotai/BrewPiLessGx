@@ -12,7 +12,9 @@
 #include "screensaver.h"
 #include "timeformat.h"
 #include "skindef.h"
-#include "driver_if.h"
+#if HOMEKIT_UI
+#include "homekitqrcode.h"
+#endif
 
 #define GRAVITY_TITLE "Gravity"
 #define ORIGINAL_GRAVITY_TITLE "Original Gravity"
@@ -740,6 +742,33 @@ void onTempControlScreenClicked(lv_event_t * e){
 /* ****************************************************************** */
 /* Setting screen*/
 /* ****************************************************************** */
+#if HOMEKIT_UI
+
+static const char *_HomekitStatus[]={
+"Unpaired",
+"Wait",
+"Paired",
+};
+
+static const char *_HomekitAction[]={
+"Pair",
+"Paring",
+"Reset"
+};
+static void homekitStatusCb(uint8_t status){
+	if(status >2) status =2;
+
+	lv_label_set_text(ui_lbHomekitStatus,_HomekitStatus[status]);
+	lv_label_set_text(ui_btnHomekitLabel,_HomekitAction[status]);
+	if(status == 1){
+		// pairing enable
+		lv_obj_clear_flag(ui_btnHomekit,LV_OBJ_FLAG_CLICKABLE);		
+	}else{
+		// pairing timeout or something else
+		lv_obj_add_flag(ui_btnHomekit,LV_OBJ_FLAG_CLICKABLE);
+	}
+}
+#endif
 
 #define STA_Enabled(m) ((m) == WIFI_AP_STA || (m)== WIFI_STA)
 #define AP_Enabled(m) ((m) == WIFI_AP_STA || (m)== WIFI_AP)
@@ -775,6 +804,16 @@ void onScreenSettingLoadStart(lv_event_t * e)
 	lv_label_set_text(ui_lbHostname,bplHostname());
 	lv_label_set_text(ui_lbUsername,bplUsername());
 	lv_label_set_text(ui_lbPasswd,bplPassword());
+#if HOMEKIT_UI
+	uint8_t status=bplHomekitGetStatus();
+	homekitStatusCb(status);
+	bplHomekitSetStatusCB(homekitStatusCb);
+#endif
+}
+void onScreenSettingUnloadStart(lv_event_t * e){
+#if HOMEKIT_UI
+	bplHomekitSetStatusCB(NULL);
+#endif
 }
 
 void onWiFiStaModeChange(lv_event_t * e)
@@ -813,6 +852,51 @@ void onSearchNetworkClicked(lv_event_t * e)
 
 	 _ui_screen_change( &cui_screenNetworkScan, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, &cui_screenNetworkScan_screen_init,false);
 }
+#if HOMEKIT_UI
+static void msg_event_cb(lv_event_t * e)
+{
+    lv_obj_t * obj = lv_event_get_current_target(e);
+//    LV_LOG_USER("Button %s clicked", lv_msgbox_get_active_btn_text(obj));
+	lv_msgbox_close(obj);
+}
+
+static void msg_longpressed_cb(lv_event_t * e)
+{
+    lv_obj_t * obj = lv_event_get_current_target(e);
+//    LV_LOG_USER("Button %s clicked", lv_msgbox_get_active_btn_text(obj));
+	if(lv_msgbox_get_active_btn(obj) == 0){
+		bplHomekitClearPairing();
+	}
+	lv_msgbox_close(obj);
+}
+
+void ui_event_btnHomekit( lv_event_t * e) {
+    lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
+	if ( event_code == LV_EVENT_CLICKED) {
+		if(bplHomekitGetStatus() == 0){ // inactive, paired -> pairing
+			bplHomekitStartPairing();
+
+			#if 1
+			show_homekit_qrcode(lv_scr_act());
+			#else
+		    static const char * btns[] = {"OK", NULL};   		
+			lv_obj_t * mbox1 = lv_msgbox_create(NULL, "Homekit", "Code:111-22-333.\n Wait Pairing.", btns, false);
+    		lv_obj_add_event_cb(mbox1,msg_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
+    		lv_obj_center(mbox1);
+			#endif
+		}
+	}else
+	if ( event_code == LV_EVENT_LONG_PRESSED) {
+		if(bplHomekitGetStatus() == 2){ // paired, not connected
+//			bplHomekitClearPairing();
+		    static const char * btns[] = {"OK", "Cancel",NULL};
+    		lv_obj_t * mbox1 = lv_msgbox_create(NULL, "Homekit", "Clear Pairing. The device will reboot.", btns, false);
+    		lv_obj_add_event_cb(mbox1,msg_longpressed_cb, LV_EVENT_VALUE_CHANGED, NULL);
+    		lv_obj_center(mbox1);
+		}
+	} 
+}
+#endif
 
 /* ****************************************************************** */
 /* Input screen*/
