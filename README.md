@@ -180,7 +180,19 @@ The integration of HomeKit is achieved through the esp-homekit-arduino-sdk. Plea
 
 One advantage of using HomeKit is that no additional servers or firewall configurations are needed, provided a HomeKit hub such as an Apple TV 4K or HomePod is available. To enable viewing information and controlling temperature on an iPhone, iPad, or even via Siri through a HomePod, the BPLGx system emulates a thermostat, a light sensor, and a carbon dioxide sensor. These devices were chosen for their ability to represent the required range of values:
 
-- Thermostat: The controlled temperature corresponds to the beer's temperature. There are four mode in Apple's thermostat profile, which are Off, Cooling, Heating, and Auto. Cooling and heating are mapped to beer constant mode, while Auto is Beer profile mode. When Beer Profile mode is set, the current saved profile will be applied and the starting time is set to **current time**. This design enables a controlled temperature change on demand. - Light Sensor: The ambient light level is represented by the current specific gravity reading (e.g., 1051 represents 1.051).
+- Thermostat: The controlled temperature corresponds to the beer's temperature. There are four mode in Apple's thermostat profile, which are Off, Cooling, Heating, and Auto. Cooling and heating are mapped to beer constant mode, while Auto is Beer profile mode. When Beer Profile mode is set, the current saved profile will be applied and the starting time is set to **current time**. This design enables a controlled temperature change on demand. 
+
+- Light Sensor: The ambient light level is represented by the current specific gravity reading (e.g., 1051 represents 1.051). On my iPhone, the value in detail view is rounded to 10s, however it is correct in overview.
+
 - Carbon Dioxide Sensor: The peak value represents the change in gravity over 24 hours, while the current value reflects the change over 6 hours. Both values are divided by 10 (e.g., 79 indicates a 7.9-point drop).
 
-It's important to note that the ESP32 lacks sufficient memory to run HomeKit alongside all other features. However, the ESP32-S3, equipped with additional PSRAM, may support HomeKit more effectively. I have tested HomeKit on an ESP32-based 24320S032C device, and after 3–5 days of operation, the increasing log size began to prevent the home web page from loading. Therefore, if HomeKit is enabled on an ESP32 device, it is recommended to disable log recording to avoid such issues.
+It's important to note that the ESP32 *might* lack sufficient memory to run HomeKit alongside all other features. Some memory optimization options must be used. Otherwise, the downloading log over three or five days might be problmatic, which would result in failure of loading the main page. The ESP32-S3, equipped with additional PSRAM, may support HomeKit more effectively.
+
+### Operation of Homekit UI
+In Network seting screen, the Homekit status and a button for operation is available. The status of Homekit can be
+
+- Unpaired/Inactive.
+- Paring Enabled
+- Paired.
+
+Press the button "Pair" to enable Pairing. A screen of QR code will be shown to help pairing. Only in Pairing Enabled state, the device can be paired. If no pairing is requested for a period of time, BPLGx would return to "Unpaired" state. Only one controller can be paired. If the device is removed from Home App during BPLGx is off line, BPLGx will stays in paired state without a real bonded controller. *Long pressing* the *Reset* will reset the bond, as well as the BPLGx. Avoid it by removing the device when BPLGx is on line. The pairing code is "111-22-333".
