@@ -1220,7 +1220,6 @@ void sayHello()
 }
 #endif 
 
-#define MAX_DATA_SIZE 256
 
 class LogHandler:public AsyncWebHandler
 {
@@ -1349,11 +1348,12 @@ public:
 };
 LogHandler logHandler;
 
+#define MAX_DATA_SIZE 300
 
 class ExternalDataHandler:public AsyncWebHandler
 {
 private:
-	char _buffer[MAX_DATA_SIZE+2];
+	char *_buffer;
 	char *_data;
 
 	size_t _dataLength;
@@ -1374,9 +1374,6 @@ private:
 public:
 
 	ExternalDataHandler(){
-    	_data = &(_buffer[2]);
-    	_buffer[0]='G';
-    	_buffer[1]=':';
 	}
 
 	void loadConfig(void){
@@ -1462,11 +1459,17 @@ public:
 				request->send(400);
 				return;
 			}
+	   		_buffer[0]='G';
+    		_buffer[1]=':';
 			stringAvailable(_buffer); // send to brower to log on Javascript Console
+			// process the gravity report from iSpindel
 			processGravity(request,_data,_dataLength);
 			// Process the name
 			externalData.gravityDeviceSetting(_data);
 			stringAvailable(_data);
+			
+			free(_buffer);
+			_buffer=NULL;
 			return;
 		}
 		if(request->url() == GravityFormulaPath){
@@ -1498,6 +1501,7 @@ public:
 			}else{
 				request->send(400);
 			}
+			free(_buffer);
 			return;
 		}//else{
 			// get
@@ -1514,8 +1518,10 @@ public:
 		if(!index){
 		    DBG_PRINTF("BodyStart-len:%d total: %u\n",len, total);
 			_dataLength =0;
-			_error=(total >= MAX_DATA_SIZE);
-		}
+			_buffer =(char*) malloc(total + 4);
+			_error= (_buffer ==NULL);
+	    	_data = _buffer +2;
+ 		}
 
 		if(_error) return;
 		for(size_t i=0; i< len; i++){

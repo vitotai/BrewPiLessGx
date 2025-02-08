@@ -109,13 +109,14 @@ protected:
 
 	// iSpindel and Pill: battery, tilt Angle
 
-	float  _deviceVoltage;
+	float _deviceVoltage;
 	float _tiltAngle;
-	
 	// iSpindel specific: name
     char *_ispindelName;
 	float _og;
+	
 	bool _formulaValid;
+
 	float _filteredGravity;
 	SimpleFilter filter;
 
@@ -132,7 +133,7 @@ protected:
 	void _setOriginalGravity(float og);	
 	void _setDeviceRssi(int16_t rssi){_rssi = rssi;  _rssiValid=true;}
 
-	void _reconfig(bool reformula);
+	void _reconfig(void);
 	#if SupportTiltHydrometer
 	void _gotTiltInfo(TiltHydrometerInfo* info);
 	#endif

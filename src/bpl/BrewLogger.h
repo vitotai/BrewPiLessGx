@@ -55,6 +55,7 @@
 
 #define GDIAddress 1
 #define GDIIdentity 2
+#define GDITiltTemperatureCorrection 3
 
 #define VolatileDataHeaderSize 7
 #if EnableHumidityControlSupport
