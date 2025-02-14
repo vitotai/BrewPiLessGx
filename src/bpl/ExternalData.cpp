@@ -426,7 +426,8 @@ void  ExternalData::_remoteHydrometerReport(float gravity,float tilt){
 					+ _cfg->tiltCorrectionCoeff[2] * _auxTemp * _auxTemp
 					+ _cfg->tiltCorrectionCoeff[3] * _auxTemp * _auxTemp * _auxTemp;
 
-			float calculated=_calculateGravity(tilt + tilt * tc );
+//			float calculated=_calculateGravity(tilt + tilt * tc );
+			float calculated=_calculateGravity(tilt + tc );
 			brewLogger.addGravity(calculated);
 			_setGravity(calculated);
 		}
