@@ -171,6 +171,7 @@ extern "C" {
 #endif
 
 #define GRAVITY_PATH       "/gravity"
+#define SETGRAVITY_PATH       "/sgset"
 #define GravityDeviceConfigPath "/gdc"
 #define GravityFormulaPath "/coeff"
 
@@ -1383,6 +1384,7 @@ public:
 	bool canHandle(AsyncWebServerRequest *request){
 		DBG_PRINTF("req: %s\n", request->url().c_str());
 	 	if(request->url() == GRAVITY_PATH	) return true;
+	 	if(request->url() == SETGRAVITY_PATH	) return true;
 	 	if(request->url() == GravityDeviceConfigPath) return true;
 	 	if(request->url() == GravityFormulaPath) return true;
 #if	SupportTiltHydrometer
@@ -1453,12 +1455,29 @@ public:
 		 }
 #endif
 
+		if(request->url() == SETGRAVITY_PATH){
+			if(request->hasParam("sg")){
+				float gravity = request->getParam("sg")->value().toFloat();
+				DBG_PRINTF("set sg\n");
+				externalData.setGravity(gravity);
+				request->send(200,ApplicationJsonType,"{}");
+			}else if(request->hasParam("og")){
+				float gravity = request->getParam("og")->value().toFloat();
+				externalData.setOriginalGravity(gravity);
+				request->send(200,ApplicationJsonType,"{}");
+				DBG_PRINTF("set og\n");
+			}else{
+				request->send(400);
+			}
+			return;
+		}
 
 		if(request->url() == GRAVITY_PATH){
 			if(request->method() != HTTP_POST){
 				request->send(400);
 				return;
 			}
+			request->send(200,ApplicationJsonType,"{}");
 	   		_buffer[0]='G';
     		_buffer[1]=':';
 			stringAvailable(_buffer); // send to brower to log on Javascript Console
@@ -1496,12 +1515,14 @@ public:
 		}
 		// config
 		if(request->method() == HTTP_POST){
+			DBG_PRINTF("Config\n");
   			if(externalData.processconfig(_data)){
 		  		request->send(200,ApplicationJsonType,"{}");
 			}else{
 				request->send(400);
 			}
 			free(_buffer);
+			_buffer= NULL;
 			return;
 		}//else{
 			// get
@@ -1517,13 +1538,17 @@ public:
 	virtual void handleBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)override final{
 		if(!index){
 		    DBG_PRINTF("BodyStart-len:%d total: %u\n",len, total);
-			_dataLength =0;
-			_buffer =(char*) malloc(total + 4);
+			size_t asize = (total > 256)? (total+4):256;
+			_buffer =(char*) malloc(asize);
 			_error= (_buffer ==NULL);
+			_dataLength =0;
 	    	_data = _buffer +2;
  		}
 
-		if(_error) return;
+		if(_error){
+			DBG_PRINTF("Error handleBody for failure in allocation memory\n");
+			return;
+		}
 		for(size_t i=0; i< len; i++){
 			//Serial.write(data[i]);
 			_data[_dataLength ++] = data[i];

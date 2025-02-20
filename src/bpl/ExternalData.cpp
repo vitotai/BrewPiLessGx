@@ -326,29 +326,7 @@ bool ExternalData::processGravityReport(char data[],size_t length, bool authenti
 	}
 
 	String name= root["name"];
-    // web interface
-	if(name.equals("webjs")){
-		if(! authenticated){
-			error = ErrorAuthenticateNeeded;
-    	    return false;
-        }
-
-		if(!root.containsKey("gravity")){
-  			DBG_PRINTF("No gravity\n");
-  			error = ErrorMissingField;
-  			return false;
-  		}		
-		float  gravity = root["gravity"];
-
-		if(root.containsKey("og")){
-			_setOriginalGravity(gravity);
-	
-		}else{
-			// gravity data from user
-			float tilt = -100;
-			userSetGravity(gravity,tilt);
-		}
-	}else if(root.containsKey("name") && root.containsKey("temperature") && root.containsKey("angle") && root.containsKey("battery")&& root.containsKey("RSSI")){
+	if(root.containsKey("name") && root.containsKey("temperature") && root.containsKey("angle") && root.containsKey("battery")&& root.containsKey("RSSI")){
 		DBG_PRINTF("%s\n",name.c_str());
 		// force to set to iSpindel.
 		#if SupportTiltHydrometer || SupportPillHydrometer
@@ -385,7 +363,7 @@ bool ExternalData::processGravityReport(char data[],size_t length, bool authenti
 }
 
 void  ExternalData::userSetGravity(float gravity,float tilt){
-	
+	#if 0 // don't derive gravity here	
 	if(_cfg->calbybpl){
 		if(tilt < 0){
 			if(_formulaKeeper.addGravity(gravity)){
@@ -396,6 +374,7 @@ void  ExternalData::userSetGravity(float gravity,float tilt){
 			_deriveFormula();
 		}
 	}
+	#endif
 
 	_setGravity(gravity);
 	
