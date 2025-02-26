@@ -60,7 +60,6 @@ int sprintFloat(char *buff,float value,int precision)
     if(value <0)
     {
         buff[0]='-';
-	buff = buff;
 	value = 0.0- value;
 	len=1;
     }

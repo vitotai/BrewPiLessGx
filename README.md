@@ -10,7 +10,8 @@ The main display is defined by [JSON format](doc/skin.md). There is a developing
 # Update Note
 - 2025/
    - Memory tweak for ESP32 device(ESP32_2432S032C) so that Homekit is possible
-   - Temperature correction for Wireless Hydrometer. **Backup setting before upgrading. Gravity setting should be re-configured after upgrading. **
+   - [Temperature correction](doc/TemperatureCorrection.md) for Wireless Hydrometer. **Backup setting before upgrading. Gravity setting should be re-configured after upgrading. Formating the file system would be better.**
+
 - 2024/11/20
    - fixed wrong calculation of Attunation for SG.
    - Reduce memory usage by tunning NimBLE configuration.
