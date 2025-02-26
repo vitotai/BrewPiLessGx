@@ -38,8 +38,8 @@ float BrewPiGetRoomTemp(){ return -255.0;}
 
 char BrewPiGetUnit(){ return 'C';}
 
-int BrewPiGetMinSetTemp(){ return 1.0; }
-int BrewPiGetMaxSetTemp(){ return 43.9;}
+float BrewPiGetMinSetTemp(){ return 1.0; }
+float BrewPiGetMaxSetTemp(){ return 43.9;}
 
 uint8_t BrewPiGetState(){ return 4;}
 
@@ -316,6 +316,50 @@ float bplGetGravityDecreasedIn(int hour){
     if(hour == 24) return InvalidGravityDecreasedValue;
     else if(hour == 12) return 2.1;
     return 0.7;
+}
+
+static HomekitStatusIndicationCB _homekitStatusCB=NULL;
+uint8_t _homekitStatus=0;
+lv_timer_t * _pairingTimer=NULL;
+
+uint8_t bplHomekitGetStatus(void){
+    return _homekitStatus;
+}
+
+void homekit_pairing_timeout(lv_timer_t * timer){
+    _pairingTimer = NULL;
+    _homekitStatus =0;
+    if(_homekitStatusCB){
+        _homekitStatusCB(_homekitStatus);
+    }
+}
+
+bool bplHomekitStartPairing(void){
+    if(_homekitStatus == 0){ // inactive.
+        _pairingTimer = lv_timer_create(homekit_pairing_timeout, 10000,  NULL);
+        lv_timer_set_repeat_count(_pairingTimer,1);
+        _homekitStatus =1;
+        if(_homekitStatusCB){
+            _homekitStatusCB(_homekitStatus);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool bplHomekitClearPairing(void){
+    return true;
+}
+
+
+void bplHomekitSetStatusCB(HomekitStatusIndicationCB cb){
+    _homekitStatusCB = cb;
+}
+void bplHomekitGetSetupUri(char ret[]){
+    strcpy(ret,"X-HM://0052SD8YMHSPN");
+}
+const char* bplHomekitGetPairCode(void){
+    return "466-37-726";
 }
 
 #endif

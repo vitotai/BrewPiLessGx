@@ -1,6 +1,5 @@
 #include "ui.h"
 #include "screensaver.h"
-#include "canvasdraw.h"
 #include "driver_if.h"
 #include "BrewPiInterface.h"
 

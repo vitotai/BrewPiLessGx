@@ -157,21 +157,22 @@ static void constructRxLevel(lv_obj_t **lvobj,rxlevel_widget **rxwidget,const Js
         }
         *rxwidget = lv_rxlevel_create(ui_screenMain,width,height);
         assignCommonStyles(lv_rxlevel_getCanvas(*rxwidget),json);
-
+        /*
         if(json.containsKey(BACKGROUND_COLOR)){
             uint32_t color=strtol(json[BACKGROUND_COLOR],NULL,16);
             lv_rxlevel_setBgColor(*rxwidget, lv_color_hex(color) );
         }
+        */
         if(json.containsKey(FILL_COLOR)){
             uint32_t color=strtol(json[FILL_COLOR],NULL,16);
             lv_rxlevel_setColor(*rxwidget, lv_color_hex(color) );
         }
+        /*
         if(json.containsKey(SHADOW_COLOR)){
             uint32_t color=strtol(json[SHADOW_COLOR],NULL,16);
             lv_rxlevel_setSubColor(*rxwidget, lv_color_hex(color) );
         }
-
-
+        */
     }
 }
 

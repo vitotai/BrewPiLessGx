@@ -8,8 +8,9 @@ extern "C" {
 #include "lvgl.h"
 
 typedef struct _rxlevel_widget{
-lv_obj_t *canvas;
-lv_color_t *buffer;
+lv_obj_t *base;
+lv_obj_t *disabled_label;
+lv_obj_t *bars[4];
 uint16_t width;
 uint16_t height;
 uint16_t level;
@@ -22,9 +23,10 @@ extern rxlevel_widget *lv_rxlevel_create(lv_obj_t *parent,uint16_t width,uint16_
 extern void lv_rxlevel_setDisabled(rxlevel_widget* widget,bool disabled);
 
 extern void lv_rxlevel_setLevel(rxlevel_widget* widget,uint8_t level);
-extern void lv_rxlevel_setBgColor(rxlevel_widget* widget,lv_color_t color);
+
+//extern void lv_rxlevel_setBgColor(rxlevel_widget* widget,lv_color_t color);
 extern void lv_rxlevel_setColor(rxlevel_widget* widget,lv_color_t color);
-extern void lv_rxlevel_setSubColor(rxlevel_widget* widget,lv_color_t color);
+//extern void lv_rxlevel_setSubColor(rxlevel_widget* widget,lv_color_t color);
 
 extern lv_obj_t *lv_rxlevel_getCanvas(rxlevel_widget* widget);
 
