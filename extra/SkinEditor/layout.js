@@ -42,7 +42,9 @@ Rssibar.prototype.setRssi=function(x){
     var height= hu;
 
     $(t.ele).find(".rssi-bar").each(function(i,div){
-        $(div).css({"background-color":(i < bar) ? t.prop.color :t.prop.shadow,
+        //$(div).css({"background-color":(i < bar) ? t.prop.color :t.prop.shadow,
+        $(div).css({"background-color":t.prop.color,
+        "opacity": (i < bar)? 1:0.2,
         "left": x,
         "top": y,
         "height": height,
@@ -350,8 +352,8 @@ function djsonWgtStyle(tr,json){
     if(typeof json["h"] !="undefined" && json.h != "c") $(tr).find('input[target="height"]').val(json.h);
 
     if(typeof json["fc"] !="undefined") $(tr).find('input[target="color"]').val(json.fc);    
-    if(typeof json["bg"] !="undefined") $(tr).find('input[target="bg-color"]').val(json.bc);    
-    if(typeof json["sc"] !="undefined") $(tr).find('input[target="shadow-color"]').val(json.sc);    
+    //if(typeof json["bg"] !="undefined") $(tr).find('input[target="bg-color"]').val(json.bc);    
+    //if(typeof json["sc"] !="undefined") $(tr).find('input[target="shadow-color"]').val(json.sc);    
     $(tr).find('input[target="show"]').prop('checked',true);
 }
 
@@ -378,7 +380,7 @@ function djsonIconStyle(tr,json){
 function rssiBarFromJson(target, json){
     var prop={};    
     if(typeof json["fc"] !="undefined") prop["color"] = json.fc;
-    if(typeof json["sc"] !="undefined") prop["shadow-color"] = json.sc;
+    //if(typeof json["sc"] !="undefined") prop["shadow-color"] = json.sc;
 
     var wgt = new Rssibar("#"+target,prop);
     RssiWidgets[target]=wgt;
@@ -529,10 +531,10 @@ function getRssiJson(tr){
     json.rep="wgt";
     var fc= $(tr).find('input[target="color"]').val();
     if(fc != "") json.fc = fc;
-    var bg= $(tr).find('input[target="bg-color"]').val();
-    if(bg != "") json.bg = bg;
-    var sc= $(tr).find('input[target="shadow-color"]').val();
-    if(sc != "") json.sc = sc;
+    //var bg= $(tr).find('input[target="bg-color"]').val();
+    //if(bg != "") json.bg = bg;
+   // var sc= $(tr).find('input[target="shadow-color"]').val();
+   // if(sc != "") json.sc = sc;
 
     return json;
 }
@@ -813,9 +815,9 @@ function rssiWidgetInput(input){
     }else if(prop == "color"){
         if($(input).val().trim() == "") wgt.rmProp("color");
         else wgt.updateProp({color:"#"+$(input).val().trim()});
-    }else if(prop == "shadow-color"){
+    /*}else if(prop == "shadow-color"){
         if($(input).val().trim() == "") wgt.rmProp("shadow");
-        else wgt.updateProp({shadow:"#"+$(input).val().trim()});
+        else wgt.updateProp({shadow:"#"+$(input).val().trim()}); */
     }
     wgt.setRssi($(input).closest("tr").find('input[target="value"]').val());
 }

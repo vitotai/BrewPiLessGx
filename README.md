@@ -8,9 +8,10 @@ The main display is defined by [JSON format](doc/skin.md). There is a developing
     -  It's a fixed bug in newer framework, but [another bug]( https://github.com/espressif/arduino-esp32/issues/8976) stop me from upgrading.
 
 # Update Note
-- 2025/
+- 2025/03/07
    - Memory tweak for ESP32 device(ESP32_2432S032C) so that Homekit is possible
    - [Temperature correction](doc/TemperatureCorrection.md) for Wireless Hydrometer. **Backup setting before upgrading. Gravity setting should be re-configured after upgrading. Formating the file system would be better.**
+   - Using lv_obj_t to implement RSSI instead of drawing.
 
 - 2024/11/20
    - fixed wrong calculation of Attunation for SG.
