@@ -3,16 +3,16 @@
 // LVGL version: 8.3.6
 // Project name: S320240
 
-#ifndef _S320240_UI_HELPERS_H
-#define _S320240_UI_HELPERS_H
+#ifndef _UI_HELPERS_H
+#define _UI_HELPERS_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include "ui.h"
-
 #define _UI_TEMPORARY_STRING_BUFFER_SIZE 32
+#if 0
 #define _UI_BAR_PROPERTY_VALUE 0
 #define _UI_BAR_PROPERTY_VALUE_WITH_ANIM 1
 void _ui_bar_set_property( lv_obj_t *target, int id, int val);
@@ -39,11 +39,11 @@ void _ui_roller_set_property( lv_obj_t *target, int id, int val);
 #define _UI_SLIDER_PROPERTY_VALUE 0
 #define _UI_SLIDER_PROPERTY_VALUE_WITH_ANIM 1
 void _ui_slider_set_property( lv_obj_t *target, int id, int val);
-
-void _ui_screen_change( lv_obj_t ** target, lv_scr_load_anim_t fademode, int spd, int delay, void (*target_init)(void),bool auto_del);
+#endif
+void _ui_screen_change( lv_obj_t ** target, lv_screen_load_anim_t fademode, int spd, int delay, void (*target_init)(void),bool auto_del);
 
 void _ui_screen_delete( lv_obj_t ** target );
-
+#if 0
 void _ui_arc_increment( lv_obj_t *target, int val);
 
 void _ui_bar_increment( lv_obj_t *target, int val, int anm);
@@ -106,15 +106,17 @@ int32_t _ui_anim_callback_get_image_zoom(lv_anim_t* a);
 int32_t _ui_anim_callback_get_image_angle(lv_anim_t* a);
 
 int32_t _ui_anim_callback_get_image_frame(lv_anim_t* a);
+#endif
 
 void _ui_arc_set_text_value( lv_obj_t *trg, lv_obj_t *src, const char *prefix, const char *postfix);
-
+#if 0
 void _ui_slider_set_text_value( lv_obj_t *trg, lv_obj_t *src, const char *prefix, const char *postfix);
 
 void _ui_checked_set_text_value( lv_obj_t *trg, lv_obj_t *src, const char *txt_on, const char *txt_off);
 
-void _ui_spinbox_step(lv_obj_t * target, int val);
-
+void _ui_spinbox_step(lv_obj_t * target, int val)
+;
+#endif
 #ifdef __cplusplus
 } /*extern "C"*/
 #endif

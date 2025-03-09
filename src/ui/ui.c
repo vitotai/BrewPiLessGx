@@ -109,15 +109,7 @@ void ui_event_kbInput( lv_event_t * e);
 lv_obj_t *ui_kbInput;
 lv_obj_t *ui_lbInputLabel;
 lv_obj_t *ui_taInput;
-lv_obj_t *ui____initial_actions0;
-//const lv_img_dsc_t *ui_imgset_cotrol__5[1] = {&ui_img_cotrol_3_5_png};
-//const lv_img_dsc_t *ui_imgset_main_5[1] = {&ui_img_main3_5_png};
-const lv_img_dsc_t *ui_imgset_1797070980[1] = {&ui_img_203665058};
-//const lv_img_dsc_t *ui_imgset_setting__5[1] = {&ui_img_setting_3_5_png};
-const lv_img_dsc_t *ui_imgset_control_[1] = {&ui_img_control_320240_png};
-//const lv_img_dsc_t *ui_imgset_main_[1] = {&ui_img_main_320240_png};
-const lv_img_dsc_t *ui_imgset_setting_[1] = {&ui_img_setting_320240_png};
-const lv_img_dsc_t *ui_imgset_main_3040v[1] = {&ui_img_main_320240v2_png};
+//lv_obj_t *ui____initial_actions0;
 
 ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16
@@ -237,13 +229,13 @@ if ( event_code == LV_EVENT_KEY &&  lv_event_get_key(e) == LV_KEY_ENTER  ) {
 
 void ui_init( void )
 {
-lv_disp_t *dispp = lv_disp_get_default();
+lv_display_t *dispp = lv_display_get_default();
 lv_theme_t *theme = lv_theme_default_init(dispp, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_RED), true, LV_FONT_DEFAULT);
-lv_disp_set_theme(dispp, theme);
+lv_display_set_theme(dispp, theme);
 ui_screenMain_screen_init();
 //ui_screenTempControl_screen_init();
 //ui_screenSetting_screen_init();
 //ui_screenInput_screen_init();
-ui____initial_actions0 = lv_obj_create(NULL);
+//ui____initial_actions0 = lv_obj_create(NULL);
 lv_disp_load_scr( ui_screenMain);
 }

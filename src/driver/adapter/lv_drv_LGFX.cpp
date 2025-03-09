@@ -1,5 +1,5 @@
 #include <lvgl.h>
-#include <ui.h>
+//#include <ui.h>
 #include <Arduino.h>
 #include "lv_drv_conf.h"
 
@@ -16,9 +16,12 @@
 
 LGFX gfx;
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+void display_drv_sleep(void);
+void display_drv_wakeup(void);
 
 void display_drv_sleep(void){
    gfx.sleep();
@@ -33,21 +36,20 @@ void display_drv_set_brightness(uint8_t brightness){
 }
 
 /* Display flushing */
-void display_drv_flush( lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p )
-{
+void display_drv_flush(lv_display_t *display, const lv_area_t *area,uint8_t *px_map){
     uint32_t w = (area->x2 - area->x1 + 1);
     uint32_t h = (area->y2 - area->y1 + 1);
 
     gfx.startWrite();
     gfx.setAddrWindow(area->x1, area->y1, w, h);
-    gfx.writePixelsDMA((lgfx::rgb565_t *)&color_p->full, w * h);
+    gfx.writePixelsDMA((lgfx::rgb565_t *)px_map, w * h);
     gfx.endWrite();
 
-    lv_disp_flush_ready(disp);
+    lv_display_flush_ready(display);
 }
 
 /*Read the touchpad*/
-void touch_drv_read(lv_indev_drv_t * indev_driver, lv_indev_data_t * data )
+void touch_drv_read(lv_indev_t * indev, lv_indev_data_t*data)
 {
     uint16_t touchX, touchY;
 
@@ -72,6 +74,7 @@ void display_drv_init()
 #endif
 }
 void touch_drv_init(){}
+
 
 #ifdef __cplusplus
 }

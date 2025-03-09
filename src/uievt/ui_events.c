@@ -2,7 +2,7 @@
 // SquareLine Studio version: SquareLine Studio 1.3.2
 // LVGL version: 8.3.6
 // Project name: SquareLine_V1
-
+#include <stdlib.h>
 #include "ui.h"
 #include "BrewPiInterface.h"
 #include "mystrlib.h"
@@ -15,6 +15,7 @@
 #if HOMEKIT_UI
 #include "homekitqrcode.h"
 #endif
+#include "driver_if.h"
 
 #define GRAVITY_TITLE "Gravity"
 #define ORIGINAL_GRAVITY_TITLE "Original Gravity"
@@ -121,23 +122,23 @@ enum BrewPiStates{
 #define INVALID_FLOAT_TEMP -200
 
 /* Main screen*/
-void uiUpdateTemperature();
-void uiUpdateMode();
-void uiUpdateStatus();
-void createDefaultRxLevelWidget();
+void uiUpdateTemperature(void);
+void uiUpdateMode(void);
+void uiUpdateStatus(void);
+void createDefaultRxLevelWidget(void);
 
-void uiUpdateWiFiStatus();
-void uiUpdateGravityDeviceWiFiStatus();
-void uiUpdateWirelessHydrometerName();
-void uiUpdateGravityDevice();
-void uiUpdatePressure();
-void uiUpdateGravityChange();
+void uiUpdateWiFiStatus(void);
+void uiUpdateGravityDeviceWiFiStatus(void);
+void uiUpdateWirelessHydrometerName(void);
+void uiUpdateGravityDevice(void);
+void uiUpdatePressure(void);
+void uiUpdateGravityChange(void);
 //#if	EanbleParasiteTempControl
-void	uiUpdateParasiteTempControl();
+void	uiUpdateParasiteTempControl(void);
 //#endif
-
+void updateScreenSaverTime(void);
 #if EnableHumidityControlSupport
-void	uiUpdateHumidityControl();
+void	uiUpdateHumidityControl(void);
 #endif
 
 
@@ -164,7 +165,7 @@ lv_timer_t *screen_saver_timer;
 /* ****************************************************************** */
 void updateBrewPiInfo(void){
 	if(isScreenSleeping()) return;
-	if(lv_scr_act() != ui_screenMain) return;
+	if(lv_screen_active() != ui_screenMain) return;
 	uiUpdateWiFiStatus();
 	// mode
 	uiUpdateMode();
@@ -187,7 +188,7 @@ void updateBrewPiInfo(void){
 }
 
 void updateGravityDevice(void){
-	if(lv_scr_act() != ui_screenMain) return;
+	if(lv_screen_active() != ui_screenMain) return;
 	// iSpindel info..
 	uiUpdateGravityDevice();
 }
@@ -197,7 +198,7 @@ void updateGravityDevice(void){
 /* Main screen*/
 /* ****************************************************************** */
 
-void createDefaultRxLevelWidget(){
+void createDefaultRxLevelWidget(void){
 	rxlevel_ptr = lv_rxlevel_create(ui_screenMain,RxLevelWidth,RxLevelHeight);
 	// position and style
 	lv_obj_t *canvas = lv_rxlevel_getCanvas(rxlevel_ptr);
@@ -236,7 +237,7 @@ static void setGravityText(lv_obj_t *obj,float value,bool plato,bool isSG){
 
 
 
-void uiUpdateTemperature(){
+void uiUpdateTemperature(void){
 	uint8_t mode= BrewPiGetMode();
 
 	if(ui_lbBeer) setTemperatureValue(ui_lbBeer,BrewPiGetBeerTemp());
@@ -248,20 +249,20 @@ void uiUpdateTemperature(){
 	if(ui_lbFridgeSet) setTemperatureValue(ui_lbFridgeSet,(mode != OffMode)? BrewPiGetFridgeSet():INVALID_FLOAT_TEMP);
 }
 
-void uiUpdateMode(){
+void uiUpdateMode(void){
 	uint8_t mode= BrewPiGetMode();
 	if(mode > 3) mode=4;
 
 	if(ui_lbMode){
 		lv_label_set_text(ui_lbMode,modeString[mode]);
 	}else if(ui_imgMode && modeIconOffsets){
-		lv_img_set_offset_x(ui_imgMode,- modeIconOffsets[mode].x);
-		lv_img_set_offset_y(ui_imgMode, -modeIconOffsets[mode].y);
+		lv_image_set_offset_x(ui_imgMode,- modeIconOffsets[mode].x);
+		lv_image_set_offset_y(ui_imgMode, -modeIconOffsets[mode].y);
 	}
 }
 
 
-void uiUpdateStatus(){
+void uiUpdateStatus(void){
 	uint8_t state=BrewPiGetState();
 
 	if(state >INVALID_STATE) state=INVALID_STATE;
@@ -269,8 +270,8 @@ void uiUpdateStatus(){
 	if(ui_lbState){
 		lv_label_set_text(ui_lbState,stateString[state]);
 	}else if(ui_imgState && stateIconOffsets){
-		lv_img_set_offset_x(ui_imgState,- stateIconOffsets[state].x);
-		lv_img_set_offset_y(ui_imgState, - stateIconOffsets[state].y);
+		lv_image_set_offset_x(ui_imgState,- stateIconOffsets[state].x);
+		lv_image_set_offset_y(ui_imgState, - stateIconOffsets[state].y);
 	}
 
 	if(ui_lbStatusTime &&(state == IDLE ||  state == HEATING || state == COOLING 
@@ -292,7 +293,7 @@ static uint8_t getRssiLevel(int db){
 	return (uint8_t)bar;
 }
 
-void uiUpdateWiFiStatus(){
+void uiUpdateWiFiStatus(void){
 	#if !SKINNABLE
 	if(!rxlevel_ptr) createDefaultRxLevelWidget();
 	#endif
@@ -326,7 +327,7 @@ void uiUpdateWiFiStatus(){
 	}
 }
 
-void uiUpdateGravityDeviceWiFiStatus(){
+void uiUpdateGravityDeviceWiFiStatus(void){
 	int16_t rssi=bplGravityDeviceRssi();
 	if(ui_lbRssi){
 		if(IsRssiInvalid(rssi)){
@@ -343,12 +344,12 @@ void uiUpdateGravityDeviceWiFiStatus(){
 		}
 	}
 }
-void uiUpdateWirelessHydrometerName(){
+void uiUpdateWirelessHydrometerName(void){
 	if(ui_lbWirelessHydrometer){
 		lv_label_set_text(ui_lbWirelessHydrometer,bplGetWirelessHydrometerName());
 	}
 } 
-void uiUpdateGravityDevice(){
+void uiUpdateGravityDevice(void){
 	char buffer[64];
 	// name
 	uiUpdateWirelessHydrometerName();
@@ -425,7 +426,7 @@ void uiUpdateGravityDevice(){
 
 }
 
-void uiUpdatePressure(){
+void uiUpdatePressure(void){
 	if(! ui_lbPressure) return;
 	char buffer[32];
 	float pressure = bplGetPressure();
@@ -449,14 +450,14 @@ static void setGravityChangeValue(lv_obj_t* obj,int hour){
 	}
 }
 
-void uiUpdateGravityChange(){
+void uiUpdateGravityChange(void){
 	if(ui_lbGravityChange) setGravityChangeValue(ui_lbGravityChange,24);
 	if(ui_lbGravityChange12H) setGravityChangeValue(ui_lbGravityChange12H,12);
 	if(ui_lbGravityChange6H) setGravityChangeValue(ui_lbGravityChange6H,6);
 }
 
 //#if	EanbleParasiteTempControl
-void	uiUpdateParasiteTempControl(){
+void	uiUpdateParasiteTempControl(void){
 	if(ui_lbGlycolTemperature) setTemperatureValue(ui_lbGlycolTemperature,bplGetGlycolTemperature());
 	if(ui_lbGlycolTempSet) setTemperatureValue(ui_lbGlycolTempSet,bplGetGlycolSetTemp());
 	// mode
@@ -465,8 +466,8 @@ void	uiUpdateParasiteTempControl(){
 	if(ui_lbGlycolState){
 		lv_label_set_text(ui_lbGlycolState,glycolStateString[state]);
 	}else if(ui_imgGlycolState && glycolStateIconOffsets){
-		lv_img_set_offset_x(ui_imgGlycolState,- glycolStateIconOffsets[state].x);
-		lv_img_set_offset_y(ui_imgGlycolState, -glycolStateIconOffsets[state].y);
+		lv_image_set_offset_x(ui_imgGlycolState,- glycolStateIconOffsets[state].x);
+		lv_image_set_offset_y(ui_imgGlycolState, -glycolStateIconOffsets[state].y);
 	}
 
 	// time
@@ -488,7 +489,7 @@ static void setHumidityValue(lv_obj_t *widget,uint8_t value){
 	if(value>100) lv_label_set_text(widget,"--");
 	else lv_label_set_text_fmt(widget,"%d%%",value);
 } 
-void uiUpdateHumidityControl(){
+void uiUpdateHumidityControl(void){
 	if(ui_lbRoomHumidity) setHumidityValue(ui_lbRoomHumidity,bplGetRoomHumidity());
 	if(ui_lbChamberHumidity) setHumidityValue(ui_lbChamberHumidity,bplGetChamberHumidity());
 	if(ui_lbTargetHumidity) setHumidityValue(ui_lbTargetHumidity,bplGetTargetHumidity());
@@ -497,8 +498,8 @@ void uiUpdateHumidityControl(){
 	if(ui_lbHumidityControlState){
 		lv_label_set_text(ui_lbHumidityControlState,humidityControlStateString[state]);
 	}else if(ui_imgHumidityControlState && glycolStateIconOffsets){
-		lv_img_set_offset_x(ui_imgHumidityControlState,- humidityControlStateIconOffsets[state].x);
-		lv_img_set_offset_y(ui_imgHumidityControlState, -humidityControlStateIconOffsets[state].y);
+		lv_image_set_offset_x(ui_imgHumidityControlState,- humidityControlStateIconOffsets[state].x);
+		lv_image_set_offset_y(ui_imgHumidityControlState, -humidityControlStateIconOffsets[state].y);
 	}
 }
 #endif
@@ -511,7 +512,7 @@ void userStopSaver(void){
 // called from BPL web request
 void updateScreenSaverTime(void){
 
-	if(lv_scr_act() == ui_screenMain){
+	if(lv_screen_active() == ui_screenMain){
 		if(getScreenSaverTime()){
 			lv_timer_set_period(screen_saver_timer,getScreenSaverTime());
 			lv_timer_reset(screen_saver_timer);
@@ -525,7 +526,9 @@ void updateScreenSaverTime(void){
 }
 
 void updateDisplayBrightness(uint8_t brightness){
+#if !SIMULATOR	
 	display_drv_set_brightness(brightness);
+#endif
 }
 
 void startScreenSaverTimer(void){
@@ -663,7 +666,7 @@ void setArcValues(uint8_t mode){
 
 		lv_arc_set_value(ui_arcTemperatureSet,value);
 		lv_label_set_text_fmt(ui_lbTemperatureSet,"%d",value);
-		lv_obj_clear_state(ui_arcTemperatureSet,LV_STATE_DISABLED);
+		lv_obj_remove_state(ui_arcTemperatureSet,LV_STATE_DISABLED);
 	}
 
 }
@@ -779,14 +782,14 @@ void onScreenSettingLoadStart(lv_event_t * e)
 	uint8_t mode=bplGetWiFiMode();
 	if(STA_Enabled(mode)){
 		lv_obj_add_state(ui_swWiFi, LV_STATE_CHECKED);
-		lv_obj_clear_state(ui_btnSearchNetwork,LV_STATE_DISABLED);
+		lv_obj_remove_state(ui_btnSearchNetwork,LV_STATE_DISABLED);
 	}else{
-		lv_obj_clear_state(ui_swWiFi, LV_STATE_CHECKED);
+		lv_obj_remove_state(ui_swWiFi, LV_STATE_CHECKED);
 		lv_obj_add_state(ui_btnSearchNetwork,LV_STATE_DISABLED);
 	}
 
 	if(AP_Enabled(mode)) lv_obj_add_state(ui_swApMode, LV_STATE_CHECKED);
-	else lv_obj_clear_state(ui_swApMode, LV_STATE_CHECKED);
+	else lv_obj_remove_state(ui_swApMode, LV_STATE_CHECKED);
 	//SSID & IPAddress
 	if(STA_Enabled(mode)){
 		lv_label_set_text(ui_lbNetwork,bplGetSsid());
@@ -823,7 +826,7 @@ void onWiFiStaModeChange(lv_event_t * e)
 	if(lv_obj_has_state(ui_swWiFi, LV_STATE_CHECKED)){
 		// switch ON
 		newMode = (mode == WIFI_AP)? WIFI_AP_STA:WIFI_STA; 
-		lv_obj_clear_state(ui_btnSearchNetwork,LV_STATE_DISABLED);
+		lv_obj_remove_state(ui_btnSearchNetwork,LV_STATE_DISABLED);
 	}else{
 		// siwtch OFF
 		newMode = (mode == WIFI_AP_STA)? WIFI_AP:WIFI_OFF; 
@@ -853,25 +856,22 @@ void onSearchNetworkClicked(lv_event_t * e)
 	 _ui_screen_change( &cui_screenNetworkScan, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, &cui_screenNetworkScan_screen_init,false);
 }
 #if HOMEKIT_UI
-static void msg_event_cb(lv_event_t * e)
+static void msg_cancel_event_cb(lv_event_t * e)
 {
-    lv_obj_t * obj = lv_event_get_current_target(e);
-//    LV_LOG_USER("Button %s clicked", lv_msgbox_get_active_btn_text(obj));
+    lv_obj_t * obj =(lv_obj_t *) lv_event_get_user_data(e);
 	lv_msgbox_close(obj);
 }
 
 static void msg_longpressed_cb(lv_event_t * e)
 {
-    lv_obj_t * obj = lv_event_get_current_target(e);
-//    LV_LOG_USER("Button %s clicked", lv_msgbox_get_active_btn_text(obj));
-	if(lv_msgbox_get_active_btn(obj) == 0){
-		bplHomekitClearPairing();
-	}
+    lv_obj_t * obj =(lv_obj_t *) lv_event_get_user_data(e);
+	bplHomekitClearPairing();
 	lv_msgbox_close(obj);
 }
 
 void ui_event_btnHomekit( lv_event_t * e) {
-    lv_event_code_t event_code = lv_event_get_code(e);lv_obj_t * target = lv_event_get_target(e);
+    lv_event_code_t event_code = lv_event_get_code(e);
+	//lv_obj_t * target = lv_event_get_target(e);
 	if ( event_code == LV_EVENT_CLICKED) {
 		if(bplHomekitGetStatus() == 0){ // inactive, paired -> pairing
 			bplHomekitStartPairing();
@@ -889,9 +889,22 @@ void ui_event_btnHomekit( lv_event_t * e) {
 	if ( event_code == LV_EVENT_LONG_PRESSED) {
 		if(bplHomekitGetStatus() == 2){ // paired, not connected
 //			bplHomekitClearPairing();
-		    static const char * btns[] = {"OK", "Cancel",NULL};
-    		lv_obj_t * mbox1 = lv_msgbox_create(NULL, "Homekit", "Clear Pairing. The device will reboot.", btns, false);
-    		lv_obj_add_event_cb(mbox1,msg_longpressed_cb, LV_EVENT_VALUE_CHANGED, NULL);
+		    //static const char * btns[] = {"OK", "Cancel",NULL};
+    		//lv_obj_t * mbox1 = lv_msgbox_create(NULL, "Homekit", "Clear Pairing. The device will reboot.", btns, false);
+			lv_obj_t * mbox1 = lv_msgbox_create(NULL);
+
+   			lv_msgbox_add_title(mbox1, "Homekit");
+
+    		lv_msgbox_add_text(mbox1, "Clear Pairing. The device will reboot.");
+
+
+		    lv_obj_t * btn;
+    		btn = lv_msgbox_add_footer_button(mbox1, "OK");
+    		lv_obj_add_event_cb(btn, msg_longpressed_cb, LV_EVENT_CLICKED, (void*)mbox1);
+    		btn = lv_msgbox_add_footer_button(mbox1, "Cancel");
+    		lv_obj_add_event_cb(btn, msg_cancel_event_cb, LV_EVENT_CLICKED, (void*)mbox1);
+
+    		//lv_obj_add_event_cb(mbox1,msg_longpressed_cb, LV_EVENT_VALUE_CHANGED, NULL);
     		lv_obj_center(mbox1);
 		}
 	} 

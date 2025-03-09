@@ -28,14 +28,14 @@ void cui_screenNetworkScan_screen_init(void)
 {
 // create screen
 cui_screenNetworkScan = lv_obj_create(NULL);
-lv_obj_clear_flag( cui_screenNetworkScan, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+lv_obj_remove_flag( cui_screenNetworkScan, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
 lv_obj_set_style_bg_color(cui_screenNetworkScan, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT );
 lv_obj_set_style_bg_opa(cui_screenNetworkScan, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
 
 /*Create a spinner*/
-    lv_obj_t * cui_spinner = lv_spinner_create(cui_screenNetworkScan, 1000, 60);
-    lv_obj_set_size(cui_spinner, 100, 100);
-    lv_obj_center(cui_spinner);
+    lv_obj_t * spinner = lv_spinner_create(cui_screenNetworkScan);
+    lv_obj_set_size(spinner, 100, 100);
+    lv_obj_center(spinner);
 /* call network scan and wait result*/
 
 lv_obj_add_event_cb(cui_screenNetworkScan, cui_event_screenNetworkScan, LV_EVENT_ALL, NULL);
@@ -55,14 +55,14 @@ void cui_screenNetworkList_screen_init(void){
 
 // create screen
 cui_screenNetworkList = lv_obj_create(NULL);
-lv_obj_clear_flag( cui_screenNetworkList, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+lv_obj_remove_flag( cui_screenNetworkList, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
 lv_obj_set_style_bg_color(cui_screenNetworkList, lv_color_hex(0x000000), LV_PART_ITEMS | LV_STATE_DEFAULT );
 lv_obj_set_style_bg_opa(cui_screenNetworkList, 255, LV_PART_MAIN| LV_STATE_DEFAULT);
 
 
 /* back button*/
-cui_btnNetworkScanBack = lv_imgbtn_create(cui_screenNetworkList);
-lv_imgbtn_set_src(cui_btnNetworkScanBack, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_backbutton_png, NULL);
+cui_btnNetworkScanBack = lv_imagebutton_create(cui_screenNetworkList);
+lv_imagebutton_set_src(cui_btnNetworkScanBack, LV_IMAGEBUTTON_STATE_RELEASED, NULL, &ui_img_back_button_png, NULL);
 lv_obj_set_width( cui_btnNetworkScanBack, 20);
 lv_obj_set_height( cui_btnNetworkScanBack, 36);
 lv_obj_set_x( cui_btnNetworkScanBack, 0 );

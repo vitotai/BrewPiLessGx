@@ -4,18 +4,18 @@
 #include "TempControl.h"
 #if EnableColorLED
 
-const lv_color32_t StateColor[]={
-	{.full = 0x002200}, // idle
-	{.full = 0x220000}, // off
-	{.full = 0xAAAAAA}, // open
-	{.full = 0xFFA500}, // heating
-	{.full = 0x000088}, // cooling
-	{.full = 0x100010}, // wait to cool
-	{.full = 0x221100}, // wait to heat
-	{.full = 0x555555}, // wait for peak
-	{.full = 0x000055}, // cool min time
-	{.full = 0x553300}, // heat min time
-	{.full = 0xFF0000} // invalid
+const lv_color_t StateColor[]={
+	{.blue=0x00, .green=0x22, .red=0x00}, // idle
+	{.blue=0x00, .green=0x00, .red=0x00}, // off
+	{.blue=0xAA, .green=0xAA, .red=0xAA}, // open
+	{.blue=0x00, .green=0xA5, .red=0xFF}, // heating
+	{.blue=0x88, .green=0x00, .red=0x00}, // cooling
+	{.blue=0x10, .green=0x00, .red=0x10}, // wait to cool
+	{.blue=0x00, .green=0x11, .red=0x22}, // wait to heat
+	{.blue=0x55, .green=0x55, .red=0x55}, // wait for peak
+	{.blue=0x55, .green=0x00, .red=0x00}, // cool min time
+	{.blue=0x00, .green=0x33, .red=0x55}, // heat min time
+	{.blue=0x00, .green=0x00, .red=0xFF} // invalid
 };
 
 
@@ -38,7 +38,7 @@ const lv_color32_t StateColor[]={
     ledcSetup(LED_PWM_CHANNEL_B, LED_PWM_FREQ, LED_PWM_BITS);
     ledcAttachPin(LED_PIN_B, LED_PWM_CHANNEL_B);
 
-    _set_led_color(lv_color32_t({.ch = {.blue=0,.green = 0x00,.red=0}}));
+    _set_led_color({.blue=0,.green = 0x00,.red=0});
  }
 
 
@@ -62,11 +62,11 @@ void LedStatusClass::setState(uint8_t state){
     */
 }
 
-void LedStatusClass::_set_led_color(lv_color32_t rgb)
+void LedStatusClass::_set_led_color(lv_color_t rgb)
 {
-  ledcWrite(LED_PWM_CHANNEL_R, LED_PWM_MAX - rgb.ch.red);
-  ledcWrite(LED_PWM_CHANNEL_G, LED_PWM_MAX - rgb.ch.green);
-  ledcWrite(LED_PWM_CHANNEL_B, LED_PWM_MAX - rgb.ch.blue);
+  ledcWrite(LED_PWM_CHANNEL_R, LED_PWM_MAX - rgb.red);
+  ledcWrite(LED_PWM_CHANNEL_G, LED_PWM_MAX - rgb.green);
+  ledcWrite(LED_PWM_CHANNEL_B, LED_PWM_MAX - rgb.blue);
 }
 
 #endif

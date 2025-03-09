@@ -29,6 +29,11 @@ Arduino_GFX *gfx = new Arduino_ILI9341(bus, GFX_NOT_DEFINED /* RST */, 1 /* rota
 #ifdef __cplusplus
 extern "C" {
 #endif
+void display_drv_sleep(void);
+void display_drv_wakeup(void);
+#ifdef __cplusplus
+}
+#endif
 
 /*******************************************************************************
  * End of Arduino_GFX setting
@@ -45,18 +50,18 @@ void display_drv_wakeup(void){
 /* Change to your screen resolution */
 
 /* Display flushing */
-void display_drv_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
+void display_drv_flush(lv_display_t *disp, const lv_area_t *area, uint8_t *px_map)
 {
    uint32_t w = (area->x2 - area->x1 + 1);
    uint32_t h = (area->y2 - area->y1 + 1);
 
 #if (LV_COLOR_16_SWAP != 0)
-   gfx->draw16bitBeRGBBitmap(area->x1, area->y1, (uint16_t *)&color_p->full, w, h);
+   gfx->draw16bitBeRGBBitmap(area->x1, area->y1, (uint16_t *)px_map, w, h);
 #else
-   gfx->draw16bitRGBBitmap(area->x1, area->y1, (uint16_t *)&color_p->full, w, h);
+   gfx->draw16bitRGBBitmap(area->x1, area->y1, (uint16_t *)px_map, w, h);
 #endif
 
-   lv_disp_flush_ready(disp);
+   lv_display_flush_ready(disp);
 }
 
 void display_drv_init()
@@ -79,9 +84,5 @@ void display_drv_set_brightness(uint8_t brightness){
       ledcWrite(TFT_PWM_CHANNEL_BL, brightness); /* Screen brightness can be modified by adjusting this parameter. (0-255) */
 #endif
 }
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

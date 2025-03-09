@@ -1,8 +1,7 @@
 #include "rxlevel.h"
 
-
 rxlevel_widget *lv_rxlevel_create(lv_obj_t *parent,uint16_t width,uint16_t height){
-    rxlevel_widget *widget=(rxlevel_widget *)lv_mem_alloc(sizeof(rxlevel_widget));
+    rxlevel_widget *widget=(rxlevel_widget *)malloc(sizeof(rxlevel_widget));
     widget->width = width;
     widget->height = height;
     lv_obj_t *base = lv_obj_create(parent);

@@ -25,7 +25,7 @@ void cui_screenQueryAutoIP_init(){
     lv_obj_align(label,LV_ALIGN_CENTER,0,-36);
 
     // button 1
-    cui_btnQueryAutoIPYes = lv_btn_create(cui_screenQueryAutoIP);
+    cui_btnQueryAutoIPYes = lv_button_create(cui_screenQueryAutoIP);
     lv_obj_align(cui_btnQueryAutoIPYes, LV_ALIGN_CENTER, 80, 10);
     lv_obj_add_event_cb(cui_btnQueryAutoIPYes, onAutoIPYes, LV_EVENT_CLICKED, NULL);
 
@@ -35,7 +35,7 @@ void cui_screenQueryAutoIP_init(){
 
 
     // button 2
-    cui_btnQueryAutoIPNo = lv_btn_create(cui_screenQueryAutoIP);
+    cui_btnQueryAutoIPNo = lv_button_create(cui_screenQueryAutoIP);
     lv_obj_align(cui_btnQueryAutoIPNo, LV_ALIGN_CENTER, -80, 10);
     lv_obj_add_event_cb(cui_btnQueryAutoIPNo, onAutoIPNo, LV_EVENT_CLICKED, NULL);
 

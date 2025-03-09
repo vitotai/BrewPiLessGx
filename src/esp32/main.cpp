@@ -5,67 +5,44 @@
 #include "wakebutton.h"
 #include "lv_drv_conf.h"
 #include "driver_if.h"
-#include "BPLSettings.h"
-#ifdef STACK_SIZE_MONITOR
-#include <MycilaTaskMonitor.h>
-#include <ArduinoJson.h>
-
-void start_monitor(){
-  Mycila::TaskMonitor.begin(4);
-  Mycila::TaskMonitor.addTask("loopTask");
-  Mycila::TaskMonitor.addTask("async_tcp");
-  Mycila::TaskMonitor.addTask("nimble_host");
-  Mycila::TaskMonitor.addTask("httpd");
-}
-  static uint32_t stack_log_period;
-
-void monitor_log(){
-  if(millis() - stack_log_period > 60000){
-      stack_log_period = millis();
-
-      Mycila::TaskMonitor.log();
-  }
-}
-#endif
 
 extern void bpl_setup(void);
 extern void bpl_loop(void);
 
+#define DrawBufferSize  LV_DRAW_BUFFER_SIZE * (LV_COLOR_DEPTH / 8)
+
+static uint32_t my_tick(void)
+{
+    return millis();
+}
+
+
 void setup(){
     bpl_setup();
     lv_init();
+    lv_tick_set_cb(my_tick);
 
     // LVGL display driver stup
     display_drv_init();
-    display_drv_set_brightness(theSettings.systemConfiguration()->brightness);
-    static lv_disp_draw_buf_t draw_buf;
-
-    static lv_color_t *disp_draw_buf = (lv_color_t *)heap_caps_malloc(sizeof(lv_color_t) * LV_DRAW_BUFFER_SIZE, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    static uint8_t *disp_draw_buf = (uint8_t *)heap_caps_malloc(DrawBufferSize, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
     if (!disp_draw_buf){
       Serial.println("LVGL disp_draw_buf allocate failed!");
     }else{
-      lv_disp_draw_buf_init(&draw_buf, disp_draw_buf, NULL, LV_DRAW_BUFFER_SIZE);
-      /* Initialize the display */
-      static lv_disp_drv_t disp_drv;
-      lv_disp_drv_init(&disp_drv);
-      /* Change the following line to your display resolution */
-      disp_drv.hor_res = CONFIG_LVGL_DISPLAY_WIDTH;
-      disp_drv.ver_res = CONFIG_LVGL_DISPLAY_HEIGHT;
-      disp_drv.flush_cb = display_drv_flush;
-      disp_drv.draw_buf = &draw_buf;
-      lv_disp_drv_register(&disp_drv);      
-      lv_obj_clean(lv_scr_act());
+
+      static auto *lvDisplay = lv_display_create(CONFIG_LVGL_DISPLAY_WIDTH, CONFIG_LVGL_DISPLAY_HEIGHT);
+      lv_display_set_color_format(lvDisplay, LV_COLOR_FORMAT_RGB565);
+      lv_display_set_flush_cb(lvDisplay,display_drv_flush);
+      lv_display_set_buffers(lvDisplay, disp_draw_buf, nullptr, DrawBufferSize, LV_DISPLAY_RENDER_MODE_PARTIAL);
     }
 
     // LVGL touch driver
     #if TOUCH_INPUT_ENABLE    
     touch_drv_init();
     /* Initialize the (dummy) input device driver */
-    static lv_indev_drv_t indev_drv;
-    lv_indev_drv_init(&indev_drv);
-    indev_drv.type = LV_INDEV_TYPE_POINTER;
-    indev_drv.read_cb = touch_drv_read;
-    lv_indev_drv_register(&indev_drv);
+    lv_indev_t * indev = lv_indev_create();
+    lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER); 
+    lv_indev_set_read_cb(indev, touch_drv_read); 
+
     #endif
     // after "bpl_setup()",before ui_init();
     lv_port_littlefs_init();
@@ -74,17 +51,10 @@ void setup(){
     #if WAKEUP_BUTTON_ENABLED
     wakebutton_init();
     #endif
-
-#ifdef STACK_SIZE_MONITOR
-  start_monitor();
-#endif
 }
 
 void loop()
 {
-#ifdef STACK_SIZE_MONITOR
-  monitor_log();
-#endif
 
     lv_timer_handler(); /* let the GUI do its work */
     bpl_loop();

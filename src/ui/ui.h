@@ -114,20 +114,13 @@ void ui_event_kbInput( lv_event_t * e);
 extern lv_obj_t *ui_kbInput;
 extern lv_obj_t *ui_lbInputLabel;
 extern lv_obj_t *ui_taInput;
-extern lv_obj_t *ui____initial_actions0;
+//extern lv_obj_t *ui____initial_actions0;
 
-LV_IMG_DECLARE( ui_img_main_320240v2_png);   // assets/main_320240v2.png
-LV_IMG_DECLARE( ui_img_control_320240_png);   // assets/control_320240.png
-LV_IMG_DECLARE( ui_img_control_320240_top_png);   // assets/control_320240.png
-LV_IMG_DECLARE( ui_img_backbutton_png);   // assets/BackButton.png
-LV_IMG_DECLARE( ui_img_setting_320240_png);   // assets/setting_320240.png
-LV_IMG_DECLARE( ui_img_203665058);   // assets/search-button-32.png
-LV_IMG_DECLARE( ui_img_setting_320240_left_png);   // assets/setting_320240_left.png
-LV_IMG_DECLARE( ui_img_control_320240_png);   // assets/control_320240.png
-LV_IMG_DECLARE( ui_img_cotrol_3_5_png);   // assets/cotrol_3.5.png
-LV_IMG_DECLARE( ui_img_main3_5_png);   // assets/main3.5.png
-LV_IMG_DECLARE( ui_img_setting_3_5_png);   // assets/setting_3.5.png
-LV_IMG_DECLARE( ui_img_main_320240_png);   // assets/main_320240.png
+LV_IMG_DECLARE( ui_img_back_button_png);   // assets/BackButton.png
+LV_IMG_DECLARE(ui_img_control_320240_top_png);
+LV_IMG_DECLARE(ui_img_search_button_png);
+LV_IMG_DECLARE(ui_img_setting_320240_left_png);
+LV_IMG_DECLARE(state_icons_4bit);
 
 LV_FONT_DECLARE( ui_font_Font1);
 

@@ -2,7 +2,8 @@
 #include <string.h>
 
 #include "lvgl.h"
-#include "src/extra/libs/qrcode/lv_qrcode.h"
+//#include "src/extra/libs/qrcode/lv_qrcode.h"
+#include "libs/qrcode/lv_qrcode.h"
 #include "BrewPiInterface.h"
 #include "homekitqrcode.h"
 
@@ -52,7 +53,12 @@ void pair_screen_init(void){
 	//homekit_setup_uri(uri,5,"466-37-726","HSPN",0,1,0);
     bplHomekitGetSetupUri(uri);
 
-    lv_obj_t * qr = lv_qrcode_create(pair_screen, 150, lv_color_black(), lv_color_white());
+//    lv_obj_t * qr = lv_qrcode_create(pair_screen, 150, lv_color_black(), lv_color_white());
+
+    lv_obj_t * qr = lv_qrcode_create(pair_screen);
+    lv_qrcode_set_size(qr, 150);
+    lv_qrcode_set_dark_color(qr, lv_color_black());
+    lv_qrcode_set_light_color(qr, lv_color_white());
 
     /*Set data*/
     lv_qrcode_update(qr, uri, strlen(uri));

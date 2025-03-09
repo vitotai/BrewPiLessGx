@@ -20,17 +20,17 @@ void updateGravityDevice(void);
 
 extern uint32_t convertIp(const char* ip);
 
-extern	float BrewPiGetBeerTemp();
-extern	float BrewPiGetBeerSet();
-extern	float BrewPiGetFridgeTemp();
-extern	float BrewPiGetFridgeSet();
-extern	float BrewPiGetRoomTemp();
-extern	char BrewPiGetUnit();
-extern	float BrewPiGetMinSetTemp();
-extern	float BrewPiGetMaxSetTemp();
-extern	uint8_t BrewPiGetState();
-extern	uint8_t BrewPiGetMode();
-extern uint32_t BrewPiGetStatusTime();
+extern	float BrewPiGetBeerTemp(void);
+extern	float BrewPiGetBeerSet(void);
+extern	float BrewPiGetFridgeTemp(void);
+extern	float BrewPiGetFridgeSet(void);
+extern	float BrewPiGetRoomTemp(void);
+extern	char BrewPiGetUnit(void);
+extern	float BrewPiGetMinSetTemp(void);
+extern	float BrewPiGetMaxSetTemp(void);
+extern	uint8_t BrewPiGetState(void);
+extern	uint8_t BrewPiGetMode(void);
+extern uint32_t BrewPiGetStatusTime(void);
 
 bool BrewPiAmbientSensorConnected(void);
 
@@ -54,41 +54,41 @@ typedef struct _WiFiListEntry{
 }WiFiListEntry;
 
 
-extern uint8_t bplGetWiFiMode();
+extern uint8_t bplGetWiFiMode(void);
 extern void bplSetWiFiMode(uint8_t newMode);
-extern int     bplGetWiFiRssi();
-extern bool    bplIsWiFiConnected();
+extern int     bplGetWiFiRssi(void);
+extern bool    bplIsWiFiConnected(void);
 extern void bplConnectNetwork(const char* ssid,const char* passphase,uint32_t ip,uint32_t gw,uint32_t nm,uint32_t dns);
 
-extern const char* bplGetSsid();
-extern uint32_t bplGetIpAddress();
-extern const char* bplHostname();
-extern const char* bplUsername();
-extern const char* bplPassword();
+extern const char* bplGetSsid(void);
+extern uint32_t bplGetIpAddress(void);
+extern const char* bplHostname(void);
+extern const char* bplUsername(void);
+extern const char* bplPassword(void);
 extern void bplRequestWiFiScan(void (*result_cb)(WiFiListEntry* list,uint16_t count) );
 
-extern float bplGetPressure();
+extern float bplGetPressure(void);
 
-extern bool bplIsUsingPlato();
-extern float bplGravityDeviceTemperature();
-extern float bplGravityDeviceTilt();
-extern float bplGravityDeivceBattery();
-extern char bplGravityDeviceBatteryUint();
-extern int   bplGravityDeviceRssi();
-extern float bplGetGravity();
-extern float bplGetOriginalGravity();
-extern uint32_t bplGetGravityDeviceUpdateLocalTime();
-extern const char *bplGetWirelessHydrometerName();
+extern bool bplIsUsingPlato(void);
+extern float bplGravityDeviceTemperature(void);
+extern float bplGravityDeviceTilt(void);
+extern float bplGravityDeivceBattery(void);
+extern char bplGravityDeviceBatteryUint(void);
+extern int   bplGravityDeviceRssi(void);
+extern float bplGetGravity(void);
+extern float bplGetOriginalGravity(void);
+extern uint32_t bplGetGravityDeviceUpdateLocalTime(void);
+extern const char *bplGetWirelessHydrometerName(void);
 extern void bplSetGravity(float gravity);
 extern void bplSetOriginalGravity(float og);
 
 //#if EanbleParasiteTempControl
 // glycol(parasiteTemperature)
 
-extern float bplGetGlycolTemperature();
-extern float bplGetGlycolSetTemp();
-extern uint8_t bplGetGlycolState();
-extern uint32_t bplGetGlycolElapsedTime();
+extern float bplGetGlycolTemperature(void);
+extern float bplGetGlycolSetTemp(void);
+extern uint8_t bplGetGlycolState(void);
+extern uint32_t bplGetGlycolElapsedTime(void);
 //#endif
 #define InvalidGravityDecreasedValue -10000.0
 #define IsGravityDecreasedValueValid(g) (g)>-10000.0
@@ -96,10 +96,10 @@ extern uint32_t bplGetGlycolElapsedTime();
 extern float bplGetGravityDecreasedIn(int hour);
 
 #if EnableHumidityControlSupport
-extern uint8_t bplGetRoomHumidity();
-extern uint8_t bplGetChamberHumidity();
-extern uint8_t bplGetTargetHumidity();
-extern uint8_t bplGetHumidityControlState();
+extern uint8_t bplGetRoomHumidity(void);
+extern uint8_t bplGetChamberHumidity(void);
+extern uint8_t bplGetTargetHumidity(void);
+extern uint8_t bplGetHumidityControlState(void);
 #endif
 
 typedef void (*HomekitStatusIndicationCB)(uint8_t);

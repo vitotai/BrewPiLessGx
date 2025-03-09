@@ -19,7 +19,7 @@
 class LedStatusClass{
 protected:
     uint8_t _state;
-    void _set_led_color(lv_color32_t rgb);
+    void _set_led_color(lv_color_t rgb);
 
 public:
     LedStatusClass(void);

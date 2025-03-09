@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include "networkscan.h"
 #include "BrewPiInterface.h"
 #include "inputscreen.h"
@@ -85,7 +86,7 @@ void onScreenNetworkListLoadStart(lv_event_t * e){
     lv_obj_t *btn;
     for(i = 0; i < nwcount; i++) {
 
-        btn = lv_list_add_btn(cui_listNetworks, nwlist[i].enc? LV_SYMBOL_SETTINGS:LV_SYMBOL_WIFI,nwlist[i].ssid); 
+        btn = lv_list_add_button(cui_listNetworks, nwlist[i].enc? LV_SYMBOL_SETTINGS:LV_SYMBOL_WIFI,nwlist[i].ssid); 
         lv_obj_add_event_cb(btn, event_network_selected_handler, LV_EVENT_CLICKED,(void*) i);
     }
 }

@@ -8,12 +8,12 @@
 void ui_screenSetting_screen_init(void)
 {
 ui_screenSetting = lv_obj_create(NULL);
-lv_obj_clear_flag( ui_screenSetting, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+lv_obj_remove_flag( ui_screenSetting, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
 lv_obj_set_style_bg_color(ui_screenSetting,lv_color_black(), LV_PART_MAIN| LV_STATE_DEFAULT);
-ui_Image2 = lv_img_create(ui_screenSetting);
+ui_Image2 = lv_image_create(ui_screenSetting);
 
-if(setting_screen_label_image)  lv_img_set_src(ui_Image2, setting_screen_label_image);
-else lv_img_set_src(ui_Image2, &ui_img_setting_320240_left_png);
+if(setting_screen_label_image)  lv_image_set_src(ui_Image2, setting_screen_label_image);
+else lv_image_set_src(ui_Image2, &ui_img_setting_320240_left_png);
 uint32_t scrwidthhalf = lv_obj_get_width(ui_screenSetting)/2;
 lv_obj_set_width( ui_Image2, LV_SIZE_CONTENT);  /// 1
 lv_obj_set_height( ui_Image2, LV_SIZE_CONTENT);   /// 1
@@ -21,10 +21,10 @@ lv_obj_set_x( ui_Image2, 0 - scrwidthhalf);
 lv_obj_set_y( ui_Image2, 0 );
 lv_obj_set_align( ui_Image2, LV_ALIGN_RIGHT_MID);
 lv_obj_add_flag( ui_Image2, LV_OBJ_FLAG_ADV_HITTEST );   /// Flags
-lv_obj_clear_flag( ui_Image2, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+lv_obj_remove_flag( ui_Image2, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
 
-ui_btnSettingBack = lv_imgbtn_create(ui_screenSetting);
-lv_imgbtn_set_src(ui_btnSettingBack, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_backbutton_png, NULL);
+ui_btnSettingBack = lv_imagebutton_create(ui_screenSetting);
+lv_imagebutton_set_src(ui_btnSettingBack, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_back_button_png, NULL);
 lv_obj_set_width( ui_btnSettingBack, 20);
 lv_obj_set_height( ui_btnSettingBack, 36);
 
@@ -108,8 +108,8 @@ lv_label_set_text(ui_btnHomekitLabel, "PAIR");
 lv_obj_set_style_text_color(ui_btnHomekitLabel,lv_color_black(),LV_PART_MAIN);
 lv_obj_center(ui_btnHomekitLabel);
 
-ui_btnSearchNetwork = lv_imgbtn_create(ui_screenSetting);
-lv_imgbtn_set_src(ui_btnSearchNetwork, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_203665058, NULL);
+ui_btnSearchNetwork = lv_imagebutton_create(ui_screenSetting);
+lv_imagebutton_set_src(ui_btnSearchNetwork, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_search_button_png, NULL);
 lv_obj_set_width( ui_btnSearchNetwork, 32);
 lv_obj_set_height( ui_btnSearchNetwork, 32);
 lv_obj_set_x( ui_btnSearchNetwork, 134 );
@@ -132,12 +132,12 @@ lv_obj_add_event_cb(ui_btnHomekit,ui_event_btnHomekit,LV_EVENT_ALL,NULL);
 void ui_screenSetting_screen_init(void)
 {
 ui_screenSetting = lv_obj_create(NULL);
-lv_obj_clear_flag( ui_screenSetting, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+lv_obj_remove_flag( ui_screenSetting, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
 lv_obj_set_style_bg_color(ui_screenSetting,lv_color_black(), LV_PART_MAIN| LV_STATE_DEFAULT);
-ui_Image2 = lv_img_create(ui_screenSetting);
+ui_Image2 = lv_image_create(ui_screenSetting);
 
-if(setting_screen_label_image)  lv_img_set_src(ui_Image2, setting_screen_label_image);
-else lv_img_set_src(ui_Image2, &ui_img_setting_320240_left_png);
+if(setting_screen_label_image)  lv_image_set_src(ui_Image2, setting_screen_label_image);
+else lv_image_set_src(ui_Image2, &ui_img_setting_320240_left_png);
 uint32_t scrwidthhalf = lv_obj_get_width(ui_screenSetting)/2;
 lv_obj_set_width( ui_Image2, LV_SIZE_CONTENT);  /// 1
 lv_obj_set_height( ui_Image2, LV_SIZE_CONTENT);   /// 1
@@ -145,10 +145,10 @@ lv_obj_set_x( ui_Image2, 0 - scrwidthhalf);
 lv_obj_set_y( ui_Image2, 0 );
 lv_obj_set_align( ui_Image2, LV_ALIGN_RIGHT_MID);
 lv_obj_add_flag( ui_Image2, LV_OBJ_FLAG_ADV_HITTEST );   /// Flags
-lv_obj_clear_flag( ui_Image2, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+lv_obj_remove_flag( ui_Image2, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
 
-ui_btnSettingBack = lv_imgbtn_create(ui_screenSetting);
-lv_imgbtn_set_src(ui_btnSettingBack, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_backbutton_png, NULL);
+ui_btnSettingBack = lv_imagebutton_create(ui_screenSetting);
+lv_imagebutton_set_src(ui_btnSettingBack, LV_IMAGEBUTTON_STATE_RELEASED, NULL, &ui_img_back_button_png, NULL);
 lv_obj_set_width( ui_btnSettingBack, 20);
 lv_obj_set_height( ui_btnSettingBack, 36);
 
@@ -213,8 +213,8 @@ lv_obj_set_align( ui_lbPasswd, LV_ALIGN_LEFT_MID );
 //lv_label_set_text(ui_lbPasswd,"password");
 lv_obj_set_style_text_align(ui_lbPasswd, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN| LV_STATE_DEFAULT);
 
-ui_btnSearchNetwork = lv_imgbtn_create(ui_screenSetting);
-lv_imgbtn_set_src(ui_btnSearchNetwork, LV_IMGBTN_STATE_RELEASED, NULL, &ui_img_203665058, NULL);
+ui_btnSearchNetwork = lv_imagebutton_create(ui_screenSetting);
+lv_imagebutton_set_src(ui_btnSearchNetwork, LV_IMAGEBUTTON_STATE_RELEASED, NULL, &ui_img_search_button_png, NULL);
 lv_obj_set_width( ui_btnSearchNetwork, 32);
 lv_obj_set_height( ui_btnSearchNetwork, 32);
 lv_obj_set_x( ui_btnSearchNetwork, 134 );

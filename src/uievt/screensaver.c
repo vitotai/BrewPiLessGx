@@ -1,6 +1,8 @@
 #include "ui.h"
 #include "screensaver.h"
+#if !SIMULATOR
 #include "driver_if.h"
+#endif
 #include "BrewPiInterface.h"
 
 #define UPDATE_TIMER 150
@@ -66,7 +68,9 @@ lv_color_t SRMColor[] = {
 #endif
 void delay_sleep(void *timer){
 	(void) timer;
+    #if ! SIMULATOR
 	display_drv_sleep();
+    #endif
     isTftSleeping=true;
 }
 
@@ -96,7 +100,7 @@ static void create_canvas(lv_obj_t *parent){
     cui_saverBackground = lv_obj_create(parent);
 
     lv_obj_set_size(cui_saverBackground,lv_pct(100),lv_pct(100));
-    lv_obj_clear_flag( cui_saverBackground, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+    lv_obj_remove_flag( cui_saverBackground, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
     lv_obj_set_style_radius(cui_saverBackground,0,LV_PART_MAIN);
     lv_obj_set_style_border_width(cui_saverBackground,0,LV_PART_MAIN);
     // create bubbles
@@ -158,7 +162,7 @@ void periodic_timer_handler(lv_timer_t *timer){
             timerCount = MainScreenTime;
             _screenState = ScreenSavingInformation;
         }else{
-            lv_obj_clear_flag(cui_saverBackground,LV_OBJ_FLAG_HIDDEN);
+            lv_obj_remove_flag(cui_saverBackground,LV_OBJ_FLAG_HIDDEN);
             timerCount = BubbleTime;
             screenSaverInitDraw();
             _screenState = ScreenSavingBubbling;
@@ -168,6 +172,7 @@ void periodic_timer_handler(lv_timer_t *timer){
         screenSaverUpdate();
     }
 }
+
 void screenSaver_start(lv_obj_t* parent){
 
     if(!cui_saverBackground){
@@ -176,7 +181,7 @@ void screenSaver_start(lv_obj_t* parent){
         screenSaver_show();
     }
     if(0 == getScreenSaverTime()){
-        lv_obj_clear_flag(cui_btnScreen,LV_OBJ_FLAG_HIDDEN);
+        lv_obj_remove_flag(cui_btnScreen,LV_OBJ_FLAG_HIDDEN);
         // sleep
          _screenState = ScreenSavingSleep;
         lv_async_call(delay_sleep,NULL);
@@ -198,10 +203,9 @@ void screenSaver_hide(void){
 }
 
 void screenSaver_show(void){
-    lv_obj_clear_flag(cui_saverBackground,LV_OBJ_FLAG_HIDDEN);
-    lv_obj_clear_flag(cui_btnScreen,LV_OBJ_FLAG_HIDDEN);
+    lv_obj_remove_flag(cui_saverBackground,LV_OBJ_FLAG_HIDDEN);
+    lv_obj_remove_flag(cui_btnScreen,LV_OBJ_FLAG_HIDDEN);
 }
-
 
 void screenSaverInitDraw(void){
     int colorIdx=lv_rand(0,sizeof(SRMColor)/sizeof(lv_color_t)-1);
@@ -252,7 +256,9 @@ void screenSaverUpdate(void){
 
 void screenWakeup(void){
     if(_screenState == ScreenSavingSleep){
+        #ifndef SIMULATOR
         display_drv_wakeup();
+        #endif
 //        delay(10);
         isTftSleeping=false;
     }else{

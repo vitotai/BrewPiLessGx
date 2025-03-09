@@ -1,6 +1,7 @@
 
 #if SIMULATOR
 #include <stdlib.h>
+#include <memory.h>
 #include "lvgl.h"
 #include "BrewPiInterface.h"
 //#define SkinFileName "A:/skin-default324.json"
@@ -11,16 +12,21 @@ static float brewpi_beerset=20;
 
 static float brewpi_fridgeset=35;
 
-char bplGravityDeviceBatteryUint(){
+char bplGravityDeviceBatteryUint(void){
     return 'V';
 }
-const char *bplGetWirelessHydrometerName(){
+const char *bplGetWirelessHydrometerName(void){
     return "iSpindel0001";
 }
 
+float bplGetGravityDecreasedIn(int hour){
+    if (hour == 6) return 0.0;
+    if (hour == 12) return 1.3;
+    return 12.4;
+}
 
 uint32_t getScreenSaverTime(void){
-    return 0;
+    return 60000;
 }
 uint32_t getSleepTimeout(void){
     return 0; // in minutes
@@ -75,64 +81,64 @@ void BrewPiSetFridge(int temp){
 // BPL
 static uint8_t _wifiMode=WIFI_OFF;
 
-uint8_t bplGetWiFiMode(){
+uint8_t bplGetWiFiMode(void){
 	return _wifiMode;
 }
 void bplSetWiFiMode(uint8_t newMode){
     _wifiMode = newMode;
 }
-int     bplGetWiFiRssi(){
-	return -80;
+int     bplGetWiFiRssi(void){
+	return -81;
 }
 
-bool    bplIsWiFiConnected(){
+bool    bplIsWiFiConnected(void){
 	return _wifiMode == WIFI_STA || _wifiMode == WIFI_AP_STA;
 }
 
-const char* bplGetSsid(){
+const char* bplGetSsid(void){
 	return "VH";
 }
 
-uint32_t bplGetIpAddress(){
+uint32_t bplGetIpAddress(void){
 	return (192<<24) | (168<<16) | (0 <<8) | 112;
 }
 
-const char* bplHostname(){
+const char* bplHostname(void){
 	return "brewpilessGx";
 }
 
-const char* bplUsername(){
+const char* bplUsername(void){
 	return "vito";
 }
 
-const char* bplPassword(){
+const char* bplPassword(void){
 	return "mypass";
 }
 
-bool bplIsUsingPlato(){
-	return true;
+bool bplIsUsingPlato(void){
+	return false;
 }
 
-float bplGravityDeviceTemperature(){
+float bplGravityDeviceTemperature(void){
 	return 20.9;
 }
 
-float bplGravityDeviceTilt(){
+float bplGravityDeviceTilt(void){
 	return 25.32;
 }
 
-float bplGravityDeivceBattery(){
+float bplGravityDeivceBattery(void){
 	return 3.89;
 }
 
-static float _gravity=6.1;
+static float _gravity=1.088;
 static float _og=19.8;
 
-float bplGetGravity(){
+float bplGetGravity(void){
 	return _gravity;
 }
 
-float bplGetOriginalGravity(){
+float bplGetOriginalGravity(void){
 	return _og;
 }
 
@@ -144,15 +150,15 @@ void bplSetOriginalGravity(float og){
 	_og = og;
 }
 
-int   bplGravityDeviceRssi(){
+int   bplGravityDeviceRssi(void){
 	return -69;
 }
 
-uint32_t bplGetGravityDeviceUpdateLocalTime(){
+uint32_t bplGetGravityDeviceUpdateLocalTime(void){
 	return 1697489423;
 }
 
-float bplGetPressure(){
+float bplGetPressure(void){
 	return 11.8;
 }
 
@@ -297,25 +303,31 @@ uint32_t convertIp(const char* ip){
     return result;
 }
 
-float bplGetGlycolTemperature(){
+float bplGetGlycolTemperature(void){
     return 8.9;
 }
-float bplGetGlycolSetTemp(){
+float bplGetGlycolSetTemp(void){
     return 4.0;
 }
-uint8_t bplGetGlycolState(){
+uint8_t bplGetGlycolState(void){
     return 1;
 }
 
-uint32_t bplGetGlycolElapsedTime(){
+uint32_t bplGetGlycolElapsedTime(void){
     return 59+3*60+60*60*3;
 }
 
-
-float bplGetGravityDecreasedIn(int hour){
-    if(hour == 24) return InvalidGravityDecreasedValue;
-    else if(hour == 12) return 2.1;
-    return 0.7;
+bool bplHomekitClearPairing(void){
+    return true;
+}
+bool bplHomekitStartPairing(void){
+    return true;
+}
+void bplHomekitGetSetupUri(char ret[]){
+    strcpy(ret,"X-HM://0081YCYEP3QYT");
+}
+const char* bplHomekitGetPairCode(void){
+    return "111-22-333";
 }
 
 static HomekitStatusIndicationCB _homekitStatusCB=NULL;

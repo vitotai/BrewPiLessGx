@@ -14,10 +14,9 @@ void setInputApplyCallback(void (*input_applied)(const char*));
 void (*_input_applied_cb)(const char*);
 void (*_input_cancel_cb)(void);
 
-void openInputScreen(lv_scr_load_anim_t anitype,const char* title,void (*input_applied)(const char*),void (*input_cancel)(void),InputType type,const char *text,bool auto_del){
+void openInputScreen(lv_screen_load_anim_t anitype,const char* title,void (*input_applied)(const char*),void (*input_cancel)(void),InputType type,const char *text,bool auto_del){
 
     if(ui_screenInput == NULL) ui_screenInput_screen_init();
-
     _input_applied_cb = input_applied;
     _input_cancel_cb = input_cancel;
     

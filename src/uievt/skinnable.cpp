@@ -28,7 +28,7 @@ lv_font_t *customFont_3;
 const void* control_screen_label_image=NULL;
 const void* setting_screen_label_image=NULL;
 
-static void setDimension(lv_obj_t* obj,JsonVariant json,void (*setaction)(lv_obj_t*,lv_coord_t)){
+static void setDimension(lv_obj_t* obj,JsonVariant json,void (*setaction)(lv_obj_t*,int32_t)){
     if(json.is<signed int>()){
         signed int val = json.as<signed int>();
             setaction( obj, val );
@@ -160,17 +160,17 @@ static void constructRxLevel(lv_obj_t **lvobj,rxlevel_widget **rxwidget,const Js
         /*
         if(json.containsKey(BACKGROUND_COLOR)){
             uint32_t color=strtol(json[BACKGROUND_COLOR],NULL,16);
-            lv_rxlevel_setBgColor(*rxwidget, lv_color_hex(color) );
+            lv_rxlevel_setBgColor(*rxwidget,lv_color_hex(color));
         }
         */
         if(json.containsKey(FILL_COLOR)){
             uint32_t color=strtol(json[FILL_COLOR],NULL,16);
-            lv_rxlevel_setColor(*rxwidget, lv_color_hex(color) );
+            lv_rxlevel_setColor(*rxwidget, lv_color_hex(color));
         }
         /*
         if(json.containsKey(SHADOW_COLOR)){
             uint32_t color=strtol(json[SHADOW_COLOR],NULL,16);
-            lv_rxlevel_setSubColor(*rxwidget, lv_color_hex(color) );
+            lv_rxlevel_setSubColor(*rxwidget,lv_color_hex(color));
         }
         */
     }
@@ -223,18 +223,21 @@ static void constructEnumTypeWidget(lv_obj_t **lvobj,char*** texts_ptr,lv_obj_t 
         // icon type
         // load in advanced? or merge with text type?
 
-        *iconobj = lv_img_create(ui_screenMain);
+        *iconobj = lv_image_create(ui_screenMain);
+        
+        lv_image_set_align(*iconobj,LV_IMAGE_ALIGN_TOP_LEFT);
+
         assignCommonStyles(*iconobj,json);
         
         if(json.containsKey(ICON_PATH)){
         //  *icons_ptr = strdup(json[ICON_PATH].as<const char*>());
-        //    lv_img_set_src(*iconobj,*icons_ptr);
+        //    lv_image_set_src(*iconobj,*icons_ptr);
             const char* src=json[ICON_PATH].as<const char*>();
-            const lv_img_dsc_t *img=getEmbeddedImage(src);
+            const lv_image_dsc_t *img=getEmbeddedImage(src);
             if(img){
-                lv_img_set_src(*iconobj,img);
+                lv_image_set_src(*iconobj,img);
             }else{
-                lv_img_set_src(*iconobj,strdup(src));
+                lv_image_set_src(*iconobj,strdup(src));
             }
         }
 
@@ -257,17 +260,17 @@ static void constructEnumTypeWidget(lv_obj_t **lvobj,char*** texts_ptr,lv_obj_t 
 
 
 static void constructTransparentButton(lv_obj_t **lvobj,void (*evcb)(lv_event_t*),const JsonObject& json){
-    *lvobj = lv_btn_create(ui_screenMain);
+    *lvobj = lv_button_create(ui_screenMain);
 
     assignCommonStyles(*lvobj,json);
 
     lv_obj_add_flag( *lvobj, LV_OBJ_FLAG_SCROLL_ON_FOCUS );   /// Flags
-    lv_obj_clear_flag( *lvobj, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+    lv_obj_remove_flag( *lvobj, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
     lv_obj_set_style_bg_color(*lvobj, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT );
     lv_obj_set_style_bg_opa(*lvobj, 0, LV_PART_MAIN| LV_STATE_DEFAULT);
     lv_obj_add_event_cb(*lvobj, evcb, LV_EVENT_ALL, NULL);
     //lv_state_t state= lv_obj_get_state(*lvobj);
-    lv_obj_clear_state(*lvobj,LV_STATE_FOCUS_KEY | LV_STATE_FOCUSED);
+    lv_obj_remove_state(*lvobj,LV_STATE_FOCUS_KEY | LV_STATE_FOCUSED);
 }
 
 static void setupStaticTextLabelStyle(const JsonObject& json,lv_style_t *style){
@@ -429,7 +432,8 @@ static const ClickArea clickAreas[]={
 static bool skinMainScreen(char* data){
 
     //StaticJsonDocument<6400> root;
-    DynamicJsonDocument root(6400);
+    //DynamicJsonDocument root(6400);
+    DynamicJsonDocument root(7200);
 	auto jsonerror=deserializeJson(root,data);
 
 	if(jsonerror){
@@ -449,18 +453,18 @@ static bool skinMainScreen(char* data){
 
     //1. create screen
     ui_screenMain = lv_obj_create(NULL);
-    lv_obj_clear_flag( ui_screenMain, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
+    lv_obj_remove_flag( ui_screenMain, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
 
     //2. backgraound image.
     if(root.containsKey(JsonKey_BackgroundImage)){
         const char *imgsrc=root[JsonKey_BackgroundImage].as<const char*>();
-        const lv_img_dsc_t *img=getEmbeddedImage(imgsrc);
+        const lv_image_dsc_t *img=getEmbeddedImage(imgsrc);
         if(img){
             lv_obj_set_style_bg_img_src( ui_screenMain, img, LV_PART_MAIN | LV_STATE_DEFAULT );
         }else{
             //if image src is assigned to "file", the image would not be cached. 
-            lv_obj_t *nimg=lv_img_create(ui_screenMain);
-            lv_img_set_src(nimg,strdup(imgsrc));
+            lv_obj_t *nimg=lv_image_create(ui_screenMain);
+            lv_image_set_src(nimg,strdup(imgsrc));
             lv_obj_set_style_bg_img_src( ui_screenMain, img, LV_PART_MAIN | LV_STATE_DEFAULT );
         }
     }else{
@@ -470,7 +474,7 @@ static bool skinMainScreen(char* data){
     // control screen
     if(root.containsKey(JsonKey_ControlLabelImage)){
         const char *imgsrc=root[JsonKey_ControlLabelImage].as<const char*>();
-        const lv_img_dsc_t *img=getEmbeddedImage(imgsrc);
+        const lv_image_dsc_t *img=getEmbeddedImage(imgsrc);
         if(img){
             control_screen_label_image=img;
         }else{
@@ -481,7 +485,7 @@ static bool skinMainScreen(char* data){
     // setting screen
     if(root.containsKey(JsonKey_SettingLabelImage)){
         const char *imgsrc=root[JsonKey_SettingLabelImage].as<const char*>();
-        const lv_img_dsc_t *img=getEmbeddedImage(imgsrc);
+        const lv_image_dsc_t *img=getEmbeddedImage(imgsrc);
         if(img){
             setting_screen_label_image=img;
         }else{
@@ -500,15 +504,15 @@ static bool skinMainScreen(char* data){
     //4. custom font
     if(root.containsKey(TEXT_FONT_CUSTOM1)){
         const char *src=root[TEXT_FONT_CUSTOM1].as<const char*>();
-        customFont_1 =   lv_font_load(src);
+        customFont_1 =   lv_binfont_create(src);
     }
     if(root.containsKey(TEXT_FONT_CUSTOM2)){
         const char *src=root[TEXT_FONT_CUSTOM2].as<const char*>();
-        customFont_2 =   lv_font_load(src);
+        customFont_2 =   lv_binfont_create(src);
     }
     if(root.containsKey(TEXT_FONT_CUSTOM3)){
         const char *src=root[TEXT_FONT_CUSTOM3].as<const char*>();
-        customFont_3 =   lv_font_load(src);
+        customFont_3 =   lv_binfont_create(src);
     }
 
 
@@ -583,7 +587,26 @@ static bool skinMainScreen(char* data){
 
     return true;
 }
+static void createDummyInterface(void){
+    //1. create screen
+    ui_screenMain = lv_obj_create(NULL);
+    lv_obj_remove_flag( ui_screenMain, LV_OBJ_FLAG_SCROLLABLE );    /// Flags
 
+    ui_lbMode = lv_label_create(ui_screenMain);
+    lv_obj_set_width( ui_lbMode, LV_SIZE_CONTENT);
+    lv_obj_set_height( ui_lbMode, LV_SIZE_CONTENT);   /// 1
+    lv_label_set_text(ui_lbMode,"No Skin Available!");
+    lv_obj_align(ui_lbMode, LV_ALIGN_CENTER, 0, -40);
+
+    ui_btnSetting = lv_button_create(ui_screenMain);
+    lv_obj_add_event_cb(ui_btnSetting, ui_event_btnSetting, LV_EVENT_ALL, NULL);
+    lv_obj_align(ui_btnSetting, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_remove_flag(ui_btnSetting, LV_OBJ_FLAG_PRESS_LOCK);
+
+    ui_lbBeer = lv_label_create(ui_btnSetting);
+    lv_label_set_text(ui_lbBeer, "WiFi");
+    lv_obj_center(ui_lbBeer);
+}
 #if SKINNABLE
 
 #define MaxJsonFileSize 3096
@@ -612,7 +635,10 @@ void ui_screenMain_screen_init(void){
     }
     if(skin<NumberOfEmbeddedSkin){
         strcpy(buf,getEmbeddedSkinFile(skin));
-        skinMainScreen(buf);
+        skinned=skinMainScreen(buf);
+    }
+    if(!skinned){
+        createDummyInterface();
     }
     free(buf);
 }
